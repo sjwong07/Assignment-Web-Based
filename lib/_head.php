@@ -10,6 +10,15 @@
     <script src = "/js/app.js"></script>
 </head>
 <body>
-    
+    <header>
+        <h1><a href="/">Web-Based Assignment</a></h1>
+    </header>
+<nav>
+    <a href="/">PUt here</a>
+    <a href="Product.php">Product Filtering</a>
+</nav>
+<main>
+    <h1><?= $_title ?? 'Edit_here' ?> </h1>
+</main>
 </body>
 </html>
