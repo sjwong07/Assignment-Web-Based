@@ -1,5 +1,11 @@
 <?php
 
+// PHP Setups
+date_default_timezone_set('Asia/Kuala_Lumpur');
+session_start();
+
+// General Page Functions
+
 function is_get() {
     return $_SERVER['REQUEST_METHOD'] == 'GET';
 }
@@ -45,12 +51,12 @@ function encode($value) {
 }
 
 function html_hidden($key, $attr = '') {
-    $value ??= encode($GLOBALS[$key] ?? '');
+    $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='hidden' id='$key' name='$key' value='$value' $attr>";
 }
 
-function html_select($key, $items, $default = '- Select One -', $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
+function html_select($key, $items, $default = '- Select One -', $selected = null, $attr = '') {
+    $value = $selected !== null ? $selected : encode($GLOBALS[$key] ?? '');
     echo "<select id='$key' name='$key' $attr>";
     if ($default !== null) {
         echo "<option value=''>$default</option>";

@@ -60,8 +60,8 @@ include '../_head.php';
             <td class="right"><?= $p->price ?></td>
             <td>
                 <form method="post">
-                    <?=  html_hidden('id') ?>
-                    <?=  html_select('unit', $_units, '') ?>
+                    <input type = "hidden" name="id" value = "<?= $p->id ?>">
+                    <?php html_select('unit', $_units, '', $unit) ?>
                 </form>            
             </td>
             <td class="right">
