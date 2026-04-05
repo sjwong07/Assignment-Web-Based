@@ -119,7 +119,7 @@ function update_cart($id, $unit) {
 // ============================================================================
 
 // Global PDO object
-$_db = new PDO('mysql:dbname=dba', 'root', '', [
+$_db = new PDO('mysql:dbname=dbA', 'root', '', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 ]);
 
@@ -144,12 +144,3 @@ function is_exists($value, $table, $field) {
 // ============================================================================
 
 $_units = array_combine(range(1,10), range(1,10));
-
-$_categories = [
-    'SAMSUNG' => 'SAMSUNG',
-    'OPPO'    => 'OPPO',
-    'IPHONE'  => 'IPHONE',
-    'IPAD'    => 'IPAD',
-    'VIVO'    => 'VIVO',
-    'XIAOMI'  => 'XIAOMI'
-];
