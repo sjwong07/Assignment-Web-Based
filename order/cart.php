@@ -50,6 +50,8 @@ include '../_head.php';
             $stm->execute([$id]);
             $p = $stm->fetch();
 
+            $GLOBALS['unit'] = $unit;
+
             $subtotal = $p->price * $unit;
             $count += $unit;
             $total += $subtotal;
@@ -61,7 +63,7 @@ include '../_head.php';
             <td>
                 <form method="post">
                     <input type = "hidden" name="id" value = "<?= $p->id ?>">
-                    <?php html_select('unit', $_units, '', $unit) ?>
+                    <?= html_select('unit', $_units, '') ?>
                 </form>            
             </td>
             <td class="right">

@@ -55,13 +55,24 @@ $products = $stm->fetchAll();
         <th>Product_Name</th>
         <th>Product_Price</th>
         <th>Product_Category</th>
+        <th>Add To Cart</th> 
     </tr>
-    <?php foreach($products as $p): ?>
+    <?php foreach($products as $p): 
+        $cart = get_cart();    
+        $current_unit = $cart[$p->Product_id] ?? 0;
+        $GLOBALS['unit'] = $current_unit;
+    ?>
     <tr>
         <td><?= encode($p->Product_id) ?></td>
         <td><?= encode($p->Product_model) ?></td>
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
+        <td>
+            <form method="post" action="/order/cart.php">
+                <input type="hidden" name="id" value="<?= $p->Product_id ?>">
+                <?= html_select('unit', $_units, 'Add To Cart') ?>
+            </form>
+        </td>
     </tr>
     <?php endforeach; ?>
 </table>
