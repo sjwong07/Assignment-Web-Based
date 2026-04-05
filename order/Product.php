@@ -1,0 +1,71 @@
+<?php
+require '../lib/_base.php';
+
+$_title = 'Product Listing';
+include '../lib/_head.php';
+?>
+<p>Hello</p>
+<?php
+
+
+// 1. Get filters from GET
+$category  = get('category', null);
+$min_price = get('min_price', null);
+$max_price = get('max_price', null);
+
+// 2. Query products with filters
+$sql = "SELECT Product_id, Product_model, Product_price, Category_id
+        FROM Product
+        WHERE 1=1
+          AND (:category IS NULL OR Category_id = :category)
+          AND (:min_price IS NULL OR Product_price >= :min_price)
+          AND (:max_price IS NULL OR Product_price <= :max_price)
+        ORDER BY Product_model";
+
+$stm = $_db->prepare($sql);
+$stm->execute([
+    ':category'  => $category ?: null,
+    ':min_price' => $min_price ?: null,
+    ':max_price' => $max_price ?: null
+]);
+
+$products = $stm->fetchAll();
+?>
+
+
+<form method="POST" action="">
+    <label>Category:</label>
+    <select name="category">
+        <option value="">All</option>
+        <?php foreach($_categories as $id => $name): ?>
+            <option value="<?= $id ?>" <?= ($category == $id ? 'selected' : '') ?>><?= $name ?></option>
+        <?php endforeach; ?>
+
+    </select>
+    <label>Min Price:</label>
+    <input type="number" name="min_price" value="<?= encode($min_price) ?>">
+
+    <button type="submit">Filter</button>
+</form>
+
+<!-- 4. Product Table -->
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Product_ID</th>
+        <th>Product_Name</th>
+        <th>Product_Price</th>
+        <th>Product_Category</th>
+    </tr>
+    <?php foreach($products as $p): ?>
+    <tr>
+        <td><?= encode($p->Product_id) ?></td>
+        <td><?= encode($p->Product_model) ?></td>
+        <td><?= number_format($p->Product_price, 2) ?></td>
+        <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+
+
+<?php
+include '../lib/_foot.php';
