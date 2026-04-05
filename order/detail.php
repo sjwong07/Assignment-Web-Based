@@ -15,7 +15,7 @@ $o = $stm->fetch();
 if (!$o) redirect('history.php');
 
 $stm = $_db->prepare('
-    SELECT i.*, p.Product_model as name, p.Product_id as product_id
+    SELECT i.*, p.Product_model as name, p.Product_id as product_id, p.photo
     FROM item AS i, Product AS p
     WHERE i.product_id = p.Product_id AND i.order_id = ?
 ');
@@ -39,11 +39,11 @@ include '../_head.php';
     <br>
 
     <label>Datetime</label>
-    <div><?= $o->datetime ?></div>
+    <div><?= $o->order_date ?></div>
     <br>
 
-    <label>Count</label>
-    <div><?= $o->count ?></div>
+    <label>Items</label>
+    <div><?= count($arr) ?></div>
     <br>
 
     <label>Total</label>

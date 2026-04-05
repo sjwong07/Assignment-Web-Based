@@ -43,7 +43,7 @@ include '../_head.php';
         $total = 0;
         $item = [];
 
-        $stm = $_db->prepare('SELECT * FROM product WHERE id = ?');
+        $stm = $_db->prepare('SELECT * FROM Product WHERE Product_id = ?');
         $cart = get_cart();
 
         foreach($cart as $id => $unit):
@@ -52,17 +52,17 @@ include '../_head.php';
 
             $GLOBALS['unit'] = $unit;
 
-            $subtotal = $p->price * $unit;
+            $subtotal = $p->Product_price * $unit;
             $count += $unit;
             $total += $subtotal;
     ?>
         <tr>
-            <td><?= $p->id ?></td>
-            <td><?= $p->name ?></td>
-            <td class="right"><?= $p->price ?></td>
+            <td><?= $p->Product_id ?></td>
+            <td><?= $p->Product_model ?></td>
+            <td class="right"><?= $p->Product_price ?></td>
             <td>
                 <form method="post">
-                    <input type = "hidden" name="id" value = "<?= $p->id ?>">
+                    <input type = "hidden" name="id" value = "<?= $p->Product_id ?>">
                     <?= html_select('unit', $_units, '') ?>
                 </form>            
             </td>

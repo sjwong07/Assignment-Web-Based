@@ -9,7 +9,7 @@ include '../_base.php';
 $stm = $_db->prepare('
     SELECT * FROM `order`
     WHERE customer_id = ?
-    ODER BY id DESC
+    ORDER BY id DESC
 ');
 $stm->execute([$_user->Customer_id]);
 $arr = $stm->fetchAll();
@@ -25,7 +25,6 @@ include '../_head.php';
     <tr>
         <th>Id</th>
         <th>Datetime</th>
-        <th>Count</th>
         <th>Total (RM)</th>
         <th>Detail</th>
     </tr>
