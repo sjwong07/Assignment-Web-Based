@@ -1,12 +1,12 @@
 <?php
-require '../_base.php';
+require '../lib/_base.php';
 
-$_title = 'Product Filtering';
-include '../_head.php';
+$_title = 'Product Listing';
+include '../lib/_head.php';
 ?>
 <p>Hello</p>
 <?php
-require '../_base.php'; 
+
 
 // 1. Get filters from GET
 $category  = get('category', null);
@@ -33,21 +33,17 @@ $products = $stm->fetchAll();
 ?>
 
 
-  //   3. Filter Form
-<form method="GET" action="">
+<form method="POST" action="">
     <label>Category:</label>
     <select name="category">
         <option value="">All</option>
         <?php foreach($_categories as $id => $name): ?>
             <option value="<?= $id ?>" <?= ($category == $id ? 'selected' : '') ?>><?= $name ?></option>
         <?php endforeach; ?>
-    </select>
 
+    </select>
     <label>Min Price:</label>
     <input type="number" name="min_price" value="<?= encode($min_price) ?>">
-
-    <label>Max Price:</label>
-    <input type="number" name="max_price" value="<?= encode($max_price) ?>">
 
     <button type="submit">Filter</button>
 </form>
@@ -55,10 +51,10 @@ $products = $stm->fetchAll();
 <!-- 4. Product Table -->
 <table border="1" cellpadding="5">
     <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Category</th>
+        <th>Product_ID</th>
+        <th>Product_Name</th>
+        <th>Product_Price</th>
+        <th>Product_Category</th>
     </tr>
     <?php foreach($products as $p): ?>
     <tr>
@@ -72,4 +68,4 @@ $products = $stm->fetchAll();
 
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';

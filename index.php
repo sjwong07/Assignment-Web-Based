@@ -2,7 +2,7 @@
 include  __DIR__. '/lib/_head.php';
 ?>
 <?php
-require '_base.php';
+require '/lib_base.php';
 ?>
 
 <div class= "container mt-5">
@@ -11,5 +11,5 @@ require '_base.php';
 </div>
 
 <?php 
-    include '_foot.php';
+    include  __DIR__ .'_foot.php';
 ?>

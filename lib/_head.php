@@ -18,7 +18,9 @@
     <a href="/lib/index.php">Index</a>
     <a href="/order/checkout.php">CheckOut</a>
     <a href="/order/cart.php">Cart</a>
-    <a href="/Product.php">Product</a>
+    <a href="/order/Product.php">Product</a>
+    <a href="/order/history.php">History</a>
+    
 </nav>
 <main>
     <h1><?= $_title ?? 'Untitle' ?></h1>
