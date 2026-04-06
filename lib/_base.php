@@ -91,19 +91,52 @@ function err($key) {
 
 // Get shopping cart
 function get_cart() {
-    return $_SESSION['cart'] ?? [];
+    global $_user, $_db;
+
+    if($_user){
+        $stm = $_db->prepare('
+            SELECT produt_id, unit FROM cart_item
+            WHERE customer_id = ?
+        ');
+        $stm->execute([$_user->Customer_id]);
+        $rows = $stm->fetchAll();
+
+        $cart = [];
+        foreach ($rows as $row){
+            $cart[$row->product_id] = $row->unit;
+        }
+        return $cart;
+    }
 }
 
 // Set shopping cart
 function set_cart($cart = []) {
-    $_SESSION['cart'] = $cart;
+    global $_user, $_db;
+
+    if($_user){
+        $stm = $_db->prepare('
+            DELETE FROM cart_item WHERE customer_id = ?
+        ');
+        $stm->execute([$_user->Customer_id]);
+        
+        $stm = $_db->prepare('
+            INSERT INTO cart_item (customer_id, product_id, unit)
+            VLAUES (?, ?, ?)
+        ');
+
+        foreach ($cart as $product_id => $unit){
+            $stm->execute([$_user->Customer_id, $product_id, $unit]);
+        }
+    } else {
+        $_SESSION['cart'] = $cart;
+    }
 }
 
 // Update shopping cart
 function update_cart($id, $unit) {
     $cart = get_cart();
 
-    if($unit >= 1 && $unit <= 10 && is_exists($id, 'product', 'id')){
+    if($unit >= 1 && $unit <= 10 && is_exists($id, 'Product', 'Product_id')){
         $cart[$id] = $unit;
         ksort($cart);
     }
