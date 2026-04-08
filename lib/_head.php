@@ -18,7 +18,8 @@
     <a href="/lib/index.php">Index</a>
     <a href="/order/checkout.php">CheckOut</a>
     <a href="/order/cart.php">Cart</a>
-    <a href="/order/Product.php">Product</a>
+    <a href="/order/ProductMember.php">Product(Member)</a>
+    <a href="/order/ProductAdmin.php">Product(Admin)</a>
     <a href="/order/history.php">History</a>
     
 </nav>

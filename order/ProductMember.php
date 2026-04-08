@@ -4,7 +4,7 @@ require '../lib/_base.php';
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
-<p>Hello</p>
+<p>Here is Our Product List</p>
 <?php
 
 
@@ -44,7 +44,8 @@ $products = $stm->fetchAll();
     </select>
     <label>Min Price:</label>
     <input type="number" name="min_price" value="<?= encode($min_price) ?>">
-
+    <label>Max Price:</label>
+    <input type="number" name="max_price" value="<?= encode($max_price) ?>">
     <button type="submit">Filter</button>
 </form>
 
@@ -56,6 +57,7 @@ $products = $stm->fetchAll();
         <th>Product_Price</th>
         <th>Product_Category</th>
         <th>Add To Cart</th> 
+        <th>Product photo upload</th>
     </tr>
     <?php foreach($products as $p): 
         $cart = get_cart();    
