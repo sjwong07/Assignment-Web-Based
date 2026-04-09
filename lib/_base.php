@@ -147,6 +147,17 @@ function update_cart($id, $unit) {
     set_cart($cart);
 }
 
+function get_file($field_name) {
+    // Check if a file was uploaded via form
+    if (!isset($_FILES[$field_name]) || $_FILES[$field_name]['error'] === UPLOAD_ERR_NO_FILE) {
+        return null; // no file uploaded
+    }
+
+    // Return the uploaded file info
+    return $_FILES[$field_name];
+}
+
+
 // ============================================================================
 // Database Setups and Functions
 // ============================================================================

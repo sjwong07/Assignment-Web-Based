@@ -4,25 +4,30 @@ require '../lib/_base.php';
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
-<p>Here is Our Product List</p>
+<p></p>
+
 <?php
 
-
 // 1. Get filters from GET
-$category  = get('category', null);
+$category  = get('Category', null);
 $min_price = get('min_price', null);
 $max_price = get('max_price', null);
 
 // 2. Query products with filters
-$sql = "SELECT Product_id, Product_model, Product_price, Category_id
-        FROM Product
-        WHERE 1=1
-          AND (:category IS NULL OR Category_id = :category)
-          AND (:min_price IS NULL OR Product_price >= :min_price)
-          AND (:max_price IS NULL OR Product_price <= :max_price)
-        ORDER BY Product_model";
+$product = "SELECT 
+    p.*, 
+    c.Category_name
+FROM product p
+JOIN Category c 
+    ON p.Category_id = c.Category_id
+WHERE 1=1
+    AND (:category IS NULL OR p.category_id = :category)
+    AND (:min_price IS NULL OR p.Product_price >= :min_price)
+    AND (:max_price IS NULL OR p.Product_price <= :max_price)
+ORDER BY p.Product_model
+";
 
-$stm = $_db->prepare($sql);
+$stm = $_db->prepare($product);
 $stm->execute([
     ':category'  => $category ?: null,
     ':min_price' => $min_price ?: null,
@@ -56,35 +61,41 @@ $products = $stm->fetchAll();
         <th>Product_Name</th>
         <th>Product_Price</th>
         <th>Product_Category</th>
-        <th>Add To Cart</th> 
+        <th>Category_description</th>
         <th>Product photo upload</th>
     </tr>
-    <?php foreach($products as $p): 
-        $cart = get_cart();    
-        $current_unit = $cart[$p->Product_id] ?? 0;
-        $GLOBALS['unit'] = $current_unit;
-    ?>
+    <?php foreach($products as $p):?>
     <tr>
         <td><?= encode($p->Product_id) ?></td>
         <td><?= encode($p->Product_model) ?></td>
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
-        <td>
-            <form method="post" action="/order/cart.php">
-                <input type="hidden" name="id" value="<?= $p->Product_id ?>">
-                <?= html_select('unit', $_units, 'Add To Cart') ?>
-            </form>
-        </td>
-        <td>
-            <form method="post" enctype="multipart/form-data">
-            <input type="file" name="photo">
-            <button type="submit">Upload</button>
-            </form>
+       <td><?= encode($p->Category_name) ?></td>
+       <td>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
+            <input type="file" name='photo' accept='image/*'>
+            <button type="submit" name="upload">Upload</button>
+        </form>
         </td>
     </tr>
     <?php endforeach; ?>
 </table>
 
+<?php
+$f = get_file('photo');
+if (isset($_POST['upload'])) {
+    // Get the uploaded file
+    $f = get_file('photo');
+
+    // Validate
+    if ($f === null) {
+        echo "Photo needed";
+    } else {
+        echo "File ready to upload!";
+    }
+}
+?>
 
 <?php
 include '../lib/_foot.php';

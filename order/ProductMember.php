@@ -57,7 +57,6 @@ $products = $stm->fetchAll();
         <th>Product_Price</th>
         <th>Product_Category</th>
         <th>Add To Cart</th> 
-        <th>Product photo upload</th>
     </tr>
     <?php foreach($products as $p): 
         $cart = get_cart();    
