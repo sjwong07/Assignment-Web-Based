@@ -1,1 +1,94 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* all can change ah, i just write a sample first */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, input, button, select{
+    font: 16px 'Roboto', sans-serif;
+    background: f5f5f5;
+}
+
+.app-container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+nav-bar{
+    background: #333;
+    padding: 15px 0;
+}
+
+nav-link{
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: inline-block;
+}
+
+nav-link:hover{
+    background: #555;
+}
+
+button, .btn{
+    background: #95c5f8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover, .btn:hover{
+    background: #4ea0f7;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td{
+    border: 2px solid #000000;
+    padding: 10px;
+    text-align: left;
+}
+
+th{
+    background: #aac4fb;
+}
+
+.table-wrapper{
+    max-width: 1200px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: o 1px 3px rgba(0,0,0,0.1);
+}
+
+
+.success{
+    background: #f8f9a3;
+    color: #000000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.error{
+    background: #f8f9a3;
+    color: #000000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
