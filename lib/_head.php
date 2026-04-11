@@ -9,21 +9,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="js/app.js"></script>
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     <header>
         <h1><a href="/">Reusable Layout</a></h1>
 
     </header>
 <nav>
-    <a href="/lib/index.php">Index</a>
-    <a href="/order/checkout.php">CheckOut</a>
-    <a href="/order/cart.php">Cart</a>
+    <a href="/index.php">Index</a>
     <a href="/order/ProductMember.php">Product(Member)</a>
     <a href="/order/ProductAdmin.php">Product(Admin)</a>
-    <a href="/order/history.php">History</a>
+    <a href="/order/cart.php">🛒 Shopping Cart</a>
+    <a href="/order/checkout.php">💳 CheckOut</a>
+    <a href="/order/history.php">🕓 History</a>
     
 </nav>
-<main>
-    <h1><?= $_title ?? 'Untitle' ?></h1>
+<main style="flex: 1;">
+    <h1 style="margin-top: 20px;"><?= $_title ?? 'Untitle' ?></h1>
 
     

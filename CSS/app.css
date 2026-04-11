@@ -10,7 +10,11 @@
 
 body, input, button, select{
     font: 16px 'Roboto', sans-serif;
-    background: f5f5f5;
+    background: #f5f5f5;
+}
+
+main h1{
+    margin-left: 20px;
 }
 
 .app-container{
@@ -19,24 +23,24 @@ body, input, button, select{
     padding: 0 20px;
 }
 
-nav-bar{
+nav{
     background: #333;
-    padding: 15px 0;
+    padding: 10px 0;
 }
 
-nav-link{
-    color: white;
+nav a{
+    color: rgb(255, 255, 255);
     text-decoration: none;
-    padding: 10px 15px;
+    padding: 5px 15px;
     display: inline-block;
 }
 
-nav-link:hover{
+nav a:hover{
     background: #555;
 }
 
 button, .btn{
-    background: #95c5f8;
+    background: #86bcf6;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -47,10 +51,12 @@ button:hover, .btn:hover{
     background: #4ea0f7;
 }
 
-table{
+.table{
     width: 100%;
     border-collapse: collapse;
     background: white;
+    margin: 30px 0 0 20px;
+    max-width: 1000px;
 }
 
 th, td{
@@ -63,19 +69,26 @@ th{
     background: #aac4fb;
 }
 
-.table-wrapper{
-    max-width: 1200px;
-    width: 100%;
-    overflow-x: auto;
+td form{
+    display: inline-block;
 }
 
-.table-custom {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    box-shadow: o 1px 3px rgba(0,0,0,0.1);
+td form select,
+td form button{
+    margin-right: 15px;
 }
 
+td form button {
+    margin-left: 5px;
+}
+
+form{
+    margin-left: 20px;
+}
+
+p{
+    margin-left: 20px;
+}
 
 .success{
     background: #f8f9a3;
@@ -91,4 +104,10 @@ th{
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 20px;
+}
+
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
 }

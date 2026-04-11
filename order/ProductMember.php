@@ -4,9 +4,43 @@ require '../lib/_base.php';
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
+
+<?php if($msg = temp('info')): ?>
+    <div id="tempMsg" style="position: fixed; top: 100px; 
+        left: 50%; transform: translateX(-50%); 
+        background: #333; color: #f0f0f0; 
+        padding: 10px 16px; white-space: nowrap; 
+        border-radius: 20px; z-index: 9999;">
+        <?= $msg ?>
+    </div>
+    <script>
+        setTimeout(() => {
+            let el = document.getElementById('tempMsg');
+            if(el) el.style.display = 'none';
+        }, 2000);
+    </script>
+<?php endif; ?>
+<br>
 <p>Here is Our Product List</p>
+<br>
 <?php
 
+//cart
+if(is_post() && isset($_POST['id'])){
+    $id = post('id');
+    $unit = post('unit');
+
+    if($unit > 0){
+        $cart = $_SESSION['cart'] ?? [];
+        $cart[$id] = $unit;
+        $_SESSION['cart'] = $cart;
+
+        update_cart($id, $unit);
+
+        temp('info', 'Add Successfully!');
+        redirect();
+    }
+}
 
 // 1. Get filters from GET
 $category  = get('category', null);
@@ -32,7 +66,6 @@ $stm->execute([
 $products = $stm->fetchAll();
 ?>
 
-
 <form method="POST" action="">
     <label>Category:</label>
     <select name="category">
@@ -50,7 +83,7 @@ $products = $stm->fetchAll();
 </form>
 
 <!-- 4. Product Table -->
-<table border="1" cellpadding="5">
+<table class="table" border="1" cellpadding="5">
     <tr>
         <th>Product_ID</th>
         <th>Product_Name</th>
@@ -69,9 +102,10 @@ $products = $stm->fetchAll();
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
         <td>
-            <form method="post" action="/order/cart.php">
+            <form method="post">
                 <input type="hidden" name="id" value="<?= $p->Product_id ?>">
-                <?= html_select('unit', $_units, 'Add To Cart') ?>
+                <?= html_select('unit', $_units, 'Select Unit') ?>
+                <button type="submit">Add To Cart</button>
             </form>
         </td>
     </tr>

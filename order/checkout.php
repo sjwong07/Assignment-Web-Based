@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
 //Authorization member
 // auth('Member');

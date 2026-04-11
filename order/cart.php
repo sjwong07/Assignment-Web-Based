@@ -1,9 +1,10 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
 // ----------------------------------------------------------------------------
 
 if (is_post()) {
+
     $btn = req('btn');
     if ($btn == 'clear'){
         set_cart();
@@ -18,8 +19,8 @@ if (is_post()) {
 
 // ----------------------------------------------------------------------------
 
-$_title = 'Order | Shopping Cart';
-include '../_head.php';
+$_title = 'Shopping Cart 🛒';
+include '../lib/_head.php';
 ?>
 
 <style>
@@ -82,12 +83,15 @@ include '../_head.php';
 
 <p>
     <?php if ($cart): ?>
-        <button data-post="?btn=clear">Clear</button>
+        <form method="post" style="margin-left: 20px; margin-top: 10px;">
+            <input type="hidden" name="btn" value="clear">
+            <button type="submit">Clear All</button>
+        </form>
 
         <?php if ($_user?->role == 'Member'): ?>
             <button data-post="checkout.php">Checkout</button>
         <?php else: ?>
-            Please <a href="/login.php">login</a> as member to checkout
+            Please <a href="/security/login.php">login</a> as member to checkout
         <?php endif ?>
     <?php endif ?>
 </p>
@@ -97,4 +101,4 @@ include '../_head.php';
 </script>
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';

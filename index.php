@@ -11,5 +11,5 @@ require __DIR__.'/lib/_base.php';
 </div>
 
 <?php 
-    include  __DIR__ .'_foot.php';
+    include  __DIR__ .'/lib/_foot.php';
 ?>
