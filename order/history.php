@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
 // ----------------------------------------------------------------------------
 
@@ -14,8 +14,8 @@ $stm = $_db->prepare('
 $stm->execute([$_user->Customer_id]);
 $arr = $stm->fetchAll();
 
-$_title = 'Order History';
-include '../_head.php';
+$_title = 'Order History 🕓';
+include '../lib/_head.php';
 ?>
 
 
@@ -42,4 +42,4 @@ include '../_head.php';
 </table>
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';

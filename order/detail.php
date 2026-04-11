@@ -1,5 +1,5 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
 //Authorization member
 // auth('Member');
@@ -23,7 +23,7 @@ $stm->execute([$id]);
 $arr = $stm->fetchAll();
 
 $_title = 'Order Detail';
-include '../_head.php';
+include '../lib/_head.php';
 ?>
 
 <style>
@@ -87,4 +87,4 @@ include '../_head.php';
 </p>
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';
