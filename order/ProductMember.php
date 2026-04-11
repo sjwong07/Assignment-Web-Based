@@ -6,11 +6,7 @@ include '../lib/_head.php';
 ?>
 
 <?php if($msg = temp('info')): ?>
-    <div id="tempMsg" style="position: fixed; top: 100px; 
-        left: 50%; transform: translateX(-50%); 
-        background: #333; color: #f0f0f0; 
-        padding: 10px 16px; white-space: nowrap; 
-        border-radius: 20px; z-index: 9999;">
+    <div id="tempMsg" >
         <?= $msg ?>
     </div>
     <script>
