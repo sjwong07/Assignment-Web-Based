@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
                 if ($_SESSION['login_attempts'] >= $max_attempts) {
                     $_SESSION['locked_until'] = time() + $lockout_time;
-                    $error = "5 failed attempts. Locked for 1 minutes.";
+                    $error = "3 failed attempts. Locked for 1 minutes.";
                 } else {
                     $left = $max_attempts - $_SESSION['login_attempts'];
                     $error = "Invalid password. $left attempts left.";
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
             if ($_SESSION['login_attempts'] >= $max_attempts) {
                 $_SESSION['locked_until'] = time() + $lockout_time;
-                $error = "5 failed attempts. Locked for 1 minutes.";
+                $error = "3 failed attempts. Locked for 1 minutes.";
             } else {
                 $left = $max_attempts - $_SESSION['login_attempts'];
                 $error = "No user found with that username. $left attempts left.";
