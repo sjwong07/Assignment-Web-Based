@@ -5,7 +5,7 @@ session_start();
 $host = 'localhost';
 $username_db = 'root';   // XAMPP default is 'root'
 $password_db = '';       // XAMPP default is an empty string (no space)
-$dbname = 'store_db'; // Change this to the name you created in phpMyAdmin
+$dbname = 'dbA'; // Change this to the name you created in phpMyAdmin
 
 $connection = mysqli_connect($host, $username_db, $password_db, $dbname);
 
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Check if username or email already exists
-      $check_sql = "SELECT Customer_id FROM Customer WHERE username = ? OR email = ?";
+      $check_sql = "SELECT user_id FROM `user` WHERE username = ? OR email = ?";
         $check_stmt = mysqli_prepare($connection, $check_sql);
         mysqli_stmt_bind_param($check_stmt, "ss", $username, $email);
         mysqli_stmt_execute($check_stmt);
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Username or email already exists. Please choose another.";
         } else {
             // Insert into database
-            $sql = "INSERT INTO Customer (username, password, email, phone, role) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO `user` (username, password, email, phone, role) VALUES (?, ?, ?, ?, ?)";
             $stmt = mysqli_prepare($connection, $sql);
             mysqli_stmt_bind_param($stmt, "sssss", $username, $hashed_password, $email, $phone, $role);
 

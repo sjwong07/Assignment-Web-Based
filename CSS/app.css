@@ -908,15 +908,16 @@ input:checked + .slider:before {
 
 div#tempMsg  {
     position: fixed;
-    top: 100px; 
+    top: 150px; 
     left: 50%;
     transform: translateX(-50%); 
-    background: #333; 
-    color: #f0f0f0; 
+    background: #a1f3bc; 
+    color: #098702; 
     padding: 10px 16px; 
     white-space: nowrap; 
     border-radius: 20px; 
     z-index: 9999;
+    font-weight: bold;
 }
 
 td form {
