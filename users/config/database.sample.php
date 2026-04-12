@@ -1,5 +1,4 @@
 <?php
-// config/database.sample.php
 // COPY THIS FILE to database.php and change the database name
 
 $host = 'localhost';
