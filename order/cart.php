@@ -1,7 +1,16 @@
 <?php
 include '../lib/_base.php';
 
-// ----------------------------------------------------------------------------
+// $user_id = $_user->Customer_id ?? 'guest';
+
+// if($_user){
+//     if(!isset($_SESSION['cart' . $user_id])){
+//         $_SESSION['cart' . $user_id] = [];
+//     }
+//     $cart = get_cart();
+// }else {
+//     $cart = $_SESSION['cat_guest'] ?? [];
+// }
 
 if (is_post()) {
 
@@ -69,7 +78,6 @@ include '../lib/_head.php';
             </td>
             <td class="right">
                 <?= sprintf('%.2f', $subtotal) ?>
-                <img src="/products/<?= $p->photo ?>" class="popup">
             </td>
         </tr>
     <?php endforeach ?>
@@ -91,7 +99,7 @@ include '../lib/_head.php';
         <?php if ($_user?->role == 'Member'): ?>
             <button data-post="checkout.php">Checkout</button>
         <?php else: ?>
-            Please <a href="/security/login.php">login</a> as member to checkout
+            Please <a href="/login.php">login</a> as member to checkout
         <?php endif ?>
     <?php endif ?>
 </p>

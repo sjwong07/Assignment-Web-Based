@@ -620,7 +620,7 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/login.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'login.php' ? 'active' : ''; ?>">
+                <a href="<?= BASE_URL ?>/login.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'login.php' ? 'active' : ''; ?>">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </a>
                 <a href="/register.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'register.php' ? 'active' : ''; ?>">

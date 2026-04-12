@@ -16,7 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($new_pass !== $confirm) {
         $error = "Passwords do not match.";
     } else {
+        $customer_id = $reg_user['customer_id'] ?? time() . rand(100, 999);
+
         $_SESSION['registered_user']['password'] = password_hash($new_pass, PASSWORD_DEFAULT);
+        $_SESSION['registered_user']['customer_id'] = $customer_id;
         $success = "Password reset! <a href='login.php' style='color:inherit; font-weight:bold;'>Login now</a>";
     }
 }

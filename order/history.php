@@ -1,18 +1,20 @@
 <?php
 include '../lib/_base.php';
 
-// ----------------------------------------------------------------------------
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
+    header("Location: ../login.php");
+    exit;
+}
 
-//Authorization member
-// auth('Member');
+$custoemr_id = $_SESSION['customer_id'];
 
 $stm = $_db->prepare('
     SELECT * FROM `order`
     WHERE customer_id = ?
     ORDER BY id DESC
 ');
-$stm->execute([$_user->Customer_id]);
-$arr = $stm->fetchAll();
+$stm->execute([$customer_id]);
+$arr = $stm->fetchAll(PDO::FETCH_OBJ);
 
 $_title = 'Order History 🕓';
 include '../lib/_head.php';

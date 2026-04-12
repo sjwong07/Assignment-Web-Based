@@ -7,7 +7,7 @@ $error = "";
 
 // 1. Redirect if already logged in
 if (isset($_SESSION['loggedin'])) {
-    header("location: " . ($_SESSION['role'] === 'admin' ? "admin_dashboard.php" : "product.php"));
+    header("location: " . ($_SESSION['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
     exit;
 }
 
@@ -18,7 +18,8 @@ if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $reg_user['username'];
         $_SESSION['role'] = $reg_user['role'];
-        header("location: product.php");
+        $_SESSION['customer_id'] = $reg_user['customer_id'];
+        header("location: /order/ProductMember.php");
         exit;
     }
 }
@@ -39,13 +40,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $user;
             $_SESSION['role'] = $reg_user['role'];
+            $_SESSION['customer_id'] = $reg_user['customer_id'];
             unset($_SESSION['login_attempts'], $_SESSION['locked_until']);
 
             if ($remember) {
                 setcookie("remember_me_user", $user, time() + (30 * 24 * 60 * 60), "/");
             }
 
-            header("location: " . ($reg_user['role'] === 'admin' ? "admin_dashboard.php" : "product.php"));
+            header("location: " . ($reg_user['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
             exit;
         } else {
             $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;

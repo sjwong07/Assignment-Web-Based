@@ -6,6 +6,8 @@
 // Start session first
 session_start();
 
+define('BASE_URL', '');
+
 // Set timezone
 date_default_timezone_set('Asia/Kuala_Lumpur');
 

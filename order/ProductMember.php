@@ -1,6 +1,19 @@
 <?php
 require '../lib/_base.php';
 
+
+//cart
+if(is_post() && isset($_POST['id'])){
+    $id = post('id');
+    $unit = post('unit');
+
+    if($unit > 0){
+        update_cart($id, $unit);
+
+        temp('info', 'Add Successfully!');
+        redirect();
+    }
+}
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
@@ -16,27 +29,8 @@ include '../lib/_head.php';
         }, 2000);
     </script>
 <?php endif; ?>
-<br>
 <p>Here is Our Product List</p>
-<br>
 <?php
-
-//cart
-if(is_post() && isset($_POST['id'])){
-    $id = post('id');
-    $unit = post('unit');
-
-    if($unit > 0){
-        $cart = $_SESSION['cart'] ?? [];
-        $cart[$id] = $unit;
-        $_SESSION['cart'] = $cart;
-
-        update_cart($id, $unit);
-
-        temp('info', 'Add Successfully!');
-        redirect();
-    }
-}
 
 // 1. Get filters from GET
 $category  = get('category', null);
