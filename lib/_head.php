@@ -552,13 +552,13 @@
 
     <!-- Header Section -->
     <header>
-        <h1><a href="/">ELEX Store </a></h1>
+        <h1><a href="/index.php">ELEX Store </a></h1>
     </header>
 
     <!-- Modern Navigation Bar -->
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
-            <a href="index.php">📱 ELEX Store</a>
+            <a href="/index.php">📱 ELEX Store</a>
         </div>
         
         <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -566,22 +566,22 @@
         </button>
         
         <div class="nav-menu" id="navMenu">
-            <a href="index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+            <a href="/index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
                 <i class="fas fa-home"></i> Home
             </a>
-            <a href="products.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'products.php' ? 'active' : ''; ?>">
+            <a href="/order/ProductMember.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'products.php' ? 'active' : ''; ?>">
                 <i class="fas fa-mobile-alt"></i> Products
             </a>
-            <a href="about.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'about.php' ? 'active' : ''; ?>">
+            <a href="/about.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'about.php' ? 'active' : ''; ?>">
                 <i class="fas fa-info-circle"></i> About
             </a>
-            <a href="contact.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'contact.php' ? 'active' : ''; ?>">
+            <a href="/contact.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'contact.php' ? 'active' : ''; ?>">
                 <i class="fas fa-envelope"></i> Contact
             </a>
             
             <?php if (isset($_SESSION['user_id'])): ?>
                 <!-- Cart Icon -->
-                <a href="cart.php" class="nav-link">
+                <a href="/order/cart.php" class="nav-link">
                     <i class="fas fa-shopping-cart"></i> Cart
                     <span class="cart-count" id="cartCount">0</span>
                 </a>
@@ -596,10 +596,10 @@
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="dashboard.php">
+                        <a href="/dashboard.php">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
-                        <a href="profile.php">
+                        <a href="/profile.php">
                             <i class="fas fa-user-circle"></i> My Profile
                         </a>
                         <a href="orders.php">
@@ -612,7 +612,7 @@
                         <a href="settings.php">
                             <i class="fas fa-cog"></i> Settings
                         </a>
-                        <form method="POST" action="logout.php" style="margin: 0;">
+                        <form method="POST" action="/logout.php" style="margin: 0;">
                             <button type="submit" onclick="return confirm('Are you sure you want to logout?')">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </button>
@@ -620,10 +620,10 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a href="login.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'login.php' ? 'active' : ''; ?>">
+                <a href="/login.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'login.php' ? 'active' : ''; ?>">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </a>
-                <a href="register.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'register.php' ? 'active' : ''; ?>">
+                <a href="/register.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'register.php' ? 'active' : ''; ?>">
                     <i class="fas fa-user-plus"></i> Register
                 </a>
             <?php endif; ?>
@@ -632,12 +632,12 @@
 
     <!-- Legacy Navigation Menu (Order Management) -->
     <nav>
-        <a href="/lib/index.php">Index</a>
-        <a href="/order/checkout.php">CheckOut</a>
-        <a href="/order/cart.php">Cart</a>
+        <a href="/index.php">Index</a>
         <a href="/order/ProductMember.php">Product(Member)</a>
         <a href="/order/ProductAdmin.php">Product(Admin)</a>
-        <a href="/order/history.php">History</a>
+        <a href="/order/cart.php">🛒 Shopping Cart</a>
+        <a href="/order/checkout.php">💳 CheckOut</a>
+        <a href="/order/history.php">🕓 History</a>
     </nav>
 
     <!-- Breadcrumb Navigation (Optional - shows on inner pages) -->
