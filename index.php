@@ -98,7 +98,7 @@ $username = $_SESSION['username'] ?? 'Guest';
                     </div>
                 </div>
             <?php else: ?>
-                <a href="login.php" class="nav-link">Login</a>
+                <a href="/login.php" class="nav-link">Login</a>
                 <a href="register.php" class="nav-link">Register</a>
             <?php endif; ?>
         </div>
@@ -149,7 +149,7 @@ $username = $_SESSION['username'] ?? 'Guest';
                     endwhile;
                 else:
                 ?>
-                    <p>No products found. Please <a href="login.php">login</a> to see our full catalog.</p>
+                    <p>No products found. Please <a href="/login.php">login</a> to see our full catalog.</p>
                 <?php endif; ?>
             </div>
         </div>

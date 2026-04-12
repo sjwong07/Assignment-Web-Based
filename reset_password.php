@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $_SESSION['registered_user']['password'] = password_hash($new_pass, PASSWORD_DEFAULT);
         $_SESSION['registered_user']['customer_id'] = $customer_id;
-        $success = "Password reset! <a href='login.php' style='color:inherit; font-weight:bold;'>Login now</a>";
+        $success = "Password reset! <a href='/login.php' style='color:inherit; font-weight:bold;'>Login now</a>";
     }
 }
 ?>
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="confirm_password" maxlength="12" placeholder="Confirm New Password" required>
             <button type="submit" class="btn">Update Password</button>
         </form>
-        <a href="login.php" class="back"><i class="fa-solid fa-arrow-left"></i> Back to Login</a>
+        <a href="/login.php" class="back"><i class="fa-solid fa-arrow-left"></i> Back to Login</a>
     </div>
 </body>
 </html>

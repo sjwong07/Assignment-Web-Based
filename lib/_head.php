@@ -549,12 +549,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Header Section -->
-    <header>
-        <h1><a href="/index.php">ELEX Store </a></h1>
-    </header>
-
     <!-- Modern Navigation Bar -->
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
@@ -694,7 +688,7 @@
                 <?php endif; ?>
             </div>
             <?php endif; ?>
-
+                        
 <script>
     // ========================================
     // NAVIGATION & UI INTERACTIONS

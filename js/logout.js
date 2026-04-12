@@ -15,7 +15,7 @@ function logoutUser() {
         })
         .catch(error => {
             console.error('Error:', error);
-            window.location.href = 'login.php';
+            window.location.href = '/login.php';
         });
     }
 }

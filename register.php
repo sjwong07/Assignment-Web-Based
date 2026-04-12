@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'role'     => $role, 
             'password' => $hashed_password
         ];
-        $success = "Account created as " . ucfirst($role) . "! <a href='login.php'>Login here</a>";
+        $success = "Account created as " . ucfirst($role) . "! <a href='/login.php'>Login here</a>";
         $username = $email = $phone = "";
     }
 }
@@ -111,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit" class="btn">Register Now</button>
         </form>
-        <div class="footer-link">Already have an account? <a href="login.php">Login here</a></div>
+        <div class="footer-link">Already have an account? <a href="/login.php">Login here</a></div>
     </div>
 
     <script>
