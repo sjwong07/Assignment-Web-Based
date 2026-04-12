@@ -8,8 +8,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
     exit;
 }
 
-$customer_id = $_SESSION['customer_id'] ?? null;
-if(!$customer_id) {
+$user_id = $_SESSION['user_id'] ?? null;
+if(!$user_id) {
     temp('info', 'User data error. Please login again.');
     header("Location: /login.php");
     exit;
@@ -25,10 +25,10 @@ if (is_post()) {
 
         // insert order
         $stm = $_db->prepare('
-            INSERT INTO `order` (customer_id, order_date, total, status)
+            INSERT INTO `order` (user_id, order_date, total, status)
             VALUES (?, NOW(), 0, "Pending")
         ');
-        $stm->execute([$customer_id]);
+        $stm->execute([$user_id]);
         $order_id = $_db->lastInsertId();
 
         $stm = $_db->prepare('

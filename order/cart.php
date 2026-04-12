@@ -1,16 +1,7 @@
 <?php
 include '../lib/_base.php';
 
-// $user_id = $_user->Customer_id ?? 'guest';
-
-// if($_user){
-//     if(!isset($_SESSION['cart' . $user_id])){
-//         $_SESSION['cart' . $user_id] = [];
-//     }
-//     $cart = get_cart();
-// }else {
-//     $cart = $_SESSION['cat_guest'] ?? [];
-// }
+$cart = get_cart();
 
 if (is_post()) {
 
