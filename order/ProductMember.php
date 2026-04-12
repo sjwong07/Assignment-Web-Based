@@ -1,16 +1,25 @@
 <?php
 require '../lib/_base.php';
 
+
+//cart
+if(is_post() && isset($_POST['id'])){
+    $id = post('id');
+    $unit = post('unit');
+
+    if($unit > 0){
+        update_cart($id, $unit);
+
+        temp('info', 'Add Successfully!');
+        redirect();
+    }
+}
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
 
 <?php if($msg = temp('info')): ?>
-    <div id="tempMsg" style="position: fixed; top: 100px; 
-        left: 50%; transform: translateX(-50%); 
-        background: #333; color: #f0f0f0; 
-        padding: 10px 16px; white-space: nowrap; 
-        border-radius: 20px; z-index: 9999;">
+    <div id="tempMsg" >
         <?= $msg ?>
     </div>
     <script>
@@ -20,27 +29,8 @@ include '../lib/_head.php';
         }, 2000);
     </script>
 <?php endif; ?>
-<br>
 <p>Here is Our Product List</p>
-<br>
 <?php
-
-//cart
-if(is_post() && isset($_POST['id'])){
-    $id = post('id');
-    $unit = post('unit');
-
-    if($unit > 0){
-        $cart = $_SESSION['cart'] ?? [];
-        $cart[$id] = $unit;
-        $_SESSION['cart'] = $cart;
-
-        update_cart($id, $unit);
-
-        temp('info', 'Add Successfully!');
-        redirect();
-    }
-}
 
 // 1. Get filters from GET
 $category  = get('category', null);

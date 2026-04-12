@@ -1,8 +1,19 @@
 <?php
 include '../lib/_base.php';
 
-//Authorization member
-// auth('Member');
+//check login
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
+    temp('info', 'Please login to checkout');
+    header("Location: ../login.php");
+    exit;
+}
+
+$customer_id = $_SESSION['customer_id'] ?? null;
+if(!$customer_id) {
+    temp('info', 'User data error. Please login again.');
+    header("Location: /login.php");
+    exit;
+}
 
 if (is_post()) {
     //Get shopping cart
@@ -17,7 +28,7 @@ if (is_post()) {
             INSERT INTO `order` (customer_id, order_date, total, status)
             VALUES (?, NOW(), 0, "Pending")
         ');
-        $stm->execute([$_user->Customer_id]);
+        $stm->execute([$customer_id]);
         $order_id = $_db->lastInsertId();
 
         $stm = $_db->prepare('
