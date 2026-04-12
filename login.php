@@ -9,7 +9,7 @@ $error = "";
 $host = 'localhost';
 $username_db = 'root';
 $password_db = '';
-$dbname = 'store_db'; // MUST match phpMyAdmin
+$dbname = 'dbA'; // MUST match phpMyAdmin
 
 $connection = mysqli_connect($host, $username_db, $password_db, $dbname);
 
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Locked! Try again in $remaining minute(s).";
     } else {
         // Query database for user
-        $sql = "SELECT * FROM Customer WHERE username = ?";
+        $sql = "SELECT * FROM `user` WHERE username = ?";
 
 
         $stmt = mysqli_prepare($connection, $sql);
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role'];
-                $_SESSION['customer_id'] = $row['Customer_id']; // This ID is very critical
+                $_SESSION['user_id'] = $row['user_id']; // This ID is very critical
 
                 // Clear any previous failed attempts
                 unset($_SESSION['login_attempts'], $_SESSION['locked_until']);
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['registered_user'] = [
                         'username' => $row['username'],
                         'role' => $row['role'],
-                        'customer_id' => $row['Customer_id']
+                        'user_id' => $row['user_id']
                     ];
                 }
 
@@ -100,7 +100,7 @@ if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
 
         $remember_user = $_COOKIE['remember_me_user'];
 
-        $sql = "SELECT * FROM Customer WHERE username = ?";
+        $sql = "SELECT * FROM `user`` WHERE username = ?";
         $stmt = mysqli_prepare($connection, $sql);
         mysqli_stmt_bind_param($stmt, "s", $remember_user);
         mysqli_stmt_execute($stmt);
@@ -110,7 +110,7 @@ if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role'];
-            $_SESSION['customer_id'] = $row['Customer_id'];
+            $_SESSION['user_id'] = $row['user_id'];
 
             header("location: /order/ProductMember.php");
             exit;
