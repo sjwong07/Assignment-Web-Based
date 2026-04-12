@@ -914,7 +914,7 @@ $_units = array_combine(range(1,10), range(1,10));
 if (isset($_SESSION['user_id'])) {
     if (!checkSessionTimeout()) {
         destroyUserSession();
-        header("Location: login.php?timeout=1");
+        header("Location: /login.php?timeout=1");
         exit();
     }
     regenerateSessionIfNeeded();

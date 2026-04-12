@@ -3,7 +3,7 @@ session_start();
 
 // 1. Protection: If not logged in, boot them to login page
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("location: login.php");
+    header("location: /login.php");
     exit;
 }
 

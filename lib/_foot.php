@@ -5,7 +5,7 @@
 // This file should be included at the bottom of every page
 // It closes HTML tags opened in _head.php
 ?>
-
+</div>
     <!-- Footer Section -->
     <footer class="footer">
         <div class="footer-content">
@@ -39,7 +39,7 @@
                         <li><a href="orders.php">🛒 My Orders</a></li>
                         <li><a href="logout.php" onclick="return confirm('Logout?')">🚪 Logout</a></li>
                     <?php else: ?>
-                        <li><a href="login.php">🔐 Login</a></li>
+                        <li><a href="/login.php">🔐 Login</a></li>
                         <li><a href="register.php">📝 Register</a></li>
                         <li><a href="forgot_password.php">❓ Forgot Password</a></li>
                     <?php endif; ?>
@@ -276,7 +276,7 @@
                     <div class="modal-content">
                         <h3>Session Expiring Soon</h3>
                         <p>Your session will expire in ${Math.floor(warningSeconds / 60)} minutes.</p>
-                        <button onclick="window.location.href='login.php'" class="btn btn-primary">Login Again</button>
+                        <button onclick="window.location.href='/login.php'" class="btn btn-primary">Login Again</button>
                         <button onclick="this.closest('.modal-overlay').remove()" class="btn btn-secondary">Dismiss</button>
                     </div>
                 `;
