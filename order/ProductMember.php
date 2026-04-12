@@ -10,7 +10,7 @@ if(is_post() && isset($_POST['id'])){
     if($unit > 0){
         update_cart($id, $unit);
 
-        temp('info', 'Add Successfully!');
+        temp('info', 'Add Successfully !');
         redirect();
     }
 }

@@ -61,9 +61,68 @@ include '../lib/_head.php';
 
 <p>Please review your item before checkout.</p>
 
-<form method="post">
-    <button type="submit" style="background: #95c5f8; color: white;">Confirm Order</button>
-    <a href="/order/cart.php">Back to Cart</a>
-</form>
+<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price (RM)</th>
+                <th>Unit</th>
+                <th>Subtotal (RM)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $count = 0;
+                $total = 0;
+                
+                $stm = $_db->prepare('SELECT * FROM Product WHERE Product_id = ?');
+
+                foreach($cart as $id => $unit):
+                    $stm->execute([$id]);
+                    $p = $stm->fetch();
+                    
+                    if (!$p) continue; 
+
+                    $subtotal = $p->Product_price * $unit;
+                    $count += $unit;
+                    $total += $subtotal;
+            ?>
+                <tr>
+                    <td><?= $p->Product_id ?></td>
+                    <td><?= $p->Product_model ?></td>
+                    <td class="right"><?= number_format($p->Product_price, 2) ?></td>
+                    <td class="center"><?= $unit ?></td>
+                    <td class="right">
+                        <?= number_format($subtotal, 2) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">Total</th>
+                <th class="center"><?= $count ?></th>
+                <th class="right">RM <?= number_format($total, 2) ?></th>
+            </tr>
+        </tfoot>
+    </table>
+
+<div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
+    
+    <button type="button" 
+            onclick="location='/order/cart.php'" 
+            style="background: #95c5f8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+        Back to Cart
+    </button>
+
+    <form method="post" style="margin: 0;">
+        <button type="submit" 
+                style="background: #95c5f8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Confirm Order
+        </button>
+    </form>
+
+</div>
 
 <?php include '../lib/_foot.php'; ?>
