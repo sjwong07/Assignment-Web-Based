@@ -50,6 +50,7 @@ include '../lib/_head.php';
         foreach($cart as $id => $unit):
             $stm->execute([$id]);
             $p = $stm->fetch();
+            if (!$p) continue;
 
             $GLOBALS['unit'] = $unit;
 
@@ -82,16 +83,18 @@ include '../lib/_head.php';
 
 <p>
     <?php if ($cart): ?>
-        <form method="post" style="margin-left: 20px; margin-top: 10px;">
-            <input type="hidden" name="btn" value="clear">
-            <button type="submit">Clear All</button>
-        </form>
+        <div style="display: flex; gap: 15px; margin-top: 20px; align-items: center;">
+            <form method="post" style="margin: 0;">
+                <input type="hidden" name="btn" value="clear">
+                <button type="submit">Clear All</button>
+            </form>
 
-        <?php if ($_user?->role == 'member'): ?>
-            <button data-get="/order/checkout.php">Checkout</button>
-        <?php else: ?>
-            Please <a href="/login.php">login</a> as member to checkout
-        <?php endif ?>
+            <?php if ($_user?->role == 'member'): ?>
+                <button type="button" onclick="window.location.href='/order/checkout.php'">Checkout</button>
+            <?php else: ?>
+                <span>Please <a href="/login.php">login</a> as member to checkout</span>
+            <?php endif ?>
+        </div>
     <?php endif ?>
 </p>
 

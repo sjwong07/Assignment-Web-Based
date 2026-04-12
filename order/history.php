@@ -37,7 +37,7 @@ include '../lib/_head.php';
         <td><?= $o->order_date ?></td>
         <td class="right"><?= number_format($o->total, 2) ?></td>
         <td>
-            <button data-get="detail.php?id=<?= $o->id ?>">View</button>
+            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>'">View</button>
         </td>
     </tr>
     <?php endforeach ?>
