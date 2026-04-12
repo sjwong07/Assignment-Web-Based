@@ -686,10 +686,10 @@ function get_cart() {
     if($_user){
         $stm = $_db->prepare('
             SELECT product_id, unit FROM cart_item
-            WHERE customer_id = ?
+            WHERE user_id = ?
         ');
-        $stm->execute([$_user->Customer_id]);
-        $rows = $stm->fetchAll();
+        $stm->execute([$_user->user_id]);
+        $rows = $stm->fetchAll(PDO::FETCH_OBJ);
 
         $cart = [];
         foreach ($rows as $row){
@@ -707,17 +707,17 @@ function set_cart($cart = []) {
 
     if($_user){
         $stm = $_db->prepare('
-            DELETE FROM cart_item WHERE customer_id = ?
+            DELETE FROM cart_item WHERE user_id = ?
         ');
-        $stm->execute([$_user->Customer_id]);
+        $stm->execute([$_user->user_id]);
         
         $stm = $_db->prepare('
-            INSERT INTO cart_item (customer_id, product_id, unit)
+            INSERT INTO cart_item (user_id, product_id, unit)
             VALUES (?, ?, ?)
         ');
 
         foreach ($cart as $product_id => $unit){
-            $stm->execute([$_user->Customer_id, $product_id, $unit]);
+            $stm->execute([$_user->user_id, $product_id, $unit]);
         }
     } else {
         $_SESSION['cart'] = $cart;
@@ -942,11 +942,11 @@ $csrf_token = generateCSRFToken();
 
 // Note: $_user variable should be set by your authentication system
 // If you have a customer object from your existing system, you can set it here
-if (isset($_SESSION['customer_id'])) {
+if (isset($_SESSION['user_id'])) {
     // For existing customer system compatibility
-    $stm = $_db->prepare("SELECT * FROM Customer WHERE Customer_id = ?");
-    $stm->execute([$_SESSION['customer_id']]);
-    $_user = $stm->fetch();
+    $stm = $_db->prepare("SELECT * FROM `user` WHERE user_id = ?");
+    $stm->execute([$_SESSION['user_id']]);
+    $_user = $stm->fetch(PDO::FETCH_OBJ);
 }
 
 // ========================================

@@ -1,16 +1,7 @@
 <?php
 include '../lib/_base.php';
 
-// $user_id = $_user->Customer_id ?? 'guest';
-
-// if($_user){
-//     if(!isset($_SESSION['cart' . $user_id])){
-//         $_SESSION['cart' . $user_id] = [];
-//     }
-//     $cart = get_cart();
-// }else {
-//     $cart = $_SESSION['cat_guest'] ?? [];
-// }
+$cart = get_cart();
 
 if (is_post()) {
 
@@ -96,8 +87,8 @@ include '../lib/_head.php';
             <button type="submit">Clear All</button>
         </form>
 
-        <?php if ($_user?->role == 'Member'): ?>
-            <button data-post="checkout.php">Checkout</button>
+        <?php if ($_user?->role == 'member'): ?>
+            <button data-get="/order/checkout.php">Checkout</button>
         <?php else: ?>
             Please <a href="/login.php">login</a> as member to checkout
         <?php endif ?>

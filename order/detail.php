@@ -7,9 +7,9 @@ include '../lib/_base.php';
 $id = req('id');
 $stm = $_db->prepare('
     SELECT * FROM `order`
-    WHERE id = ? AND customer_id = ?
+    WHERE id = ? AND user_id = ?
 ');
-$stm->execute([$id, $_user->Customer_id]);
+$stm->execute([$id, $_user->user_id]);
 $o = $stm->fetch();
 
 if (!$o) redirect('history.php');

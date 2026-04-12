@@ -2,33 +2,29 @@
 include '../lib/_base.php';
 
 //check login
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
+if (!isset($_SESSION['user_id'])){
     temp('info', 'Please login to checkout');
-    header("Location: ../login.php");
-    exit;
+    redirect('/login.php');
 }
 
-$customer_id = $_SESSION['customer_id'] ?? null;
-if(!$customer_id) {
-    temp('info', 'User data error. Please login again.');
-    header("Location: /login.php");
-    exit;
+$user_id = $_SESSION['user_id'] ?? null;
+$cart = get_cart();
+
+if(!$cart) {
+    temp('info', 'Your cart is empty.');
+    redirect('/order/cart.php');
 }
 
 if (is_post()) {
-    //Get shopping cart
-    $cart = get_cart();
-    if(!$cart) redirect('cart.php');
-
     try{
         $_db->beginTransaction();
 
         // insert order
         $stm = $_db->prepare('
-            INSERT INTO `order` (customer_id, order_date, total, status)
+            INSERT INTO `order` (user_id, order_date, total, status)
             VALUES (?, NOW(), 0, "Pending")
         ');
-        $stm->execute([$customer_id]);
+        $stm->execute([$user_id]);
         $order_id = $_db->lastInsertId();
 
         $stm = $_db->prepare('
@@ -49,14 +45,25 @@ if (is_post()) {
         $_db->commit();
 
         // clear cart
-        set_cart([]);
+        set_cart();
 
         temp('info', 'Order placed successfully!');
-        redirect("detail.php?id=$order_id");
+        redirect("/order/history.php");
     }catch (Exception $e){
         $_db->rollBack();
-        $_err['order'] = 'Failed to create order: ' . $e->getMessage();
+        temp('info', 'Checkout failed.');
     }
 }
 
-redirect('cart.php');
+$_title = 'Checkout Confirmation';
+include '../lib/_head.php';
+?>
+
+<p>Please review your item before checkout.</p>
+
+<form method="post">
+    <button type="submit" style="background: #95c5f8; color: white;">Confirm Order</button>
+    <a href="/order/cart.php">Back to Cart</a>
+</form>
+
+<?php include '../lib/_foot.php'; ?>
