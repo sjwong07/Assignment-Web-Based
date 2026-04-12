@@ -2,65 +2,129 @@
 session_start();
 
 $max_attempts = 3;
-$lockout_time = 300; 
+$lockout_time = 300; // 5 minutes in seconds
 $error = "";
+
+// Database connection - UPDATED CREDENTIALS
+$host = 'localhost';
+$username_db = 'root';
+$password_db = '';
+$dbname = 'store_db'; // MUST match phpMyAdmin
+
+$connection = mysqli_connect($host, $username_db, $password_db, $dbname);
+
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 // 1. Redirect if already logged in
 if (isset($_SESSION['loggedin'])) {
-    header("location: " . ($_SESSION['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
-    exit;
+    
 }
 
-// 2. Remember Me Cookie Logic
-if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
-    $reg_user = $_SESSION['registered_user'] ?? null;
-    if ($reg_user && $_COOKIE['remember_me_user'] === $reg_user['username']) {
-        $_SESSION['loggedin'] = true;
-        $_SESSION['username'] = $reg_user['username'];
-        $_SESSION['role'] = $reg_user['role'];
-        $_SESSION['customer_id'] = $reg_user['customer_id'];
-        header("location: /order/ProductMember.php");
-        exit;
-    }
-}
-
-// 3. Login Logic
+// 2. Login Logic (Database validation)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = trim($_POST['username']);
     $pass = trim($_POST['password']);
     $remember = isset($_POST['remember']);
 
+    // Check lockout status
     if (isset($_SESSION['locked_until']) && time() < $_SESSION['locked_until']) {
         $remaining = ceil(($_SESSION['locked_until'] - time()) / 60);
         $error = "Locked! Try again in $remaining minute(s).";
     } else {
-        $reg_user = $_SESSION['registered_user'] ?? null;
+        // Query database for user
+        $sql = "SELECT * FROM Customer WHERE username = ?";
 
-        if ($reg_user && $user === $reg_user['username'] && password_verify($pass, $reg_user['password'])) {
-            $_SESSION['loggedin'] = true;
-            $_SESSION['username'] = $user;
-            $_SESSION['role'] = $reg_user['role'];
-            $_SESSION['customer_id'] = $reg_user['customer_id'];
-            unset($_SESSION['login_attempts'], $_SESSION['locked_until']);
 
-            if ($remember) {
-                setcookie("remember_me_user", $user, time() + (30 * 24 * 60 * 60), "/");
+        $stmt = mysqli_prepare($connection, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $user);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            // Verify hashed password from database
+            if (password_verify($pass, $row['password'])) {
+                // Successful login
+                $_SESSION['loggedin'] = true;
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['role'] = $row['role'];
+                $_SESSION['customer_id'] = $row['Customer_id']; // This ID is very critical
+
+                // Clear any previous failed attempts
+                unset($_SESSION['login_attempts'], $_SESSION['locked_until']);
+
+                // Set remember me cookie if requested
+                if ($remember) {
+                    setcookie("remember_me_user", $user, time() + (30 * 24 * 60 * 60), "/");
+                    // Also store user data for cookie auto-login
+                    $_SESSION['registered_user'] = [
+                        'username' => $row['username'],
+                        'role' => $row['role'],
+                        'customer_id' => $row['Customer_id']
+                    ];
+                }
+
+                header("location: " . ($row['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
+                exit;
+            } else {
+                // Invalid password
+                $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
+                if ($_SESSION['login_attempts'] >= $max_attempts) {
+                    $_SESSION['locked_until'] = time() + $lockout_time;
+                    $error = "5 failed attempts. Locked for 1 minutes.";
+                } else {
+                    $left = $max_attempts - $_SESSION['login_attempts'];
+                    $error = "Invalid password. $left attempts left.";
+                }
             }
-
-            header("location: " . ($reg_user['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
-            exit;
         } else {
+            // No user found
             $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
             if ($_SESSION['login_attempts'] >= $max_attempts) {
                 $_SESSION['locked_until'] = time() + $lockout_time;
-                $error = "3 failed attempts. Locked for 5 minutes.";
+                $error = "5 failed attempts. Locked for 1 minutes.";
             } else {
                 $left = $max_attempts - $_SESSION['login_attempts'];
-                $error = "Invalid credentials. $left attempts left.";
+                $error = "No user found with that username. $left attempts left.";
             }
         }
     }
 }
+
+// 3. Remember Me Cookie Auto-login (after lockout check)
+// 3. Remember Me Cookie Auto-login
+if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
+
+    if (!isset($_SESSION['locked_until']) || time() >= $_SESSION['locked_until']) {
+
+        $remember_user = $_COOKIE['remember_me_user'];
+
+        $sql = "SELECT * FROM Customer WHERE username = ?";
+        $stmt = mysqli_prepare($connection, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $remember_user);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            $_SESSION['loggedin'] = true;
+            $_SESSION['username'] = $row['username'];
+            $_SESSION['role'] = $row['role'];
+            $_SESSION['customer_id'] = $row['Customer_id'];
+
+            header("location: /order/ProductMember.php");
+            exit;
+        } else {
+            // Clear invalid cookie
+            setcookie("remember_me_user", "", time() - 3600, "/");
+        }
+    }
+}
+
+            
+            
+
+mysqli_close($connection);
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="card">
         <h2>Store Login</h2>
-        <?php if ($error): ?> <div class="error-box"><i class="fa-solid fa-circle-exclamation"></i> <?php echo $error; ?></div> <?php endif; ?>
+        <?php if ($error): ?> <div class="error-box"><i class="fa-solid fa-circle-exclamation"></i> <?php echo htmlspecialchars($error); ?></div> <?php endif; ?>
 
         <form method="POST">
             <?php $is_locked = (isset($_SESSION['locked_until']) && time() < $_SESSION['locked_until']); ?>
