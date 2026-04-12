@@ -6,14 +6,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
     exit;
 }
 
-$custoemr_id = $_SESSION['customer_id'];
+$user_id = $_SESSION['user_id'];
 
 $stm = $_db->prepare('
     SELECT * FROM `order`
-    WHERE customer_id = ?
+    WHERE user_id = ?
     ORDER BY id DESC
 ');
-$stm->execute([$customer_id]);
+$stm->execute([$user_id]);
 $arr = $stm->fetchAll(PDO::FETCH_OBJ);
 
 $_title = 'Order History 🕓';
