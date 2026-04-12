@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ];
                 }
 
-                header("location: " . ($row['role'] === 'admin' ? "/order/ProductAdmin.php" : "/order/ProductMember.php"));
+                header("location: " . ($row['role'] === 'admin' ? "/index.php" : "/index.php"));
                 exit;
             } else {
                 // Invalid password

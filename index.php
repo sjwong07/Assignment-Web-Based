@@ -5,7 +5,7 @@ require __DIR__ . '/lib/_base.php';
 require __DIR__ . '/lib/_head.php';
 
 // 2. Logic Check
-$is_logged_in = isset($_SESSION['user_id']);
+$is_logged_in = isset($_SESSION['loggedin']);
 $username = $_SESSION['username'] ?? 'Guest';
 ?>
 
