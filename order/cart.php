@@ -1,6 +1,6 @@
 <?php
 include '../lib/_base.php';
-$_SESSION['user_id'] = 1;
+
 $cart = get_cart();
 
 if (is_post()) {
