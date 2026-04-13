@@ -27,6 +27,12 @@ include '../lib/_head.php';
     .popup {
         width: 100px;
         height: 100px;
+        }
+    .table th, .table td{
+        border: 2px solid #333;
+    }
+    th, td{
+        padding: 12px;
     }
 </style>
 
@@ -59,16 +65,16 @@ include '../lib/_head.php';
             $total += $subtotal;
     ?>
         <tr>
-            <td><?= $p->Product_id ?></td>
+            <td style= "text-align: center;"><?= $p->Product_id ?></td>
             <td><?= $p->Product_model ?></td>
-            <td class="right"><?= $p->Product_price ?></td>
-            <td>
+            <td class="right" style= "text-align: center;"><?= $p->Product_price ?></td>
+            <td style= "text-align: center;">
                 <form method="post">
                     <input type = "hidden" name="id" value = "<?= $p->Product_id ?>">
                     <?= html_select('unit', $_units, '') ?>
                 </form>            
             </td>
-            <td class="right">
+            <td class="right" style= "text-align: center;">
                 <?= sprintf('%.2f', $subtotal) ?>
             </td>
         </tr>

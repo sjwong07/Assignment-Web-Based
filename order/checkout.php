@@ -61,6 +61,15 @@ include '../lib/_head.php';
 
 <p>Please review your item before checkout.</p>
 
+<style>
+    .table th, .table td{
+        border: 2px solid #333;
+    }
+    th, td{
+        padding: 12px;
+    }
+</style>
+
 <table class="table">
         <thead>
             <tr>
