@@ -19,7 +19,8 @@ if (!$connection) {
 
 // 1. Redirect if already logged in
 if (isset($_SESSION['loggedin'])) {
-    
+    header("location: /index.php");
+    exit;
 }
 
 // 2. Login Logic (Database validation)
@@ -56,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Set remember me cookie if requested
                 if ($remember) {
-                    setcookie("remember_me_user", $user, time() + (30 * 24 * 60 * 60), "/");
+                    setcookie("remember_me_user", $user, time() + (30 * 24 * 60 * 60), "/", "", false, true);
                     // Also store user data for cookie auto-login
                     $_SESSION['registered_user'] = [
                         'username' => $row['username'],
@@ -65,14 +66,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ];
                 }
 
-                header("location: " . ($row['role'] === 'admin' ? "/index.php" : "/index.php"));
-                exit;
+                if ($row['role'] === 'admin') {
+    header("location: /admin/dashboard.php");
+} else {
+    header("location: /index.php");
+}
+exit;
+
             } else {
                 // Invalid password
                 $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
                 if ($_SESSION['login_attempts'] >= $max_attempts) {
                     $_SESSION['locked_until'] = time() + $lockout_time;
-                    $error = "3 failed attempts. Locked for 1 minutes.";
+                    $error = "3 failed attempts. Locked for 5 minutes.";
                 } else {
                     $left = $max_attempts - $_SESSION['login_attempts'];
                     $error = "Invalid password. $left attempts left.";
@@ -100,7 +106,7 @@ if (isset($_COOKIE['remember_me_user']) && !isset($_SESSION['loggedin'])) {
 
         $remember_user = $_COOKIE['remember_me_user'];
 
-        $sql = "SELECT * FROM `user`` WHERE username = ?";
+        $sql = "SELECT * FROM `user` WHERE username = ?";
         $stmt = mysqli_prepare($connection, $sql);
         mysqli_stmt_bind_param($stmt, "s", $remember_user);
         mysqli_stmt_execute($stmt);
