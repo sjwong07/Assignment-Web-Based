@@ -1,68 +1,200 @@
 <?php
 require '../lib/_base.php';
 
+/* ================= UPLOAD HANDLER (FIXED) ================= */
+if (is_post() && isset($_POST['upload'])) {
+
+    $product_id = post('product_id');
+    $file = get_file('photo');
+
+    if ($file === null) {
+        temp('info', '❌ Please select a photo');
+        redirect();
+    }
+
+    // create upload folder if not exists
+    $folder = '../uploads/';
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    // unique file name
+    $filename = uniqid() . '_' . $file->name;
+    $path = $folder . $filename;
+
+    // move file
+    if (move_uploaded_file($file->tmp_name, $path)) {
+
+        // save into database (MAKE SURE column exists)
+        $stm = $_db->prepare("
+            UPDATE Product
+            SET product_photo = :photo
+            WHERE Product_id = :id
+        ");
+
+        $stm->execute([
+            ':photo' => $filename,
+            ':id' => $product_id
+        ]);
+
+        temp('info', '✅ Upload successful!');
+    } else {
+        temp('info', '❌ Upload failed!');
+    }
+
+    redirect();
+}
+
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
-<p></p>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+}
+
+.container {
+    width: 95%;
+    margin: 20px auto;
+}
+
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.filter-box input,
+.filter-box select {
+    padding: 6px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-filter {
+    background: #007bff;
+    color: white;
+}
+
+.btn-upload {
+    background: #28a745;
+    color: white;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #343a40;
+    color: white;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+img {
+    border-radius: 6px;
+}
+</style>
+
+<div class="container">
+
+<h2>📦 Product Management</h2>
+
+<?php if ($msg = temp('info')): ?>
+    <div style="background:#28a745;color:white;padding:10px;margin-bottom:10px;">
+        <?= $msg ?>
+    </div>
+<?php endif; ?>
 
 <?php
 
 // 1. Get filters from GET
-$Category  = get('Category', null);
+$category  = get('Category', null);
 $min_price = get('min_price', null);
 $max_price = get('max_price', null);
 
-$category = "SELECT Category_name FROM Category";
-$stm = $_db->prepare($category);
-$stm->execute();
-$categories = $stm->fetchAll();
+// get descriptions for dropdown
+$desc_sql = "SELECT DISTINCT Category_name FROM Category";
+$descriptions = $_db->query($desc_sql)->fetchAll();
 
-// 2. Query products with filters
-$product = "SELECT 
+// main query
+$sql = "SELECT 
     p.*, 
     c.Category_name
 FROM product p
 JOIN Category c 
     ON p.Category_id = c.Category_id
 WHERE 1=1
-    AND (:category IS NULL OR c.Category_name = :category)
+    AND (:category IS NULL OR p.category_id = :category)
     AND (:min_price IS NULL OR p.Product_price >= :min_price)
     AND (:max_price IS NULL OR p.Product_price <= :max_price)
-ORDER BY p.Product_model
-";
+    AND (:category_desc IS NULL OR c.Category_name = :category_desc)
+ORDER BY p.Product_model";
 
-$stm = $_db->prepare($product);
+$stm = $_db->prepare($sql);
 $stm->execute([
-    ':category'  => !empty($Category) ? $Category : null,
-    ':min_price' => is_numeric($min_price) ? $min_price : null,
-    ':max_price' => is_numeric($max_price) ? $max_price : null
+    ':category'  => $category ?: null,
+    ':min_price' => $min_price ?: null,
+    ':max_price' => $max_price ?: null
 ]);
 
 $products = $stm->fetchAll();
 ?>
 
+<!-- ================= FILTER ================= -->
+<div class="card filter-box">
+<form method="GET">
 
-<form method="GET" action="">
+<form method="POST" action="">
     <label>Category:</label>
     <select name="Category">
         <option value="">All</option>
-         <?php foreach ($categories as $c): ?>
-        <option value="<?= $c->Category_name ?>">
-            <?= $c->Category_name ?>
-        </option>
-    <?php endforeach; ?>
+        <?php foreach($_categories as $id => $name): ?>
+            <option value="<?= $id ?>" <?= ($category == $id ? 'selected' : '') ?>><?= $name ?></option>
+        <?php endforeach; ?>
 
     </select>
+
     <label>Min Price:</label>
     <input type="number" name="min_price" value="<?= encode($min_price) ?>">
+
     <label>Max Price:</label>
     <input type="number" name="max_price" value="<?= encode($max_price) ?>">
-    <button type="submit">Filter</button>
+
+    <label>Description:</label>
+    <select name="category_desc">
+        <option value="">All</option>
+        <?php foreach ($descriptions as $d): ?>
+            <option value="<?= $d->Category_name ?>"
+                <?= ($category_desc == $d->Category_name ? 'selected' : '') ?>>
+                <?= $d->Category_name ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <button class="btn btn-filter">🔍 Filter</button>
 </form>
+</div>
 
 <!-- 4. Product Table -->
- <div class="ProductAdmin">
 <table border="1" cellpadding="5">
     <tr>
         <th>Product_ID</th>
@@ -71,7 +203,6 @@ $products = $stm->fetchAll();
         <th>Product_Category</th>
         <th>Category_description</th>
         <th>Product photo upload</th>
-        <th>Actions</th>
     </tr>
     <?php foreach($products as $p):?>
     <tr>
@@ -83,19 +214,14 @@ $products = $stm->fetchAll();
        <td>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
-            <input type="file" name='photo' accept='image/*'>
-            <button type="submit" name="upload">Upload</button>
+            <input type="file" name="photo" accept="image/*">
+            <button class="btn btn-upload" type="submit" name="upload">Upload</button>
         </form>
-        </td>
-        <td>
-            <button>Add Product</button>
-            <button>Update Product</button>
-            <button>Delete Product</button>
         </td>
     </tr>
     <?php endforeach; ?>
 </table>
-    </div>
+
 <?php
 $f = get_file('photo');
 if (isset($_POST['upload'])) {
@@ -111,5 +237,4 @@ if (isset($_POST['upload'])) {
 }
 ?>
 
-<?php
-include '../lib/_foot.php';
+<?php include '../lib/_foot.php'; ?>
