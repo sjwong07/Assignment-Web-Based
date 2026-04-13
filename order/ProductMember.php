@@ -14,7 +14,7 @@ $min_price = get('min_price', null);
 $max_price = get('max_price', null);
 
 // 2. Query products with filters
-$sql = "SELECT Product_id, Product_model, Product_price, Category_id
+$product = "SELECT Product_id, Product_model, Product_price, Category_id
         FROM Product
         WHERE 1=1
           AND (:category IS NULL OR Category_id = :category)
@@ -22,7 +22,7 @@ $sql = "SELECT Product_id, Product_model, Product_price, Category_id
           AND (:max_price IS NULL OR Product_price <= :max_price)
         ORDER BY Product_model";
 
-$stm = $_db->prepare($sql);
+$stm = $_db->prepare($product);
 $stm->execute([
     ':category'  => $category ?: null,
     ':min_price' => $min_price ?: null,
