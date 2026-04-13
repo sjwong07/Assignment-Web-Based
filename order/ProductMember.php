@@ -104,16 +104,7 @@ $products = $stm->fetchAll();
     <label>Max Price:</label>
     <input type="number" name="max_price" value="<?= encode($max_price) ?>">
 
-    <label>Category Description:</label>
-    <select name="category_desc">
-        <option value="">All</option>
-        <?php foreach ($category_list as $c): ?>
-            <option value="<?= $c->Category_name ?>" 
-                <?= ($category_desc == $c->Category_name ? 'selected' : '') ?>>
-                <?= $c->Category_name ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    
 
     <button class="btn">Filter</button>
 </form>
