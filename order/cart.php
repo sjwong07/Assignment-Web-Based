@@ -1,9 +1,10 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
-// ----------------------------------------------------------------------------
+$cart = get_cart();
 
 if (is_post()) {
+
     $btn = req('btn');
     if ($btn == 'clear'){
         set_cart();
@@ -18,8 +19,8 @@ if (is_post()) {
 
 // ----------------------------------------------------------------------------
 
-$_title = 'Order | Shopping Cart';
-include '../_head.php';
+$_title = 'Shopping Cart 🛒';
+include '../lib/_head.php';
 ?>
 
 <style>
@@ -49,6 +50,7 @@ include '../_head.php';
         foreach($cart as $id => $unit):
             $stm->execute([$id]);
             $p = $stm->fetch();
+            if (!$p) continue;
 
             $GLOBALS['unit'] = $unit;
 
@@ -68,7 +70,6 @@ include '../_head.php';
             </td>
             <td class="right">
                 <?= sprintf('%.2f', $subtotal) ?>
-                <img src="/products/<?= $p->photo ?>" class="popup">
             </td>
         </tr>
     <?php endforeach ?>
@@ -82,13 +83,18 @@ include '../_head.php';
 
 <p>
     <?php if ($cart): ?>
-        <button data-post="?btn=clear">Clear</button>
+        <div style="display: flex; gap: 15px; margin-top: 20px; align-items: center;">
+            <form method="post" style="margin: 0;">
+                <input type="hidden" name="btn" value="clear">
+                <button type="submit">Clear All</button>
+            </form>
 
-        <?php if ($_user?->role == 'Member'): ?>
-            <button data-post="checkout.php">Checkout</button>
-        <?php else: ?>
-            Please <a href="/login.php">login</a> as member to checkout
-        <?php endif ?>
+            <?php if ($_user?->role == 'member'): ?>
+                <button type="button" onclick="window.location.href='/order/checkout.php'">Checkout</button>
+            <?php else: ?>
+                <span>Please <a href="/login.php">login</a> as member to checkout</span>
+            <?php endif ?>
+        </div>
     <?php endif ?>
 </p>
 
@@ -97,4 +103,4 @@ include '../_head.php';
 </script>
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';

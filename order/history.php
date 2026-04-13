@@ -1,21 +1,23 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
-// ----------------------------------------------------------------------------
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
+    header("Location: ../login.php");
+    exit;
+}
 
-//Authorization member
-// auth('Member');
+$user_id = $_SESSION['user_id'];
 
 $stm = $_db->prepare('
     SELECT * FROM `order`
-    WHERE customer_id = ?
+    WHERE user_id = ?
     ORDER BY id DESC
 ');
-$stm->execute([$_user->Customer_id]);
-$arr = $stm->fetchAll();
+$stm->execute([$user_id]);
+$arr = $stm->fetchAll(PDO::FETCH_OBJ);
 
-$_title = 'Order History';
-include '../_head.php';
+$_title = 'Order History 🕓';
+include '../lib/_head.php';
 ?>
 
 
@@ -35,11 +37,11 @@ include '../_head.php';
         <td><?= $o->order_date ?></td>
         <td class="right"><?= number_format($o->total, 2) ?></td>
         <td>
-            <button data-get="detail.php?id=<?= $o->id ?>">View</button>
+            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>'">View</button>
         </td>
     </tr>
     <?php endforeach ?>
 </table>
 
 <?php
-include '../_foot.php';
+include '../lib/_foot.php';

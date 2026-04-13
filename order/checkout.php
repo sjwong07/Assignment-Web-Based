@@ -1,23 +1,30 @@
 <?php
-include '../_base.php';
+include '../lib/_base.php';
 
-//Authorization member
-// auth('Member');
+//check login
+if (!isset($_SESSION['user_id'])){
+    temp('info', 'Please login to checkout');
+    redirect('/login.php');
+}
+
+$user_id = $_SESSION['user_id'] ?? null;
+$cart = get_cart();
+
+if(!$cart) {
+    temp('info', 'Your cart is empty.');
+    redirect('/order/cart.php');
+}
 
 if (is_post()) {
-    //Get shopping cart
-    $cart = get_cart();
-    if(!$cart) redirect('cart.php');
-
     try{
         $_db->beginTransaction();
 
         // insert order
         $stm = $_db->prepare('
-            INSERT INTO `order` (customer_id, order_date, total, status)
+            INSERT INTO `order` (user_id, order_date, total, status)
             VALUES (?, NOW(), 0, "Pending")
         ');
-        $stm->execute([$_user->Customer_id]);
+        $stm->execute([$user_id]);
         $order_id = $_db->lastInsertId();
 
         $stm = $_db->prepare('
@@ -38,14 +45,84 @@ if (is_post()) {
         $_db->commit();
 
         // clear cart
-        set_cart([]);
+        set_cart();
 
         temp('info', 'Order placed successfully!');
-        redirect("detail.php?id=$order_id");
+        redirect("/order/history.php");
     }catch (Exception $e){
         $_db->rollBack();
-        $_err['order'] = 'Failed to create order: ' . $e->getMessage();
+        temp('info', 'Checkout failed.');
     }
 }
 
-redirect('cart.php');
+$_title = 'Checkout Confirmation';
+include '../lib/_head.php';
+?>
+
+<p>Please review your item before checkout.</p>
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price (RM)</th>
+                <th>Unit</th>
+                <th>Subtotal (RM)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $count = 0;
+                $total = 0;
+                
+                $stm = $_db->prepare('SELECT * FROM Product WHERE Product_id = ?');
+
+                foreach($cart as $id => $unit):
+                    $stm->execute([$id]);
+                    $p = $stm->fetch();
+                    
+                    if (!$p) continue; 
+
+                    $subtotal = $p->Product_price * $unit;
+                    $count += $unit;
+                    $total += $subtotal;
+            ?>
+                <tr>
+                    <td><?= $p->Product_id ?></td>
+                    <td><?= $p->Product_model ?></td>
+                    <td class="right"><?= number_format($p->Product_price, 2) ?></td>
+                    <td class="center"><?= $unit ?></td>
+                    <td class="right">
+                        <?= number_format($subtotal, 2) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">Total</th>
+                <th class="center"><?= $count ?></th>
+                <th class="right">RM <?= number_format($total, 2) ?></th>
+            </tr>
+        </tfoot>
+    </table>
+
+<div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
+    
+    <button type="button" 
+            onclick="location='/order/cart.php'" 
+            style="background: #95c5f8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+        Back to Cart
+    </button>
+
+    <form method="post" style="margin: 0;">
+        <button type="submit" 
+                style="background: #95c5f8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Confirm Order
+        </button>
+    </form>
+
+</div>
+
+<?php include '../lib/_foot.php'; ?>
