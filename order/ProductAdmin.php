@@ -1,47 +1,66 @@
 <?php
 require '../lib/_base.php';
 
-
 if (is_post() && isset($_POST['upload'])) {
-
+    
     $product_id = post('product_id');
-    $file = get_file('photo');
-
-    if ($file === null) {
+    
+    // Check if file was uploaded
+    if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
         temp('info', '❌ Please select a photo');
         redirect();
     }
-
-    // create upload folder if not exists
+    
+    $file = $_FILES['photo'];
+    
+    // Validate file type
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!in_array($file['type'], $allowed_types)) {
+        temp('info', '❌ Only JPG, PNG, GIF, and WEBP files are allowed');
+        redirect();
+    }
+    
+    // Validate file size (max 5MB)
+    if ($file['size'] > 5 * 1024 * 1024) {
+        temp('info', '❌ File size must be less than 5MB');
+        redirect();
+    }
+    
+    // Create upload folder
     $folder = '../uploads/';
     if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
     }
-
-    // unique file name
-    $filename = uniqid() . '_' . $file->name;
+    
+    // Generate unique filename
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = uniqid() . '_' . time() . '.' . $extension;
     $path = $folder . $filename;
-
-    // move file
-    if (move_uploaded_file($file->tmp_name, $path)) {
-
-        // save into database (MAKE SURE column exists)
-        $stm = $_db->prepare("
-            UPDATE Product
-            SET product_photo = :photo
-            WHERE Product_id = :id
-        ");
-
-        $stm->execute([
-            ':photo' => $filename,
-            ':id' => $product_id
-        ]);
-
-        temp('info', '✅ Upload successful!');
+    
+    // Move uploaded file
+    if (move_uploaded_file($file['tmp_name'], $path)) {
+        
+        // Update database
+        try {
+            $stm = $_db->prepare("
+                UPDATE Product 
+                SET product_photo = ? 
+                WHERE Product_id = ?
+            ");
+            
+            $stm->execute([$filename, $product_id]);
+            
+            temp('info', '✅ Photo uploaded successfully!');
+            
+        } catch (PDOException $e) {
+            unlink($path); // Delete the file
+            temp('info', '❌ Database error: ' . $e->getMessage());
+        }
+        
     } else {
-        temp('info', '❌ Upload failed!');
+        temp('info', '❌ Failed to save file');
     }
-
+    
     redirect();
 }
 
