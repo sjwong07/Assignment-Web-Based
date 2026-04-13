@@ -44,6 +44,14 @@ include '../lib/_head.php';
         width: 100px;
         height: 100px;
     }
+
+    .table th, .table td{
+        border: 2px solid #333;
+    }
+
+    th, td{
+        padding: 12px;
+    }
 </style>
 
 <p><?= count($arr) ?> item(s)</p>
@@ -59,11 +67,11 @@ include '../lib/_head.php';
 
     <?php foreach ($arr as $i): ?>
     <tr>
-        <td><?= $i->product_id ?></td>
+        <td style= "text-align: center;"><?= $i->product_id ?></td>
         <td><?= $i->name ?></td>
-        <td class="right"><?= number_format($i->price, 2) ?></td>
-        <td class="right"><?= $i->unit ?></td>
-        <td class="right">
+        <td class="right" style= "text-align: center;"><?= number_format($i->price, 2) ?></td>
+        <td class="right" style= "text-align: center;"><?= $i->unit ?></td>
+        <td class="right" style= "text-align: center;">
             <?= $i->subtotal ?>
         </td>
     </tr>

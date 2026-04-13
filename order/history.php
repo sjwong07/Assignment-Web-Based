@@ -20,6 +20,14 @@ $_title = 'Order History 🕓';
 include '../lib/_head.php';
 ?>
 
+<style>
+    .table th, .table td{
+        border: 2px solid #333;
+    }
+    th, td{
+        padding: 12px;
+    }
+</style>
 
 <p><?= count($arr) ?> record(s)</p>
 
@@ -33,10 +41,10 @@ include '../lib/_head.php';
 
     <?php foreach ($arr as $o): ?>
     <tr>
-        <td><?= $o->id ?></td>
+        <td style= "text-align: center;"><?= $o->id ?></td>
         <td><?= $o->order_date ?></td>
-        <td class="right"><?= number_format($o->total, 2) ?></td>
-        <td>
+        <td class="right" style= "text-align: center;"><?= number_format($o->total, 2) ?></td>
+        <td style= "text-align: center;">
             <button type="button" onclick="location='detail.php?id=<?= $o->id ?>'">View</button>
         </td>
     </tr>

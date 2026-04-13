@@ -22,10 +22,11 @@ body { font-family: Arial; }
 .container { width: 90%; margin: auto; }
 .filter-box { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
 .table { width: 100%; border-collapse: collapse; }
-.table th { background: #333; color: #fff; }
+th, td{border: 2px solid #333;}
+.table th { background: #aac4fb; color: black; }
 .table th, .table td { padding: 10px; text-align: center; }
-.btn { padding: 6px 10px; background: #28a745; color: white; border: none; cursor: pointer; }
-.btn:hover { background: #218838; }
+.btn { padding: 6px 10px; background: #aac4fb; color: white; border: none; cursor: pointer; }
+.btn:hover { background: #3772f3; }
 #tempMsg { background: #28a745; color: white; padding: 10px; margin-bottom: 10px; }
 </style>
 
@@ -134,7 +135,7 @@ $products = $stm->fetchAll();
             <form method="post">
                 <input type="hidden" name="id" value="<?= $p->Product_id ?>">
                 <?= html_select('unit', $_units, 'Select Unit') ?>
-                <button class="btn">Add</button>
+                <button class="btn" style= "background: #aac4fb; color: white;">Add</button>
             </form>
         </td>
     </tr>
