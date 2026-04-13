@@ -422,6 +422,56 @@ table {
     border-collapse: collapse;
     background: white;
 }
+
+.ProductAdmin {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+    padding: 20px;
+}
+
+.ProductAdmin .container {
+    width: 95%;
+    margin: 20px auto;
+}
+
+.ProductAdmin .card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.ProductAdmin .filter-box input,
+.ProductAdmin .filter-box select {
+    padding: 6px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.ProductAdmin .btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.ProductAdmin .btn-filter {
+    background: #007bff;
+    color: white;
+}
+
+.ProductAdmin .btn-upload {
+    background: #28a745;
+    color: white;
+}
+
+.ProductAdmin .table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ProductAdmin img {
+    border-radius: 6px;
+}
+
 .ProductAdmin th
 {
     border: 2px solid #000000;

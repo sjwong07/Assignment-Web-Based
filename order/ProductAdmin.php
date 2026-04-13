@@ -49,70 +49,9 @@ $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
 
-<style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f5f7fa;
-}
-
-.container {
-    width: 95%;
-    margin: 20px auto;
-}
-
-.card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.filter-box input,
-.filter-box select {
-    padding: 6px;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-filter {
-    background: #007bff;
-    color: white;
-}
-
-.btn-upload {
-    background: #28a745;
-    color: white;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th {
-    background: #343a40;
-    color: white;
-}
-
-.table th, .table td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-img {
-    border-radius: 6px;
-}
-</style>
+<div class="ProductAdmin">
+    
+</div>
 
 <div class="container">
 
