@@ -599,9 +599,7 @@
                         <a href="orders.php">
                             <i class="fas fa-shopping-bag"></i> My Orders
                         </a>
-                        <a href="wishlist.php">
-                            <i class="fas fa-heart"></i> Wishlist
-                        </a>
+    
                         <div class="dropdown-divider"></div>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i> Settings
@@ -626,9 +624,8 @@
 
     <!-- Legacy Navigation Menu (Order Management) -->
     <nav>
-        <a href="/index.php">Index</a>
-        <a href="/order/ProductMember.php">Product(Member)</a>
-        <a href="/order/ProductAdmin.php">Product(Admin)</a>
+        <a href="/order/ProductMember.php">Product</a>
+        <a href="/order/ProductAdmin.php">Manage Product</a>
         <a href="/order/cart.php">🛒 Shopping Cart</a>
         <a href="/order/checkout.php">💳 CheckOut</a>
         <a href="/order/history.php">🕓 History</a>
