@@ -276,7 +276,7 @@
                     <div class="modal-content">
                         <h3>Session Expiring Soon</h3>
                         <p>Your session will expire in ${Math.floor(warningSeconds / 60)} minutes.</p>
-                        <button onclick="window.location.href='/login.php'" class="btn btn-primary">Login Again</button>
+                        <button onclick="window.location.href='/security/login.php'" class="btn btn-primary">Login Again</button>
                         <button onclick="this.closest('.modal-overlay').remove()" class="btn btn-secondary">Dismiss</button>
                     </div>
                 `;

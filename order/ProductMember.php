@@ -18,55 +18,15 @@ include '../lib/_head.php';
 ?>
 
 <style>
-body {
-    font-family: Arial;
-}
-
-.container {
-    width: 90%;
-    margin: auto;
-}
-
-.filter-box {
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th {
-    background: #333;
-    color: #fff;
-}
-
-.table th, .table td {
-    padding: 10px;
-    text-align: center;
-}
-
-.btn {
-    padding: 6px 10px;
-    background: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: #218838;
-}
-
-#tempMsg {
-    background: #28a745;
-    color: white;
-    padding: 10px;
-    margin-bottom: 10px;
-}
+body { font-family: Arial; }
+.container { width: 90%; margin: auto; }
+.filter-box { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { background: #333; color: #fff; }
+.table th, .table td { padding: 10px; text-align: center; }
+.btn { padding: 6px 10px; background: #28a745; color: white; border: none; cursor: pointer; }
+.btn:hover { background: #218838; }
+#tempMsg { background: #28a745; color: white; padding: 10px; margin-bottom: 10px; }
 </style>
 
 <div class="container">
@@ -90,17 +50,30 @@ $min_price      = get('min_price');
 $max_price      = get('max_price');
 $category_desc  = get('category_desc');
 
-// 2. Query products with filters
-$sql = "SELECT Product_id, Product_model, Product_price, Category_id
-        FROM Product
+// ================= LOAD CATEGORY LIST =================
+$category_sql = "SELECT Category_id, Category_name FROM Category";
+$category_stmt = $_db->query($category_sql);
+$category_list = $category_stmt->fetchAll();
+
+// Build simple category array
+$_categories = [];
+foreach ($category_list as $c) {
+    $_categories[$c->Category_id] = $c->Category_name;
+}
+
+// ================= PRODUCT QUERY =================
+$sql = "SELECT p.Product_id, p.Product_model, p.Product_price, p.Category_id, c.Category_name
+        FROM Product p
+        JOIN Category c ON p.Category_id = c.Category_id
         WHERE 1=1
-          AND (:category IS NULL OR p.Category_id = :category)
-          AND (:min_price IS NULL OR p.Product_price >= :min_price)
-          AND (:max_price IS NULL OR p.Product_price <= :max_price)
-          AND (:category_desc IS NULL OR c.Category_name = :category_desc)
+        AND (:category IS NULL OR p.Category_id = :category)
+        AND (:min_price IS NULL OR p.Product_price >= :min_price)
+        AND (:max_price IS NULL OR p.Product_price <= :max_price)
+        AND (:category_desc IS NULL OR c.Category_name = :category_desc)
         ORDER BY p.Product_model";
 
-$stm = $_db->prepare($product);
+$stm = $_db->prepare($sql);
+
 $stm->execute([
     ':category'       => $category ?: null,
     ':min_price'      => $min_price ?: null,
@@ -131,7 +104,6 @@ $products = $stm->fetchAll();
     <label>Max Price:</label>
     <input type="number" name="max_price" value="<?= encode($max_price) ?>">
 
-    <!-- ✅ DROPDOWN FILTER -->
     <label>Category Description:</label>
     <select name="category_desc">
         <option value="">All</option>
@@ -147,15 +119,16 @@ $products = $stm->fetchAll();
 </form>
 </div>
 
-<!-- 4. Product Table -->
-<table class="table" border="1" cellpadding="5">
+<!-- ================= PRODUCT TABLE ================= -->
+<table class="table" border="1">
     <tr>
-        <th>Product_ID</th>
-        <th>Product_Name</th>
-        <th>Product_Price</th>
-        <th>Product_Category</th>
-        <th>Add To Cart</th> 
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Add To Cart</th>
     </tr>
+
     <?php foreach($products as $p): 
         $cart = get_cart();    
         $current_unit = $cart[$p->Product_id] ?? 0;
@@ -165,16 +138,17 @@ $products = $stm->fetchAll();
         <td><?= encode($p->Product_id) ?></td>
         <td><?= encode($p->Product_model) ?></td>
         <td><?= number_format($p->Product_price, 2) ?></td>
-        <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
+        <td><?= encode($p->Category_name) ?></td>
         <td>
             <form method="post">
                 <input type="hidden" name="id" value="<?= $p->Product_id ?>">
                 <?= html_select('unit', $_units, 'Select Unit') ?>
-                <button type="submit">Add To Cart</button>
+                <button class="btn">Add</button>
             </form>
         </td>
     </tr>
     <?php endforeach; ?>
+
 </table>
 
 <?php include '../lib/_foot.php'; ?>

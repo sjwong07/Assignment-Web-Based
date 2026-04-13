@@ -4,7 +4,36 @@
 require __DIR__ . '/lib/_base.php';
 require __DIR__ . '/lib/_head.php';
 
-// 2. Logic Check
+// 2. Auto-login check via remember me token (if implemented)
+// This would typically be placed before the main logic
+if (!isset($_SESSION['loggedin']) && isset($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    // Validate token against database (simplified example)
+    $sql = "SELECT u.* FROM users u 
+            INNER JOIN user_tokens ut ON u.user_id = ut.user_id 
+            WHERE ut.token = ? AND ut.expires_at > NOW()";
+    $stmt = mysqli_prepare($connection, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $token);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if ($row = mysqli_fetch_assoc($result)) {
+        $_SESSION['loggedin'] = true;
+        $_SESSION['username'] = $row['username'];
+        $_SESSION['role'] = $row['role'];
+        $_SESSION['user_id'] = $row['user_id'];
+
+        // Redirect based on role even in Auto-Login
+        if ($row['role'] === 'admin') {
+            header("location: admin/dashboard.php");
+        } else {
+            header("location: index.php");
+        }
+        exit;
+    }
+}
+
+// 3. Logic Check
 $is_logged_in = isset($_SESSION['loggedin']);
 $username = $_SESSION['username'] ?? 'Guest';
 ?>
@@ -68,33 +97,139 @@ $username = $_SESSION['username'] ?? 'Guest';
         .footer-section a { color: #cbd5e0; text-decoration: none; }
         .footer-bottom { text-align: center; border-top: 1px solid #4a5568; margin-top: 30px; padding-top: 20px; color: #cbd5e0; }
 
+        /* Navbar styles */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #667eea;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #4a5568;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+        
+        /* Click-to-toggle dropdown styles - Updated */
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+        .user-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .user-btn:hover {
+            background: #f0f0f0;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
+        .dropdown-content a {
+            color: #4a5568;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+        .dropdown-content a:hover {
+            background: #f7fafc;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 4px 0;
+        }
+
+        /* Close dropdown when clicking outside */
+        .dropdown-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+        }
+        .dropdown-overlay.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .hero-content h1 { font-size: 32px; }
             .hero-buttons { flex-direction: column; align-items: center; }
+            .nav-menu { gap: 0.75rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Overlay for closing dropdown when clicking outside -->
+    <div id="dropdownOverlay" class="dropdown-overlay"></div>
+
     <nav class="navbar">
         <div class="nav-brand">
             <a href="index.php">📱 ELEX Store</a>
         </div>
         <div class="nav-menu">
-            <a href="index.php" class="nav-link">Home</a>
-            <a href="products.php" class="nav-link">Products</a>
-            <a href="about.php" class="nav-link">About</a>
-            
             <?php if ($is_logged_in): ?>
-                <div class="user-menu">
-                    <button class="user-btn">
+                <div class="user-menu" id="userMenu">
+                    <button class="user-btn" id="userBtn">
                         👤 <?php echo htmlspecialchars($username); ?> <span>▼</span>
                     </button>
-                    <div class="dropdown-content">
+                    <div class="dropdown-content" id="dropdownContent">
                         <a href="dashboard.php">📊 Dashboard</a>
-                        <a href="profile.php">👤 Profile</a>
+                        <a href="profile.php">👤 My Profile</a>
                         <a href="orders.php">🛒 Orders</a>
                         <div class="dropdown-divider"></div>
-                        <a href="logout.php" onclick="return confirm('Logout?')">🚪 Logout</a>
+                        <a href="settings.php">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="logout.php" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -112,14 +247,16 @@ $username = $_SESSION['username'] ?? 'Guest';
             <div class="hero-buttons">
                 <?php if (!$is_logged_in): ?>
                     <a href="register.php" class="btn btn-primary">Get Started</a>
-                    <a href="products.php" class="btn btn-secondary">Browse Products</a>
+                    <a href="/order/ProductMember.php" class="btn btn-secondary">Browse Products</a>
                 <?php else: ?>
                     <a href="dashboard.php" class="btn btn-primary">Go to Dashboard</a>
-                    <a href="products.php" class="btn btn-secondary">Shop Now</a>
+                    <a href="/order/ProductMember.php" class="btn btn-secondary">Shop Now</a>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+
+    
 
     <div class="container mt-5">
         <h2>Hello, <?php echo htmlspecialchars($username); ?>!</h2>
@@ -181,5 +318,48 @@ $username = $_SESSION['username'] ?? 'Guest';
     </footer>
 
     <?php include __DIR__ . '/lib/_foot.php'; ?>
+
+    <script>
+        // Click-to-toggle dropdown functionality
+        (function() {
+            const userBtn = document.getElementById('userBtn');
+            const dropdownContent = document.getElementById('dropdownContent');
+            const overlay = document.getElementById('dropdownOverlay');
+            
+            if (userBtn && dropdownContent) {
+                // Toggle dropdown when clicking the user button
+                userBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    dropdownContent.classList.toggle('show');
+                    if (overlay) {
+                        overlay.classList.toggle('show');
+                    }
+                });
+                
+                // Close dropdown when clicking on overlay
+                if (overlay) {
+                    overlay.addEventListener('click', function() {
+                        dropdownContent.classList.remove('show');
+                        overlay.classList.remove('show');
+                    });
+                }
+                
+                // Close dropdown when pressing Escape key
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape') {
+                        dropdownContent.classList.remove('show');
+                        if (overlay) {
+                            overlay.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
+
+
+
+
+
