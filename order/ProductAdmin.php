@@ -50,7 +50,7 @@ include '../lib/_head.php';
 ?>
 
 <div class="ProductAdmin">
-    
+
 </div>
 
 <div class="container">
@@ -65,16 +65,16 @@ include '../lib/_head.php';
 
 <?php
 
-// 1. Get filters from GET
-$category  = get('Category', null);
-$min_price = get('min_price', null);
-$max_price = get('max_price', null);
-
 
 $category = "SELECT Category_name FROM Category";
 $stm = $_db->prepare($category);
 $stm->execute();
 $categories = $stm->fetchAll();
+
+// Get filters from GET
+$userCategory  = get('Category', null);
+$min_price = get('min_price', null);
+$max_price = get('max_price', null);
 
 
 // main query
@@ -92,13 +92,13 @@ ORDER BY p.Product_model";
 
 $stm = $_db->prepare($product);
 $stm->execute([
-    ':category'  => !empty($Category) ? $Category : null,
+    ':category'  => !empty($userCategory) ? $userCategory : null,
+    
      ':min_price' => is_numeric($min_price) ? $min_price : null,
     ':max_price' => is_numeric($max_price) ? $max_price : null
 ]);
 
 $products = $stm->fetchAll();
-
 
 ?>
 
@@ -110,13 +110,14 @@ $products = $stm->fetchAll();
     <select name="Category">
         <option value="">All</option>
          <?php foreach ($categories as $c): ?>
-        <option value="<?= $c->Category_name ?>">
-            <?= $c->Category_name ?>
+
+        <option value="<?= $c->Category_name ?>" 
+        <?= ($userCategory == $c->Category_name) ? 'selected' : '' ?>>
+        <?= $c->Category_name ?>
         </option>
     <?php endforeach; ?>
 
     </select>
-
     <label>Min Price:</label>
     <input type="number" name="min_price" value="<?= encode($min_price) ?>">
 
@@ -137,7 +138,8 @@ $products = $stm->fetchAll();
         <th>Product_Category</th>
         <th>Category_description</th>
         <th>Product photo upload</th>
-        <th>Actions</th>
+        <th>Product Actions</th>
+        <th>Category Actions</th>
     </tr>
     <?php foreach($products as $p):?>
     <tr>
@@ -154,6 +156,11 @@ $products = $stm->fetchAll();
         </form>
         </td>
          <td>
+            <button>Add Product</button>
+            <button>Update Product</button>
+            <button>Delete Product</button>
+        </td>
+        <td>
             <button>Add Product</button>
             <button>Update Product</button>
             <button>Delete Product</button>
