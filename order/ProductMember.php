@@ -1,107 +1,210 @@
 <?php
 require '../lib/_base.php';
 
-
-//cart
-if(is_post() && isset($_POST['id'])){
+// ================= CART =================
+if (is_post() && isset($_POST['id'])) {
     $id = post('id');
     $unit = post('unit');
 
-    if($unit > 0){
+    if ($unit > 0) {
         update_cart($id, $unit);
-
-        temp('info', 'Add Successfully !');
+        temp('info', 'Added to cart successfully!');
         redirect();
     }
 }
+
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
 
-<?php if($msg = temp('info')): ?>
-    <div id="tempMsg" >
-        <?= $msg ?>
-    </div>
+<style>
+body {
+    font-family: Arial;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+}
+
+.filter-box {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #333;
+    color: #fff;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.btn {
+    padding: 6px 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #218838;
+}
+
+#tempMsg {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+</style>
+
+<div class="container">
+
+<?php if ($msg = temp('info')): ?>
+    <div id="tempMsg"><?= $msg ?></div>
     <script>
         setTimeout(() => {
             let el = document.getElementById('tempMsg');
-            if(el) el.style.display = 'none';
+            if (el) el.style.display = 'none';
         }, 2000);
     </script>
 <?php endif; ?>
-<p>Here is Our Product List</p>
+
+<h2>Product List</h2>
+
 <?php
+// ================= FILTER =================
+$category       = get('category');
+$min_price      = get('min_price');
+$max_price      = get('max_price');
+$category_desc  = get('category_desc');
 
-// 1. Get filters from GET
-$category  = get('category', null);
-$min_price = get('min_price', null);
-$max_price = get('max_price', null);
+// ✅ GET ALL CATEGORY DESCRIPTIONS
+$cat_sql = "SELECT Category_id, Category_name FROM Category";
+$cat_stm = $_db->query($cat_sql);
+$category_list = $cat_stm->fetchAll();
 
-// 2. Query products with filters
-$sql = "SELECT Product_id, Product_model, Product_price, Category_id
-        FROM Product
+// ================= QUERY =================
+$sql = "SELECT 
+            p.Product_id, 
+            p.Product_model, 
+            p.Product_price, 
+            p.Category_id,
+            c.Category_name
+        FROM Product p
+        JOIN Category c 
+            ON p.Category_id = c.Category_id
         WHERE 1=1
-          AND (:category IS NULL OR Category_id = :category)
-          AND (:min_price IS NULL OR Product_price >= :min_price)
-          AND (:max_price IS NULL OR Product_price <= :max_price)
-        ORDER BY Product_model";
+          AND (:category IS NULL OR p.Category_id = :category)
+          AND (:min_price IS NULL OR p.Product_price >= :min_price)
+          AND (:max_price IS NULL OR p.Product_price <= :max_price)
+          AND (:category_desc IS NULL OR c.Category_name = :category_desc)
+        ORDER BY p.Product_model";
 
 $stm = $_db->prepare($sql);
 $stm->execute([
-    ':category'  => $category ?: null,
-    ':min_price' => $min_price ?: null,
-    ':max_price' => $max_price ?: null
+    ':category'       => $category ?: null,
+    ':min_price'      => $min_price ?: null,
+    ':max_price'      => $max_price ?: null,
+    ':category_desc'  => $category_desc ?: null
 ]);
 
 $products = $stm->fetchAll();
 ?>
 
-<form method="POST" action="">
+<!-- ================= FILTER FORM ================= -->
+<div class="filter-box">
+<form method="GET">
+
     <label>Category:</label>
     <select name="category">
         <option value="">All</option>
-        <?php foreach($_categories as $id => $name): ?>
-            <option value="<?= $id ?>" <?= ($category == $id ? 'selected' : '') ?>><?= $name ?></option>
+        <?php foreach ($_categories as $id => $name): ?>
+            <option value="<?= $id ?>" <?= ($category == $id ? 'selected' : '') ?>>
+                <?= $name ?>
+            </option>
         <?php endforeach; ?>
-
     </select>
+
     <label>Min Price:</label>
     <input type="number" name="min_price" value="<?= encode($min_price) ?>">
+
     <label>Max Price:</label>
     <input type="number" name="max_price" value="<?= encode($max_price) ?>">
-    <button type="submit">Filter</button>
+
+    <!-- ✅ DROPDOWN FILTER -->
+    <label>Category Description:</label>
+    <select name="category_desc">
+        <option value="">All</option>
+        <?php foreach ($category_list as $c): ?>
+            <option value="<?= $c->Category_name ?>" 
+                <?= ($category_desc == $c->Category_name ? 'selected' : '') ?>>
+                <?= $c->Category_name ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <button class="btn">Filter</button>
 </form>
+</div>
 
-<!-- 4. Product Table -->
-<table class="table" border="1" cellpadding="5">
-    <tr>
-        <th>Product_ID</th>
-        <th>Product_Name</th>
-        <th>Product_Price</th>
-        <th>Product_Category</th>
-        <th>Add To Cart</th> 
-    </tr>
-    <?php foreach($products as $p): 
-        $cart = get_cart();    
-        $current_unit = $cart[$p->Product_id] ?? 0;
-        $GLOBALS['unit'] = $current_unit;
-    ?>
-    <tr>
-        <td><?= encode($p->Product_id) ?></td>
-        <td><?= encode($p->Product_model) ?></td>
-        <td><?= number_format($p->Product_price, 2) ?></td>
-        <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
-        <td>
-            <form method="post">
-                <input type="hidden" name="id" value="<?= $p->Product_id ?>">
-                <?= html_select('unit', $_units, 'Select Unit') ?>
-                <button type="submit">Add To Cart</button>
-            </form>
-        </td>
-    </tr>
-    <?php endforeach; ?>
+<!-- ================= TABLE ================= -->
+<table class="table" border="1">
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Price (RM)</th>
+    <th>Category</th>
+    <th>Category Description</th>
+    <th>Add</th>
+</tr>
+
+<?php 
+$cart = get_cart();
+
+foreach ($products as $p): 
+    $current_unit = $cart[$p->Product_id] ?? 0;
+?>
+<tr>
+    <td><?= encode($p->Product_id) ?></td>
+    <td><?= encode($p->Product_model) ?></td>
+    <td><?= number_format($p->Product_price, 2) ?></td>
+
+    <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
+
+    <td><?= encode($p->Category_name) ?></td>
+
+    <td>
+        <form method="POST">
+            <input type="hidden" name="id" value="<?= $p->Product_id ?>">
+
+            <select name="unit">
+                <option value="">Select</option>
+                <?php foreach ($_units as $u): ?>
+                    <option value="<?= $u ?>" <?= ($u == $current_unit ? 'selected' : '') ?>>
+                        <?= $u ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <button class="btn">Add</button>
+        </form>
+    </td>
+</tr>
+<?php endforeach; ?>
+
 </table>
+</div>
 
-
-<?php
-include '../lib/_foot.php';
+<?php include '../lib/_foot.php'; ?>
