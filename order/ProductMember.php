@@ -73,6 +73,7 @@ $products = $stm->fetchAll();
 </form>
 
 <!-- 4. Product Table -->
+ <div class="ProductMember">
 <table class="table" border="1" cellpadding="5">
     <tr>
         <th>Product_ID</th>
@@ -101,6 +102,7 @@ $products = $stm->fetchAll();
     </tr>
     <?php endforeach; ?>
 </table>
+    </div>
 
 
 <?php
