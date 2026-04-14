@@ -19,7 +19,7 @@ $o = $stm->fetch();
 if (!$o) redirect('history.php');
 
 $stm = $_db->prepare('
-    SELECT i.*, p.Product_model as name, p.Product_id as product_id,
+    SELECT i.*, p.Product_model as name, p.Product_id as product_id, p.Product_photo as photo,
     (i.price * i.unit) as subtotal
     FROM item AS i
     JOIN Product AS p ON i.Product_id = p.Product_id
@@ -59,6 +59,7 @@ include '../lib/_head.php';
 <table class="table">
     <tr>
         <th>Product Id</th>
+        <th>Photo</th>
         <th>Product Name</th>
         <th>Price (RM)</th>
         <th>Unit</th>
@@ -68,6 +69,15 @@ include '../lib/_head.php';
     <?php foreach ($arr as $i): ?>
     <tr>
         <td style= "text-align: center;"><?= $i->product_id ?></td>
+
+        <td style="text-align: center;">
+            <?php if (!empty($i->photo)): ?>
+                <img src="../images/<?= $i->photo ?>" alt="<?= $i->name ?>" style="max-width: 80px; max-height: 80px;">
+            <?php else: ?>
+                <img src="../images/no-image.png" alt="No Image" style="max-width: 80px; max-height: 80px;">
+            <?php endif; ?>
+        </td>
+
         <td><?= $i->name ?></td>
         <td class="right" style= "text-align: center;"><?= number_format($i->price, 2) ?></td>
         <td class="right" style= "text-align: center;"><?= $i->unit ?></td>
@@ -78,7 +88,7 @@ include '../lib/_head.php';
     <?php endforeach ?>
 
     <tr>
-        <th colspan="3"></th>
+        <th colspan="4"></th>
         <th class="right"><?= $total_count ?></th>
         <th class="right"><?= number_format($total_amount, 2) ?></th>
     </tr>

@@ -3,7 +3,6 @@ include '../lib/_base.php';
 
 //check login
 if (!isset($_SESSION['user_id'])){
-    temp('info', 'Please login to checkout');
     redirect('/login.php');
 }
 
@@ -74,6 +73,7 @@ include '../lib/_head.php';
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Photo</th>
                 <th>Name</th>
                 <th>Price (RM)</th>
                 <th>Unit</th>
@@ -99,6 +99,15 @@ include '../lib/_head.php';
             ?>
                 <tr>
                     <td><?= $p->Product_id ?></td>
+
+                    <td style= "text-align: center;">
+                        <?php if (!empty($p->Product_photo)): ?>
+                            <img src="../images/<?=  $p->Product_photo ?>" alt="<?= $p->Product_model ?>" style="max-width: 80px; max-height: 80px;">
+                        <?php else: ?>
+                            <img src="../images/no-image.png" alt="No Image" style="max-width: 80px; max-height: 80px;">
+                        <?php endif; ?>
+                    </td>
+
                     <td><?= $p->Product_model ?></td>
                     <td class="right"><?= number_format($p->Product_price, 2) ?></td>
                     <td class="center"><?= $unit ?></td>
@@ -110,7 +119,7 @@ include '../lib/_head.php';
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="3">Total</th>
+                <th colspan="4">Total</th>
                 <th class="center"><?= $count ?></th>
                 <th class="right">RM <?= number_format($total, 2) ?></th>
             </tr>

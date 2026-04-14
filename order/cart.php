@@ -39,6 +39,7 @@ include '../lib/_head.php';
 <table class="table">
     <tr>
         <th>Id</th>
+        <th>Photo</th>
         <th>Name</th>
         <th>Price (RM)</th>
         <th>Unit</th>
@@ -66,14 +67,25 @@ include '../lib/_head.php';
     ?>
         <tr>
             <td style= "text-align: center;"><?= $p->Product_id ?></td>
+            
+            <td style= "text-align: center;">
+                <?php if (!empty($p->Product_photo)): ?>
+                    <img src="../images/<?=  $p->Product_photo ?>" alt="<?= $p->Product_model ?>" style="max-width: 80px; max-height: 80px;">
+                <?php else: ?>
+                    <img src="../images/no-image.png" alt="No Image" style="max-width: 80px; max-height: 80px;">
+                <?php endif; ?>
+            </td>
+
             <td><?= $p->Product_model ?></td>
             <td class="right" style= "text-align: center;"><?= $p->Product_price ?></td>
+            
             <td style= "text-align: center;">
                 <form method="post">
                     <input type = "hidden" name="id" value = "<?= $p->Product_id ?>">
                     <?= html_select('unit', $_units, '') ?>
                 </form>            
             </td>
+            
             <td class="right" style= "text-align: center;">
                 <?= sprintf('%.2f', $subtotal) ?>
             </td>
@@ -81,7 +93,7 @@ include '../lib/_head.php';
     <?php endforeach ?>
 
     <tr>
-        <th colspan="3"></th>
+        <th colspan="4"></th>
         <th class="right"><?= $count ?></th>
         <th class="right"><?= sprintf('%.2f', $total) ?></th>
     </tr>
