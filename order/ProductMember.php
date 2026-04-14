@@ -45,10 +45,11 @@ th, td{border: 2px solid #333;}
 <h2>Product List</h2>
 
 <?php
-// ================= FILTER =================
+//FILTER 
 $category       = get('category');
 $min_price      = get('min_price');
 $max_price      = get('max_price');
+$category_desc  = get('category_desc');
 
 // ================= LOAD CATEGORY LIST =================
 $category_sql = "SELECT Category_id, Category_name FROM Category";
