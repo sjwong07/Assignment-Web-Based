@@ -118,6 +118,7 @@ $products = $stm->fetchAll();
         <th>Name</th>
         <th>Price</th>
         <th>Category</th>
+        <th>Photo</th>
         <th>Add To Cart</th>
     </tr>
 
@@ -131,6 +132,17 @@ $products = $stm->fetchAll();
         <td><?= encode($p->Product_model) ?></td>
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($p->Category_name) ?></td>
+        <td>
+            <?php if (!empty($p->product_photo)): ?>
+        <img src="../uploads/<?= encode($p->product_photo) ?>" 
+             alt="<?= encode($p->Product_model) ?>" 
+             style="max-width: 100px; max-height: 100px;">
+    <?php else: ?>
+        <img src="../images/no-image.png" 
+             alt="No Image" 
+             style="max-width: 100px; max-height: 100px;">
+    <?php endif; ?>
+        </td>
         <td>
             <form method="post">
                 <input type="hidden" name="id" value="<?= $p->Product_id ?>">

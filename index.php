@@ -212,7 +212,7 @@ $username = $_SESSION['username'] ?? 'Guest';
 
     <div class="hero-section">
         <div class="hero-content">
-            <h1>Welcome to the Electronics Hub</h1>
+            <h1>Welcome to the ELEX Store</h1>
             <p>Your one-stop shop for high-quality components and the latest gadgets.</p>
             
             <div class="hero-buttons">
