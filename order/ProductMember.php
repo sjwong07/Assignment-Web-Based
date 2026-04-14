@@ -49,7 +49,6 @@ th, td{border: 2px solid #333;}
 $category       = get('category');
 $min_price      = get('min_price');
 $max_price      = get('max_price');
-$category_desc  = get('category_desc');
 
 // ================= LOAD CATEGORY LIST =================
 $category_sql = "SELECT Category_id, Category_name FROM Category";
@@ -62,8 +61,9 @@ foreach ($category_list as $c) {
     $_categories[$c->Category_id] = $c->Category_name;
 }
 
-// ================= PRODUCT QUERY =================
-$sql = "SELECT p.Product_id, p.Product_model, p.Product_price, p.Category_id, c.Category_name
+//PRODUCT QUERY
+$sql = "SELECT p.Product_id, p.Product_model, p.Product_price, 
+               p.Category_id, p.product_photo, c.Category_name
         FROM Product p
         JOIN Category c ON p.Category_id = c.Category_id
         WHERE 1=1
@@ -133,8 +133,8 @@ $products = $stm->fetchAll();
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($p->Category_name) ?></td>
         <td>
-            <?php if (!empty($p->product_photo)): ?>
-        <img src="../uploads/<?= encode($p->product_photo) ?>" 
+    <?php if (!empty($p->product_photo)): ?>
+        <img src="../images/<?= encode($p->product_photo) ?>" 
              alt="<?= encode($p->Product_model) ?>" 
              style="max-width: 100px; max-height: 100px;">
     <?php else: ?>
@@ -142,7 +142,7 @@ $products = $stm->fetchAll();
              alt="No Image" 
              style="max-width: 100px; max-height: 100px;">
     <?php endif; ?>
-        </td>
+</td>
         <td>
             <form method="post">
                 <input type="hidden" name="id" value="<?= $p->Product_id ?>">

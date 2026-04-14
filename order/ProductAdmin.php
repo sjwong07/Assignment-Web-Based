@@ -27,7 +27,7 @@ if (is_post() && isset($_POST['upload'])) {
     }
     
     // Create upload folder
-    $folder = '../uploads/';
+    $folder = '../images/';
     if (!is_dir($folder)) {
         mkdir($folder, 0777, true);
     }
