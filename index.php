@@ -234,7 +234,7 @@ $username = $_SESSION['username'] ?? 'Guest';
         <p>Explore our wide range of tech essentials below.</p>
         
         <div class="featured-section mt-5">
-            <h3>Featured Products</h3>
+            <h3>Top 6 Best Selling Products!!</h3>
             <div class="grid mt-3">
                 <?php
                 // Fetch products from database
