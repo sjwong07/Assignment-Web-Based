@@ -217,7 +217,7 @@ $username = $_SESSION['username'] ?? 'Guest';
             
             <div class="hero-buttons">
                 <?php if (!$is_logged_in): ?>
-                    <a href="register.php" class="btn btn-primary">Get Started</a>
+                    <a href="register.php" class="btn btn-primary" style="font-size: 20px; margin-top: 20px;">Get Started</a>
                     <a href="/order/ProductMember.php" class="btn btn-secondary">Browse Products</a>
                 <?php else: ?>
                     <a href="dashboard.php" class="btn btn-primary">Go to Dashboard</a>
