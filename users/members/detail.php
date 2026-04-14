@@ -2,7 +2,7 @@
 session_start();
 require_once '../../config/database.php';
 
-$user_id = $_GET['id'] ?? 0;
+$user_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = ?");
 $stmt->execute([$user_id]);
@@ -34,17 +34,20 @@ if (!$member) {
     <div class="container">
         <h1>Member Details</h1>
         
-        <img src="../../uploads/profiles/<?= $member['profile_photo'] ?: 'default.png' ?>" class="profile-img" onerror="this.src='../../uploads/profiles/default.png'">
+       <?php
+       $photo = !empty($member['profile_photo']) ? $member['profile_photo'] : 'default.png';
+       ?>
+       <img src="../../uploads/profiles/<?= $photo ?>" class="profile-img">
         
         <div class="row"><span class="label">User ID:</span> <?= $member['user_id'] ?></div>
         <div class="row"><span class="label">Username:</span> <?= htmlspecialchars($member['username']) ?></div>
         <div class="row"><span class="label">Full Name:</span> <?= htmlspecialchars($member['full_name']) ?></div>
         <div class="row"><span class="label">Email:</span> <?= htmlspecialchars($member['email']) ?></div>
         <div class="row"><span class="label">Phone:</span> <?= htmlspecialchars($member['phone']) ?></div>
-        <div class="row"><span class="label">Gender:</span> <?= $member['gender'] == 'M' ? 'Male' : 'Female' ?></div>
+        <div class="row"><span class="label">Gender:</span> <?= $member['gender'] === 'M' ? 'Male' : ($member['gender'] === 'F' ? 'Female' : '-') ?></div>
         <div class="row"><span class="label">Role:</span> <?= $member['role'] ?></div>
         <div class="row"><span class="label">Status:</span> <span class="<?= $member['is_blocked'] ? 'status-blocked' : 'status-active' ?>"><?= $member['is_blocked'] ? 'Blocked' : 'Active' ?></span></div>
-        <div class="row"><span class="label">Registered:</span> <?= date('Y-m-d H:i', strtotime($member['created_at'])) ?></div>
+        <div class="row"><span class="label">Registered:</span> <?= !empty($member['created_at']) ? date('Y-m-d H:i', strtotime($member['created_at'])) : '-' ?></div>
         
         <a href="index.php" class="btn-back">← Back to Members</a>
     </div>
