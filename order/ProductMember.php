@@ -86,7 +86,7 @@ $stm->execute([
 $products = $stm->fetchAll();
 ?>
 
-<!-- ================= FILTER FORM ================= -->
+<!-- FILTER FORM  -->
 <div class="filter-box">
 <form method="GET">
 
@@ -135,9 +135,31 @@ $products = $stm->fetchAll();
         <td><?= encode($p->Category_name) ?></td>
         <td>
     <?php if (!empty($p->product_photo)): ?>
-        <img src="../images/<?= encode($p->product_photo) ?>" 
-             alt="<?= encode($p->Product_model) ?>" 
-             style="max-width: 100px; max-height: 100px;">
+        <?php 
+        $image_path = "../images/" . $p->product_photo;
+        
+        // Debug info
+        echo "<!-- DEBUG -->";
+        echo "<!-- File: " . $p->product_photo . " -->";
+        echo "<!-- Path: " . $image_path . " -->";
+        echo "<!-- Exists: " . (file_exists($image_path) ? 'YES' : 'NO') . " -->";
+        echo "<!-- Readable: " . (is_readable($image_path) ? 'YES' : 'NO') . " -->";
+        
+        if (file_exists($image_path)) {
+            echo "<!-- Size: " . filesize($image_path) . " bytes -->";
+            echo "<!-- Perms: " . substr(sprintf('%o', fileperms($image_path)), -4) . " -->";
+        }
+        ?>
+        
+        <?php if (file_exists($image_path) && is_readable($image_path)): ?>
+            <img src="../images/<?= encode($p->product_photo) ?>" 
+                 alt="<?= encode($p->Product_model) ?>" 
+                 style="max-width: 100px; max-height: 100px;">
+        <?php elseif (file_exists($image_path)): ?>
+            <span style="color: red;">❌ File exists but cannot be read (permission issue)</span>
+        <?php else: ?>
+            <span style="color: orange;">⚠️ File not found: <?= encode($p->product_photo) ?></span>
+        <?php endif; ?>
     <?php else: ?>
         <img src="../images/no-image.png" 
              alt="No Image" 
