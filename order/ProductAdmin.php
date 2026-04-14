@@ -63,7 +63,47 @@ if (is_post() && isset($_POST['upload'])) {
     
     redirect();
 }
+?>
+<?php
 
+
+if (is_post()) {
+    // 1. CREATE
+    if (isset($_POST['create'])) {
+        $model  = post('Product_model');
+        $price  = post('Product_price');
+        $cat_id = post('Category_id');
+
+        $stm = $_db->prepare("INSERT INTO Product (Product_model, Product_price, Category_id) VALUES (?, ?, ?)");
+        $stm->execute([$model, $price, $cat_id]);
+        temp('info', '✅ Product Created');
+        redirect();
+    }
+
+    // 2. UPDATE
+    if (isset($_POST['update'])) {
+        $id    = post('product_id');
+        $model = post('Product_model');
+        $price = post('Product_price');
+
+        $stm = $_db->prepare("UPDATE Product SET Product_model = ?, Product_price = ? WHERE Product_id = ?");
+        $stm->execute([$model, $price, $id]);
+        temp('info', '✅ Product Updated');
+        redirect();
+    }
+
+    // 3. DELETE
+    if (isset($_POST['delete'])) {
+        $id = post('product_id');
+
+        $stm = $_db->prepare("DELETE FROM Product WHERE Product_id = ?");
+        $stm->execute([$id]);
+        temp('info', '🗑️ Product Deleted');
+        redirect();
+    }
+}
+?>
+<?php
 $_title = 'Product Listing';
 include '../lib/_head.php';
 ?>
@@ -154,40 +194,46 @@ $products = $stm->fetchAll();
         <th>Product_ID</th>
         <th>Product_Name</th>
         <th>Product_Price</th>
-        <th>Product_Category</th>
-        <th>Category_description</th>
-        <th>Product photo upload</th>
-        <th>Product Actions</th>
-        <th>Category Actions</th>
+        <th>Category</th>
+        <th>Actions</th>
     </tr>
-    <?php foreach($products as $p):?>
+
     <tr>
-        <td><?= encode($p->Product_id) ?></td>
-        <td><?= encode($p->Product_model) ?></td>
-        <td><?= number_format($p->Product_price, 2) ?></td>
-        <td><?= encode($_categories[$p->Category_id] ?? $p->Category_id) ?></td>
-       <td><?= encode($p->Category_name) ?></td>
-       <td>
-        <form method="post" enctype="multipart/form-data">
-            <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
-            <input type="file" name="photo" accept="image/*">
-            <button class="btn btn-upload" type="submit" name="upload">Upload</button>
+        <form method="post">
+            <td>NEW</td>
+            <td><input type="text" name="Product_model" placeholder="New Model Name" required></td>
+            <td><input type="number" name="Product_price" step="0.01" placeholder="0.00" required></td>
+            <td>
+                <select name="Category_id">
+                    <?php foreach ($categories as $c): ?>
+                        <option value="<?= $c->Category_id ?>"><?= $c->Category_name ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td>
+                <button type="submit" name="create" class="btn-create">➕ Create</button>
+            </td>
         </form>
-        </td>
-         <td>
-            <button>Add Product</button>
-            <button>Update Product</button>
-            <button>Delete Product</button>
-        </td>
-        <td>
-            <button>Add Product</button>
-            <button>Update Product</button>
-            <button>Delete Product</button>
-        </td>
+    </tr>
+
+    <?php foreach($products as $p): ?>
+    <tr>
+        <form method="post">
+            <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
+            
+            <td><?= $p->Product_id ?></td>
+            <td><input type="text" name="Product_model" value="<?= encode($p->Product_model) ?>"></td>
+            <td><input type="number" name="Product_price" step="0.01" value="<?= $p->Product_price ?>"></td>
+            <td><?= encode($p->Category_name) ?></td>
+            
+            <td>
+                <button type="submit" name="update" class="btn-update">✏️Update</button>
+                <button type="submit" name="delete" class="btn-delete" onclick="return confirm('Delete this product?')">🗑️ Delete</button>
+            </td>
+        </form>
     </tr>
     <?php endforeach; ?>
 </table>
-    </div>
 <?php
 $f = get_file('photo');
 if (isset($_POST['upload'])) {
