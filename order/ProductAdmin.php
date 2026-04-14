@@ -48,7 +48,7 @@ if (is_post() && isset($_POST['upload'])) {
                 WHERE Product_id = ?
             ");
             
-            $stm->execute([$filename, $product_id]);
+            $stm->execute([$filename, $Product_id]);
             
             temp('info', '✅ Photo uploaded successfully!');
             

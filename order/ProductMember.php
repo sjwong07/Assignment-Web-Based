@@ -133,33 +133,20 @@ $products = $stm->fetchAll();
         <td><?= encode($p->Product_model) ?></td>
         <td><?= number_format($p->Product_price, 2) ?></td>
         <td><?= encode($p->Category_name) ?></td>
-        <td>
-    <?php if (!empty($p->product_photo)): ?>
-        <?php 
-        $image_path = "../images/" . $p->product_photo;
-        
-        // Debug info
-        echo "<!-- DEBUG -->";
-        echo "<!-- File: " . $p->product_photo . " -->";
-        echo "<!-- Path: " . $image_path . " -->";
-        echo "<!-- Exists: " . (file_exists($image_path) ? 'YES' : 'NO') . " -->";
-        echo "<!-- Readable: " . (is_readable($image_path) ? 'YES' : 'NO') . " -->";
-        
-        if (file_exists($image_path)) {
-            echo "<!-- Size: " . filesize($image_path) . " bytes -->";
-            echo "<!-- Perms: " . substr(sprintf('%o', fileperms($image_path)), -4) . " -->";
-        }
-        ?>
-        
-        <?php if (file_exists($image_path) && is_readable($image_path)): ?>
-            <img src="../images/<?= encode($p->product_photo) ?>" 
-                 alt="<?= encode($p->Product_model) ?>" 
-                 style="max-width: 100px; max-height: 100px;">
-        <?php elseif (file_exists($image_path)): ?>
-            <span style="color: red;">❌ File exists but cannot be read (permission issue)</span>
-        <?php else: ?>
-            <span style="color: orange;">⚠️ File not found: <?= encode($p->product_photo) ?></span>
-        <?php endif; ?>
+  <td>
+    <?php 
+    $image_path = "../images/" . $p->product_photo;
+    if (!empty($p->product_photo) && file_exists($image_path)): 
+    ?>
+        <img src="../images/<?= encode($p->product_photo) ?>" 
+             alt="<?= encode($p->Product_model) ?>" 
+             style="max-width: 100px; max-height: 100px;">
+    <?php elseif (!empty($p->product_photo)): ?>
+        <!-- File in database but missing locally -->
+        <div style="color: orange;">
+            📁 <?= encode($p->product_photo) ?><br>
+            <small>(Missing file - ask teammate for images folder)</small>
+        </div>
     <?php else: ?>
         <img src="../images/no-image.png" 
              alt="No Image" 
