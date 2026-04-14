@@ -58,7 +58,7 @@ h1 {
 </style>
 
 <div class="container">
-    <h1>🛍️ E-Commerce System</h1>
+    <h1>📱 ELEX Store</h1>
     
     <div class="nav-box">
         <a href="ProductMember.php" class="nav-card">
