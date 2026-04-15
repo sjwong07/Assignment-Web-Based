@@ -392,29 +392,6 @@ function togglePassword(fieldId, icon) {
 <?php endif; ?>
 </script>
 
-<form method="POST">
-<?php $is_locked = (isset($_SESSION['locked_until']) && time() < $_SESSION['locked_until']); ?>
-
-<div class="form-group">
-<input type="text" name="username" placeholder="Username" required <?php echo $is_locked ? 'disabled' : ''; ?>>
-</div>
-
-<div class="form-group">
-<input type="password" name="password" placeholder="Password" required <?php echo $is_locked ? 'disabled' : ''; ?>>
-</div>
-
-<div class="form-group">
-<input type="checkbox" name="remember"> Remember Me
-</div>
-
-<button class="btn" <?php echo $is_locked ? 'disabled' : ''; ?>>Login</button>
-</form>
-
-<p style="text-align:center; margin-top:10px;">
-    Don't have an account? <a href="register.php">Register</a>
-</p>
-
-</div>
 
 </body>
 </html>
