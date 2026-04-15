@@ -629,6 +629,7 @@
         <a href="/order/cart.php">🛒 Shopping Cart</a>
         <a href="/order/checkout.php">💳 CheckOut</a>
         <a href="/order/history.php">🕓 History</a>
+        <a href="/order/status.php">🚚 Status</a>
     </nav>
 
     <!-- Breadcrumb Navigation (Optional - shows on inner pages) -->
