@@ -6,6 +6,9 @@
 // It contains HTML head, navigation, and global styles
 ?>
 
+<?php
+$session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -584,7 +587,14 @@
                 <div class="user-menu">
                     <button class="user-btn">
                         <div class="user-avatar">
-                            <?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?>
+                            <?php if (!empty($session_photo) && file_exists($session_photo)): ?>
+                                <img src="<?php echo htmlspecialchars($session_photo); ?>" 
+                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            <?php else: ?>
+                                <span class="avatar-letter">
+                                    <?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
                         <span><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                         <i class="fas fa-chevron-down"></i>
