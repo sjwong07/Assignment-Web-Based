@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $gender = $_POST['gender'] ?? '';
     $password = $_POST['password'] ?? '';
-    $role = $_POST['role'] ?? 'member';
+    $role = 'member';
     
     if (empty($username) || empty($full_name) || empty($email) || empty($phone) || empty($gender) || empty($password)) {
         $error = 'All fields are required';
@@ -116,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label>Role *</label>
-                <select name="role" required>
                     <option value="member">Member</option>
                     <option value="admin">Admin</option>
                 </select>

@@ -2,42 +2,40 @@
 session_start();
 require_once '../../config/database.php';
 
-// Check login
-if (!isset($_SESSION['user_id'])) {
+//Security Checks
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: /login.php');
     exit();
 }
 
-// check admin role
-if ($_SESSION['role'] != 'admin') {
-    die('Access denied');
+//Validate ID
+$target_id = $_GET['id'] ?? null;
+
+if (!$target_id || !is_numeric($target_id)) {
+    die('Error: Invalid ID provided.');
 }
 
-// Validate ID
-$user_id = $_GET['id'] ?? null;
-
-if (!$user_id || !is_numeric($user_id)) {
-    die('Invalid ID');
+// Prevent self-deletion
+if ($target_id == $_SESSION['user_id']) {
+    die('Error: You cannot delete your own account while logged in.');
 }
 
-// Prevent deleting yourself
-if ($user_id == $_SESSION['user_id']) {
-    die('You cannot delete your own account');
-}
-
-// Check if admin exists
-$stmt = $pdo->prepare("SELECT * FROM user WHERE role = 'admin' AND is_deleted = 0");
+// Verify the target admin exists and is actually an admin
+$stmt = $pdo->prepare("SELECT id FROM user WHERE id = ? AND role = 'admin' AND is_deleted = 0");
+$stmt->execute([$target_id]);
 $admin = $stmt->fetch();
 
 if (!$admin) {
-    die('Admin not found');
+    die('Error: Admin account not found or already deleted.');
 }
 
-// Delete admin
-$stmt = $pdo->prepare("UPDATE user SET is_deleted = 1 WHERE user_id = ? AND role = 'admin'");
-$stmt->execute([$user_id]);
-
-
-header('Location: index.php');
-exit();
+//Perform Soft Delete
+$stmt = $pdo->prepare("UPDATE user SET is_deleted = 1 WHERE id = ?");
+if ($stmt->execute([$target_id])) {
+    // Redirect with a success flag
+    header('Location: index.php?msg=deleted');
+    exit();
+} else {
+    die('Error: Could not update the database.');
+}
 ?>
