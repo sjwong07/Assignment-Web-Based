@@ -45,7 +45,7 @@ include '../lib/_head.php';
         <td><?= $o->order_date ?></td>
         <td class="right" style= "text-align: center;"><?= number_format($o->total, 2) ?></td>
         <td style= "text-align: center;">
-            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>'">View</button>
+            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>&from=history'">Detail</button>
         </td>
     </tr>
     <?php endforeach ?>

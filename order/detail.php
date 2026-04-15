@@ -1,6 +1,7 @@
 <?php
 include '../lib/_base.php';
 
+$from = req('from'); 
 $id = req('id');
 
 if (!isset($_SESSION['user_id']) && !isset($_user->user_id)) {
@@ -95,7 +96,12 @@ include '../lib/_head.php';
 </table>
 
 <div style="margin-top: 20px;">
-    <button type="button" onclick="location.href='/order/history.php'">Back</button>
+    <?php
+        $back_url = 'history.php';
+        if ($from == 'status')  $back_url = 'status.php';
+        if ($from == 'listing') $back_url = 'listing.php';
+    ?>
+    <button type="button" onclick="location='<?= $back_url ?>'">Back</button>
 </div>
 
 <?php
