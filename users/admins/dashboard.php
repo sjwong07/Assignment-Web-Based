@@ -1,11 +1,11 @@
 <?php
 session_start();
-require_once '../../config/database.php';
+require_once '../../database.php';
 include('../../head.php');
 
 // Security: Only Admins allowed
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
