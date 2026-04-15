@@ -7,6 +7,8 @@
 ?>
 
 <?php
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/Assignment-Web-Based');}
 $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg';
 ?>
 <!DOCTYPE html>
