@@ -4,9 +4,7 @@ include '../lib/_base.php';
 $from = req('from'); 
 $id = req('id');
 
-if (!isset($_SESSION['user_id']) && !isset($_user->user_id)) {
-    redirect('history.php');
-}
+requireMember();
 
 $user_id = $_SESSION['user_id'] ?? $_user->user_id;
 

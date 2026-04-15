@@ -1,6 +1,4 @@
 <?php
-// 1. Start session and require base configuration
-// Note: session_start() is usually inside _base.php, but called here if not.
 require __DIR__ . '/lib/_base.php';
 require __DIR__ . '/lib/_head.php';
 

@@ -53,6 +53,20 @@ try {
 // GENERAL PAGE FUNCTIONS
 // ========================================
 
+function auth($required_role = null) {
+    // If no role specified, just check if logged in
+    if ($required_role === null) {
+        return isset($_SESSION['user_id']);
+    }
+    
+    // Check if user has the required role
+    if (!isset($_SESSION['role'])) {
+        return false;
+    }
+    
+    return $_SESSION['role'] === $required_role;
+}
+
 function is_get() {
     return $_SERVER['REQUEST_METHOD'] == 'GET';
 }
@@ -80,6 +94,18 @@ function redirect($url = null) {
     $url ??= $_SERVER['REQUEST_URI'];
     header("Location: $url");
     exit();
+}
+
+function requireMember() {
+    if (!isset($_SESSION['user_id'])) {
+        temp('error', 'Please login to access this page.');
+        redirect('/login.php');
+    }
+
+    if ($_SESSION['role'] !== 'member') {
+        temp('error', 'This feature is only available for members.');
+        redirect($_SERVER['HTTP_REFERER'] ?? '/index.php');
+    }
 }
 
 function temp($key, $value = null) {

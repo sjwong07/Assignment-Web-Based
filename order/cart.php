@@ -1,6 +1,8 @@
 <?php
 include '../lib/_base.php';
 
+requireMember();
+
 $cart = get_cart();
 
 if (is_post()) {
