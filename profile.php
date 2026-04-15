@@ -49,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $upd = $pdo->prepare("UPDATE user SET profile_photo = ? WHERE username = ?");
             if($upd->execute([$photo_path, $current_username])) {
                 $userData['photo'] = $photo_path;
+                $_SESSION['profile_photo'] = $photo_path;
                 $success = "Photo updated successfully!";
             }
         }
@@ -79,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $upd = $pdo->prepare("UPDATE user SET profile_photo = ? WHERE username = ?");
                     $upd->execute([$target_file, $current_username]);
                     $userData['photo'] = $target_file;
+                    $_SESSION['profile_photo'] = $target_file;
                     $success = "Photo updated successfully!";
                 } else { $error = "Failed to upload photo."; }
             } else { $error = "Invalid image file."; }
@@ -296,7 +298,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 <script>
-    // --- JQUERY IMPLEMENTATION ---
     $(document).ready(function() {
         // Auto-hide messages
         setTimeout(() => { $('#status-msg').fadeOut(); }, 3000);
@@ -340,7 +341,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         });
 
-// Final check on submit to ensure browser validation triggers correctly
 $('#passwordForm').on('submit', function(e) {
     let allFilled = true;
     $('.pass-input').each(function() {
@@ -352,7 +352,6 @@ $('#passwordForm').on('submit', function(e) {
     }
 });
 
-        // --- FIXED CLICK FUNCTION ---
         const dropZone = $('#drop-zone-box');
         
         dropZone.on('click', function(e) {
