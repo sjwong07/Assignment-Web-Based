@@ -30,7 +30,7 @@ include('../../head.php');
             <div class="stat"><?= $adminCount ?> Total</div>
         </a>
 
-        <a href="members/index.php" class="card">
+        <a href="../members/index.php" class="card">
             <i class="fas fa-users"></i>
             <h3>Member Maintenance</h3>
             <p>Search, Block, or Edit Members</p>
