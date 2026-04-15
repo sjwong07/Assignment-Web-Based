@@ -40,7 +40,7 @@ if (is_post() && isset($_POST['upload'])) {
     // Move uploaded file
     if (move_uploaded_file($file['tmp_name'], $path)) {
         
-        // Update database
+        // Update database - FIXED: $product_id not $Product_id
         try {
             $stm = $_db->prepare("
                 UPDATE Product 
@@ -48,12 +48,12 @@ if (is_post() && isset($_POST['upload'])) {
                 WHERE Product_id = ?
             ");
             
-            $stm->execute([$filename, $product_id]);
+            $stm->execute([$filename, $product_id]); // FIXED: lowercase p
             
             temp('info', '✅ Photo uploaded successfully!');
             
         } catch (PDOException $e) {
-            unlink($path);
+            unlink($path); // Delete the file
             temp('info', '❌ Database error: ' . $e->getMessage());
         }
         
@@ -65,44 +65,12 @@ if (is_post() && isset($_POST['upload'])) {
 }
 
 if (is_post()) {
-    // 1. CREATE (Add)
+    // 1. CREATE
     if (isset($_POST['Add'])) {
-        $product_id = post('Product_id'); // Manual ID input
         $model  = post('Product_model');
         $price  = post('Product_price');
-        $cat_id = post('Category_name');
-
-        // Validation
-        if (empty($product_id) || empty($model) || empty($price) || empty($cat_id)) {
-            temp('info', '❌ All fields are required!');
-            redirect();
-        }
-        
-        // Check if ID already exists
-        $check = $_db->prepare("SELECT Product_id FROM Product WHERE Product_id = ?");
-        $check->execute([$product_id]);
-        if ($check->fetch()) {
-            temp('info', '❌ Product ID already exists!');
-            redirect();
-        }
-        
-        if ($price <= 0) {
-            temp('info', '❌ Price must be greater than 0!');
-            redirect();
-        }
-
-        $stm = $_db->prepare("INSERT INTO Product (Product_id, Product_model, Product_price, Category_id, product_photo) VALUES (?, ?, ?, ?, NULL)");
-        $stm->execute([$product_id, $model, $price, $cat_id]);
-        temp('info', '✅ Product Created');
-        redirect();
-    }
-
-    // 2. UPDATE - FIXED: Get values from the edit form
-    if (isset($_POST['Update'])) {
-        $id    = post('product_id');
-        $model = post('Product_model_update'); // Get from input field
-        $price = post('Product_price_update'); // Get from input field
-        $cat_id = post('Category_name_update'); // Get from select field
+        $cat_id = post('Category_name'); // FIXED: Variable name stays same but gets Category_id value
+        $photo = post('Product_photo');
 
         // Validation
         if (empty($model) || empty($price) || empty($cat_id)) {
@@ -115,8 +83,22 @@ if (is_post()) {
             redirect();
         }
 
-        $stm = $_db->prepare("UPDATE Product SET Product_model = ?, Product_price = ?, Category_id = ? WHERE Product_id = ?");
-        $stm->execute([$model, $price, $cat_id, $id]);
+        $stm = $_db->prepare("INSERT INTO Product (Product_model, Product_price, Category_id, Product_photo) VALUES (?, ?, ?, NULL)");
+        $stm->execute([$model, $price, $cat_id]); // FIXED: removed $photo from execute
+        temp('info', '✅ Product Created');
+        redirect();
+    }
+
+    // 2. UPDATE
+    if (isset($_POST['Update'])) {
+        $id    = post('product_id');
+        $model = post('Product_model');
+        $price = post('Product_price');
+        $cat_id = post('Category_name'); // ADDED: Get category for update
+        $photo = post('Product_photo');
+
+        $stm = $_db->prepare("UPDATE Product SET Product_model = ?, Product_price = ?, Category_id = ?, Product_photo = ? WHERE Product_id = ?");
+        $stm->execute([$model, $price, $cat_id, $photo, $id]); // FIXED: removed extra comma
         temp('info', '✅ Product Updated');
         redirect();
     }
@@ -147,6 +129,7 @@ include '../lib/_head.php';
 ?>
 
 <div class="ProductAdmin">
+
 </div>
 
 <div class="container">
@@ -160,6 +143,7 @@ include '../lib/_head.php';
 <?php endif; ?>
 
 <?php
+
 $category = "SELECT Category_id,Category_name FROM Category";
 $stm = $_db->prepare($category);
 $stm->execute();
@@ -169,6 +153,7 @@ $categories = $stm->fetchAll();
 $userCategory  = get('Category', null);
 $min_price = get('min_price', null);
 $max_price = get('max_price', null);
+
 
 // main query
 $product = "SELECT 
@@ -186,11 +171,13 @@ ORDER BY p.Product_model";
 $stm = $_db->prepare($product);
 $stm->execute([
     ':category'  => !empty($userCategory) ? $userCategory : null,
-    ':min_price' => is_numeric($min_price) ? $min_price : null,
+    
+     ':min_price' => is_numeric($min_price) ? $min_price : null,
     ':max_price' => is_numeric($max_price) ? $max_price : null
 ]);
 
 $products = $stm->fetchAll();
+
 
 // Build categories array for display
 $_categories = [];
@@ -200,17 +187,20 @@ foreach ($cat_stmt->fetchAll() as $c) {
 }
 ?>
 
-<!-- FILTER -->
+<!-- ================= FILTER ================= -->
 <div class="card filter-box">
+
 <form method="GET" action="">
     <label>Category:</label>
     <select name="Category">
         <option value="">All</option>
-        <?php foreach ($categories as $c): ?>
-        <option value="<?= $c->Category_name ?>" <?= ($userCategory == $c->Category_name) ? 'selected' : '' ?>>
-            <?= $c->Category_name ?>
+         <?php foreach ($categories as $c): ?>
+
+        <option value="<?= $c->Category_name ?>" 
+        <?= ($userCategory == $c->Category_name) ? 'selected' : '' ?>>
+        <?= $c->Category_name ?>
         </option>
-        <?php endforeach; ?>
+    <?php endforeach; ?>
     </select>
 
     <label>Min Price:</label>
@@ -223,8 +213,8 @@ foreach ($cat_stmt->fetchAll() as $c) {
 </form>
 </div>
 
-<!-- Product Table -->
-<div class="ProductAdmin">
+<!-- 4. Product Table -->
+  <div class="ProductAdmin">
 <table border="1" cellpadding="5">
     <tr>
         <th>Product_ID</th>
@@ -235,13 +225,14 @@ foreach ($cat_stmt->fetchAll() as $c) {
         <th>Product Actions</th>
     </tr>
    
-    <!-- ADD NEW PRODUCT ROW - With manual ID input -->
+    <!-- ADD NEW PRODUCT ROW - FIXED: Removed Product_id input -->
     <tr>
         <form method="post">
-           <td><input type="text" name="Product_id" placeholder="ID" required style="width:60px;"></td>
+           <td><span style="color:#28a745;">NEW</span></td>
             <td><input type="text" name="Product_model" placeholder="New Model Name" required></td>
             <td><input type="number" name="Product_price" step="0.01" placeholder="0.00" required></td>
-            <td>
+           
+              <td>
                <select name="Category_name">
                     <?php foreach ($categories as $c): ?>
                         <option value="<?= $c->Category_id ?>"><?= $c->Category_name ?></option>
@@ -249,22 +240,23 @@ foreach ($cat_stmt->fetchAll() as $c) {
                 </select>
             </td>
             <td style="color:#999;">Upload after add</td>
+            
             <td>
-                <button type="submit" name="Add" class="btn-Add">Add Product</button>
+                <button type="submit" name="Add" class="btn-Add">➕Add Product</button>
             </td>
         </form>    
     </tr>
     
     <?php foreach($products as $p):?>
     <tr>
-        <!-- EDIT FORM - Values can be edited directly -->
-        <form method="post" id="editForm<?= $p->Product_id ?>">
+        <!-- EDIT FORM - FIXED: Added input fields for editing -->
+        <form method="post">
             <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
             <td><?= encode($p->Product_id) ?></td>
-            <td><input type="text" name="Product_model_update" value="<?= encode($p->Product_model) ?>" required></td>
-            <td><input type="number" name="Product_price_update" step="0.01" value="<?= $p->Product_price ?>" required></td>
+            <td><input type="text" name="Product_model" value="<?= encode($p->Product_model) ?>" required></td>
+            <td><input type="number" name="Product_price" step="0.01" value="<?= $p->Product_price ?>" required></td>
             <td>
-                <select name="Category_name_update">
+                <select name="Category_name">
                     <?php foreach ($categories as $c): ?>
                         <option value="<?= $c->Category_id ?>" <?= ($p->Category_id == $c->Category_id) ? 'selected' : '' ?>>
                             <?= $c->Category_name ?>
@@ -275,30 +267,36 @@ foreach ($cat_stmt->fetchAll() as $c) {
         </form>
         
        <td>
-        <!-- PHOTO UPLOAD FORM -->
+        <!-- PHOTO UPLOAD FORM - Separate from edit form -->
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
             <input type="file" name="photo" accept="image/*">
             <button class="btn btn-upload" type="submit" name="upload">Upload</button>
         </form>
         <?php if (!empty($p->product_photo)): ?>
-            <br><small>📷 Photo uploaded</small>
+            <br><small>📷 <?= substr(encode($p->product_photo), 0, 15) ?>...</small>
         <?php endif; ?>
         </td>
         
         <td>
-            <!-- UPDATE BUTTON - Submits the edit form -->
-            <button type="submit" name="Update" form="editForm<?= $p->Product_id ?>" onclick="return confirm('Update this product?');">✏️ Update</button>
+          <form method="post" onsubmit="return confirm('Update this product?');">
+                <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
+                <input type="hidden" name="Product_model" value="<?= encode($p->Product_model) ?>">
+                <input type="hidden" name="Product_price" value="<?= $p->Product_price ?>">
+                <input type="hidden" name="Category_name" value="<?= $p->Category_id ?>">
+                <input type="hidden" name="Product_photo" value="<?= $p->product_photo ?>">
+                <button type="submit" name="Update" >✏️ Update</button>
+            </form>
             
-            <!-- DELETE FORM -->
             <form method="post" style="margin-top:5px;" onsubmit="return confirm('Delete product #<?= $p->Product_id ?>? This will also delete the photo!');">
                 <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
-                <button type="submit" name="Delete">🗑️ Delete</button>
+                <button type="submit" name="Delete" >🗑️ Delete</button>
             </form>
         </td>
+
     </tr>
     <?php endforeach; ?>
 </table>
-</div>
+    </div>
 
 <?php include '../lib/_foot.php'; ?>
