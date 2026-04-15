@@ -75,11 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
 
                 // Redirect based on role
                 if ($row['role'] === 'admin') {
-<<<<<<< HEAD
-                    header("location: .users/admins/dashboard.php");
-=======
-                    header("location: /order/ProductAdmin.php");
->>>>>>> 68a9d2a4f5e2a26c1ccbd75f633ef3acd82b953e
+                    header("location: users/admins/dashboard.php");
                 } else {
                     header("location: /order/ProductMember.php");
                 }
