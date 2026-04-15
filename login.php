@@ -23,7 +23,7 @@ $remaining_locked_minutes = 0;
 // Redirect if already logged in
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if ($_SESSION['role'] === 'admin') {
-        header("location: ./admin/dashboard.php");
+        header("location: index.php");
     } else {
         header("location: index.php");
     }
@@ -39,7 +39,7 @@ if (isset($_SESSION['locked_until']) && time() < $_SESSION['locked_until']) {
 }
 
 //////////////////////////////////////////////////////
-// 🔑 LOGIN PROCESS
+// LOGIN PROCESS
 //////////////////////////////////////////////////////
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
 
@@ -67,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['user_id'] = $row['user_id'];
                 $_SESSION['email'] = $row['email'];
+                $_SESSION['phone'] = $row['phone'];
 
                 // Reset failed attempts on successful login
                 unset($_SESSION['login_attempts']);
@@ -74,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
 
                 // Redirect based on role
                 if ($row['role'] === 'admin') {
-                    header("location: ./admin/dashboard.php");
+                    header("location: /order/ProductAdmin.php");
                 } else {
-                    header("location: index.php");
+                    header("location: /order/ProductMember.php");
                 }
                 exit;
 
@@ -411,6 +412,29 @@ input:disabled {
     gap: 8px;
 }
 
+.role-badge {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.role-badge span {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.role-badge .member {
+    background: #10b981;
+    color: white;
+}
+
+.role-badge .admin {
+    background: #f59e0b;
+    color: white;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
     .card {
@@ -428,6 +452,11 @@ input:disabled {
 <div class="card">
     <h2>Welcome Back</h2>
     <div class="subtitle">Sign in to your account</div>
+
+    <div class="role-badge">
+        <span class="member"><i class="fas fa-users"></i> Member Login</span>
+        <span class="admin"><i class="fas fa-user-shield"></i> Admin Login</span>
+    </div>
 
     <?php if ($error && !$is_locked): ?>
         <div class="error-box">

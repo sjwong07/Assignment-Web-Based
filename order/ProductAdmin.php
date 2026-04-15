@@ -510,7 +510,6 @@ include '../lib/_head.php';
             gap: 0.5rem;
             font-size: 0.8rem;
             width: 100%;
-            margin-top: 0.5rem;
         }
 
         .btn-delete:hover {
@@ -557,12 +556,17 @@ include '../lib/_head.php';
         .photo-info {
             font-size: 0.7rem;
             color: #64748b;
+            margin-top: 0.5rem;
         }
 
         .action-buttons {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+        }
+
+        .photo-cell {
+            min-width: 120px;
         }
 
         /* Responsive */
@@ -713,10 +717,10 @@ include '../lib/_head.php';
                         <tr>
                             <th>Product ID</th>
                             <th>Product Name</th>
-                            <th>Price</th>
+                            <th>Price (RM)</th>
                             <th>Category</th>
                             <th>Photo</th>
-                            <th>Actions</th>
+                            <th style="width: 160px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -751,10 +755,11 @@ include '../lib/_head.php';
                         
                         <?php foreach($products as $p): ?>
                         <tr>
-                            <!-- EDIT FORM -->
+                            <td><?= htmlspecialchars($p->Product_id) ?></td>
+                            
+                            <!-- EDIT FORM for product fields -->
                             <form method="post">
                                 <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
-                                <td><?= htmlspecialchars($p->Product_id) ?></td>
                                 <td><input type="text" name="Product_model" value="<?= htmlspecialchars($p->Product_model) ?>" required></td>
                                 <td><input type="number" name="Product_price" step="0.01" value="<?= $p->Product_price ?>" required></td>
                                 <td>
@@ -768,9 +773,9 @@ include '../lib/_head.php';
                                 </td>
                             </form>
                             
-                            <!-- PHOTO UPLOAD -->
-                            <td>
-                                <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
+                            <!-- PHOTO UPLOAD Cell -->
+                            <td class="photo-cell">
+                                <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.5rem;">
                                     <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
                                     <input type="file" name="photo" accept="image/*" style="font-size: 0.7rem;">
                                     <button class="btn-upload" type="submit" name="upload">
@@ -789,7 +794,7 @@ include '../lib/_head.php';
                                 <?php endif; ?>
                             </td>
                             
-                            <!-- ACTION BUTTONS -->
+                            <!-- ACTION BUTTONS Cell -->
                             <td class="action-buttons">
                                 <form method="post" onsubmit="return confirm('Update this product?');">
                                     <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">

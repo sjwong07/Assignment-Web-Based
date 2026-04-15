@@ -16,14 +16,78 @@ if (!$connection) {
 $error = "";
 $success = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Secret admin creation key (hidden from users)
+$ADMIN_SECRET_KEY = "XAm87c";
+
+// Check if admin already exists
+$check_admin_sql = "SELECT user_id FROM `user` WHERE role = 'admin' LIMIT 1";
+$check_admin_result = mysqli_query($connection, $check_admin_sql);
+$admin_exists = mysqli_num_rows($check_admin_result) > 0;
+
+// Handle admin creation (only accessible with secret key)
+$admin_created = false;
+if (isset($_POST['create_admin']) && isset($_POST['admin_secret']) && $_POST['admin_secret'] === $ADMIN_SECRET_KEY) {
+    $admin_username = trim($_POST['admin_username']);
+    $admin_email = trim($_POST['admin_email']);
+    $admin_phone = trim($_POST['admin_phone']);
+    $admin_password = $_POST['admin_password'];
+    $admin_confirm = $_POST['admin_confirm_password'];
+    
+    if (empty($admin_username) || empty($admin_email) || empty($admin_phone) || empty($admin_password)) {
+        $admin_error = "All admin fields are required.";
+    } elseif (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
+        $admin_error = "Invalid email format.";
+    } elseif (!preg_match('/^[0-9]{7,15}$/', $admin_phone)) {
+        $admin_error = "Phone number must be 7-15 digits.";
+    } elseif (strlen($admin_password) < 8 || strlen($admin_password) > 12) {
+        $admin_error = "Password must be 8-12 characters long.";
+    } elseif (!preg_match('/[A-Z]/', $admin_password)) {
+        $admin_error = "Password must contain at least 1 uppercase letter.";
+    } elseif (!preg_match('/[0-9]/', $admin_password)) {
+        $admin_error = "Password must contain at least 1 number.";
+    } elseif (!preg_match('/[\W_]/', $admin_password)) {
+        $admin_error = "Password must contain at least 1 special character.";
+    } elseif ($admin_password !== $admin_confirm) {
+        $admin_error = "Passwords do not match.";
+    } else {
+        $hashed_admin_password = password_hash($admin_password, PASSWORD_DEFAULT);
+        
+        // Check if admin username or email exists
+        $check_sql = "SELECT user_id FROM `user` WHERE username = ? OR email = ?";
+        $check_stmt = mysqli_prepare($connection, $check_sql);
+        mysqli_stmt_bind_param($check_stmt, "ss", $admin_username, $admin_email);
+        mysqli_stmt_execute($check_stmt);
+        mysqli_stmt_store_result($check_stmt);
+        
+        if (mysqli_stmt_num_rows($check_stmt) > 0) {
+            $admin_error = "Admin username or email already exists.";
+        } else {
+            // Insert admin user
+            $sql = "INSERT INTO `user` (username, password, email, phone, role) VALUES (?, ?, ?, ?, 'admin')";
+            $stmt = mysqli_prepare($connection, $sql);
+            mysqli_stmt_bind_param($stmt, "ssss", $admin_username, $hashed_admin_password, $admin_email, $admin_phone);
+            
+            if (mysqli_stmt_execute($stmt)) {
+                $admin_created = true;
+                $admin_success = "Admin account created successfully! You can now <a href='login.php'>login as admin</a>";
+            } else {
+                $admin_error = "Admin creation failed: " . mysqli_error($connection);
+            }
+            mysqli_stmt_close($stmt);
+        }
+        mysqli_stmt_close($check_stmt);
+    }
+}
+
+// Member registration (normal flow - NO ADMIN ALLOWED)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register_member'])) {
     $username = trim($_POST['username']);
     $email    = trim($_POST['email']);
     $phone    = trim($_POST['phone']);
     $password = $_POST['password'];
     $confirm  = $_POST['confirm_password'];
 
-    // ✅ FORCE ROLE (NO ADMIN ALLOWED)
+    // FORCE ROLE (NO ADMIN ALLOWED)
     $role = 'member';
 
     // Validation
@@ -116,11 +180,6 @@ body::before {
         radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
     pointer-events: none;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
 }
 
 @keyframes fadeInUp {
@@ -355,12 +414,63 @@ input:hover:not(:focus) {
     font-size: 10px;
 }
 
-.requirement-met {
-    color: #10b981;
+/* Admin Section Styles */
+.admin-section {
+    margin-top: 30px;
+    border-top: 2px dashed #e2e8f0;
+    padding-top: 25px;
 }
 
-.requirement-unmet {
-    color: #94a3b8;
+.admin-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.admin-toggle-btn {
+    background: transparent;
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-toggle-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.admin-form {
+    display: none;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.admin-form.show {
+    display: block;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.admin-note {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 /* Responsive */
@@ -400,7 +510,9 @@ input:hover:not(:focus) {
         </div>
     <?php endif; ?>
 
+    <!-- Member Registration Form (Default) -->
     <form method="POST" id="registerForm">
+        <input type="hidden" name="register_member" value="1">
         
         <div class="form-group">
             <label><i class="fas fa-user"></i> Username</label>
@@ -449,13 +561,93 @@ input:hover:not(:focus) {
         </div>
 
         <button type="submit" class="btn">
-            <i class="fas fa-user-plus"></i> Register
+            <i class="fas fa-user-plus"></i> Register as Member
         </button>
 
         <div class="login-link">
             Already have an account? <a href="login.php">Sign in</a>
         </div>
     </form>
+
+    <!-- Admin Registration Section -->
+    <div class="admin-section">
+        <div class="admin-toggle">
+            <button type="button" class="admin-toggle-btn" onclick="toggleAdminForm()">
+                <i class="fas fa-user-shield"></i> Admin Registration
+            </button>
+        </div>
+        
+        <div id="adminForm" class="admin-form">
+            <div style="text-align: center;">
+                <span class="admin-badge"><i class="fas fa-crown"></i> Administrator Access</span>
+            </div>
+            <div class="admin-note">
+                <i class="fas fa-lock"></i> This section is for authorized administrators only. 
+                Please enter the valid special key to proceed.
+            </div>
+            
+            <?php if (isset($admin_error)): ?>
+                <div class="msg error-msg" style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($admin_error); ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($admin_success) && $admin_created): ?>
+                <div class="msg success-msg" style="margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo $admin_success; ?>
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label><i class="fas fa-user-shield"></i> Admin Username</label>
+                    <input type="text" name="admin_username" required placeholder="Enter admin username">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Admin Email</label>
+                    <input type="email" name="admin_email" required placeholder="admin@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Admin Phone</label>
+                    <input type="text" name="admin_phone" required placeholder="Enter phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Admin Password</label>
+                    <input type="password" name="admin_password" id="adminPass" required>
+                    <i class="fa-solid fa-eye toggle-btn" onclick="toggle('adminPass', this)"></i>
+                    <div class="password-requirements" style="margin-top: 6px;">
+                        <span><i class="fas fa-circle"></i> 8-12 chars</span>
+                        <span><i class="fas fa-circle"></i> Uppercase</span>
+                        <span><i class="fas fa-circle"></i> Number</span>
+                        <span><i class="fas fa-circle"></i> Special char</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-check-circle"></i> Confirm Password</label>
+                    <input type="password" name="admin_confirm_password" id="adminConf" required>
+                    <i class="fa-solid fa-eye toggle-btn" onclick="toggle('adminConf', this)"></i>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> Special Key</label>
+                    <input type="password" name="admin_secret" required placeholder="Enter special key">
+                    <small style="font-size: 11px; color: #94a3b8; margin-top: 5px; display: block;">
+                        <i class="fas fa-info-circle"></i> Required special key for admin registration
+                    </small>
+                </div>
+                
+                <button type="submit" name="create_admin" class="btn" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                    <i class="fas fa-user-shield"></i> Create Admin Account
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -472,7 +664,12 @@ function toggle(id, icon) {
     }
 }
 
-// Real-time password validation
+function toggleAdminForm() {
+    const adminForm = document.getElementById('adminForm');
+    adminForm.classList.toggle('show');
+}
+
+// Real-time password validation for member form
 const passwordInput = document.getElementById('pass');
 const confirmInput = document.getElementById('conf');
 const matchMsg = document.getElementById('matchMsg');
@@ -519,23 +716,28 @@ function checkPasswordMatch() {
     }
 }
 
-passwordInput.addEventListener('input', function() {
-    validatePassword();
-    checkPasswordMatch();
-});
+if (passwordInput) {
+    passwordInput.addEventListener('input', function() {
+        validatePassword();
+        checkPasswordMatch();
+    });
+    
+    confirmInput.addEventListener('input', checkPasswordMatch);
+}
 
-confirmInput.addEventListener('input', checkPasswordMatch);
-
-// Form submission validation
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    if (!validatePassword()) {
-        e.preventDefault();
-        alert('Please meet all password requirements:\n- 8-12 characters\n- At least 1 uppercase letter\n- At least 1 number\n- At least 1 special character');
-    } else if (passwordInput.value !== confirmInput.value) {
-        e.preventDefault();
-        alert('Passwords do not match!');
-    }
-});
+// Form submission validation for member form
+const registerForm = document.getElementById('registerForm');
+if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+        if (!validatePassword()) {
+            e.preventDefault();
+            alert('Please meet all password requirements:\n- 8-12 characters\n- At least 1 uppercase letter\n- At least 1 number\n- At least 1 special character');
+        } else if (passwordInput.value !== confirmInput.value) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+        }
+    });
+}
 </script>
 
 </body>
