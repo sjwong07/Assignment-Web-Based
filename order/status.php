@@ -56,7 +56,7 @@ include '../lib/_head.php';
         <td style="text-align: center;"><?= $o->id ?></td>
         <td><?= $o->order_date ?></td>
         <td style="text-align: center;">
-            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>&from=status'">View Items</button>
+            <button type="button" onclick="location='detail.php?id=<?= $o->id ?>&from=status'">View</button>
         </td>
         <td style="text-align: center;">
             <span class="status-badge <?= $status_class ?>">
