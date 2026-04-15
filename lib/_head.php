@@ -580,6 +580,14 @@
                     <span class="cart-count" id="cartCount">0</span>
                 </a>
                 
+                <a href="/contact.php" class="nav-link">Contact</a>
+
+            <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin'): ?>
+                <a href="/users/admins/index.php" class="nav-link">
+                    <i class="fas fa-users-cog"></i> Admin Panel
+                </a>
+            <?php endif; ?>
+
                 <!-- User Dropdown Menu -->
                 <div class="user-menu">
                     <button class="user-btn">

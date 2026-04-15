@@ -51,5 +51,8 @@ if (!$member) {
         
         <a href="index.php" class="btn-back">← Back to Members</a>
     </div>
+
+<script src="../../js/block.js"></script>
 </body>
 </html>
+

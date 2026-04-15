@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $phone = $_POST['phone'] ?? '';
     $gender = $_POST['gender'] ?? '';
-    $password = $_POST['password'] ?? '';
+   $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     
     if (empty($username) || empty($full_name) || empty($email) || empty($phone) || empty($gender) || empty($password)) {
         $error = 'All fields required';
@@ -34,10 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Admin</title>
+<?php
+session_start();
+require_once '../../config/database.php';
+
+$_title = "Add Admin";
+$_subtitle = "Create new admin account";
+include('../../_head.php');
+?>
+
     <style>
         body { font-family: Arial; background: #f0f2f5; padding: 20px; }
         .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 8px; }
@@ -52,9 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <h1>Add New Admin</h1>
+
         <?php if ($error): ?>
             <div class="error"><?= $error ?></div>
         <?php endif; ?>
+
         <form method="POST">
             <div class="form-group"><label>Username</label><input type="text" name="username" required></div>
             <div class="form-group"><label>Full Name</label><input type="text" name="full_name" required></div>
@@ -63,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group"><label>Gender</label><select name="gender" required><option value="">Select</option><option value="M">Male</option><option value="F">Female</option></select></div>
             <div class="form-group"><label>Password</label><input type="password" name="password" required></div>
             <button type="submit">Create Admin</button>
-            <a href="index.php" style="margin-left: 10px;">Cancel</a>
+            <a href="index.php">Cancel</a>
         </form>
     </div>
-</body>
-</html>
+
+<?php include('../../_foot.php'); ?>

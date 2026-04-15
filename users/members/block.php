@@ -3,12 +3,35 @@ session_start();
 header('Content-Type: application/json');
 require_once '../../config/database.php';
 
-$user_id = $_POST['user_id'] ?? 0;
-$current_status = $_POST['current_status'] ?? 0;
-$new_status = $current_status ? 0 : 1;
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false]);
+    exit();
+}
 
-$stmt = $pdo->prepare("UPDATE user SET is_blocked = ? WHERE user_id = ? AND role = 'member'");
+if ($_SESSION['role'] != 'admin') {
+    echo json_encode(['success' => false]);
+    exit();
+}
+
+$user_id = $_POST['user_id'] ?? null;
+
+$stmt = $pdo->prepare("SELECT is_blocked FROM user WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
+
+if (!$user) {
+    echo json_encode(['success' => false, 'message' => 'User not found']);
+    exit();
+}
+
+$new_status = $user['is_blocked'] ? 0 : 1;
+
+$stmt = $pdo->prepare("UPDATE user SET is_blocked = ? WHERE user_id = ?");
 $stmt->execute([$new_status, $user_id]);
 
-echo json_encode(['success' => true]);
+echo json_encode([
+    'success' => true,
+    'new_status' => $new_status,
+    'message' => $new_status ? 'User blocked successfully' : 'User unblocked successfully'
+]);
 ?>

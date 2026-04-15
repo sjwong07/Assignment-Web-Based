@@ -191,6 +191,15 @@ input { width:100%; padding:12px; border:1px solid #ccc; border-radius:6px;}
 <button class="btn" <?php echo $is_locked ? 'disabled' : ''; ?>>Login</button>
 
 </form>
+<div style="text-align:center; margin-top:15px; font-size:14px;">
+    <p>Don't have an account?
+        <a href="register.php" style="color:#3b82f6; font-weight:bold; text-decoration:none;">
+            Register here
+        </a>
+    </p>
+</div>
+
+</form>
 
 </div>
 </body>

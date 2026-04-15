@@ -1,3 +1,7 @@
+<?php
+session_start();
+require_once '../../config/database.php';
+
 // SECURITY (admin only)
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     die("Access denied");
@@ -5,8 +9,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 
 // SEARCH
 $search = $_GET['search'] ?? '';
-
-// FILTER
 $status = $_GET['status'] ?? '';
 
 // PAGINATION
@@ -14,7 +16,11 @@ $page = $_GET['page'] ?? 1;
 $limit = 5;
 $offset = ($page - 1) * $limit;
 
-// BUILD QUERY
+$limit = (int)$limit;
+$page = (int)$page;
+$offset = (int)$offset;
+
+
 $sql = "SELECT * FROM user WHERE role='member'";
 $params = [];
 
@@ -37,14 +43,30 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $members = $stmt->fetchAll();
 
-// TOTAL COUNT (for pagination)
-$countStmt = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member'");
+
+$countSql = "SELECT COUNT(*) FROM user WHERE role='member'";
+$countParams = [];
+
+if ($search) {
+    $countSql .= " AND (full_name LIKE ? OR email LIKE ? OR username LIKE ?)";
+    $countParams[] = "%$search%";
+    $countParams[] = "%$search%";
+    $countParams[] = "%$search%";
+}
+
+if ($status === 'active') {
+    $countSql .= " AND is_blocked = 0";
+} elseif ($status === 'blocked') {
+    $countSql .= " AND is_blocked = 1";
+}
+
+$countStmt = $pdo->prepare($countSql);
+$countStmt->execute($countParams);
 $totalRows = $countStmt->fetchColumn();
 $totalPages = ceil($totalRows / $limit);
 
 // DASHBOARD STATS
 $total = $totalRows;
-
 $active = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blocked=0")->fetchColumn();
 $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blocked=1")->fetchColumn();
 ?>
@@ -68,11 +90,6 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
             background: rgba(255,255,255,0.95);
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            margin-bottom: 20px;
         }
 
         .stats {
@@ -97,25 +114,9 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
             margin-bottom: 20px;
         }
 
-        .search-box input, .search-box select {
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-        }
-
-        .search-box button {
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: none;
-            background: #667eea;
-            color: white;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            border-radius: 10px;
-            overflow: hidden;
         }
 
         th {
@@ -130,10 +131,6 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
 
         tr:nth-child(even) {
             background: #f9f9f9;
-        }
-
-        tr:hover {
-            background: #f1f3ff;
         }
 
         .active { color: green; font-weight: bold; }
@@ -156,7 +153,6 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
         }
 
         .pagination {
@@ -178,24 +174,26 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
 <body>
 
 <div class="container">
-    <h1>👥 Member Management</h1>
 
-    <! DASHBOARD>
+    <h1> Member Management</h1>
+
+    <!-- DASHBOARD -->
     <div class="stats">
         <div class="card blue">Total<br><b><?= $total ?></b></div>
         <div class="card green">Active<br><b><?= $active ?></b></div>
         <div class="card red">Blocked<br><b><?= $blocked ?></b></div>
     </div>
 
-    <!SEARCH + FILTER>
+    <!-- SEARCH + FILTER -->
     <div class="search-box">
         <form method="GET">
-            <input type="text" name="search" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
+            <input type="text" name="search" placeholder="Search..."
+                   value="<?= htmlspecialchars($search) ?>">
 
             <select name="status">
-                <option value="">All</option>
-                <option value="active">Active</option>
-                <option value="blocked">Blocked</option>
+                <option value="" <?= $status==''?'selected':'' ?>>All</option>
+                <option value="active" <?= $status=='active'?'selected':'' ?>>Active</option>
+                <option value="blocked" <?= $status=='blocked'?'selected':'' ?>>Blocked</option>
             </select>
 
             <button type="submit">Filter</button>
@@ -220,8 +218,10 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
         <?php foreach ($members as $m): ?>
             <tr>
                 <td>
-                    <img src="../../uploads/profiles/<?= $m['profile_photo'] ?: 'default.png' ?>" class="profile-img">
+                    <img src="../../uploads/profiles/<?= $m['profile_photo'] ?: 'default.png' ?>"
+                         class="profile-img">
                 </td>
+
                 <td><?= $m['user_id'] ?></td>
                 <td><?= htmlspecialchars($m['username']) ?></td>
                 <td><?= htmlspecialchars($m['full_name']) ?></td>
@@ -245,12 +245,15 @@ $blocked = $pdo->query("SELECT COUNT(*) FROM user WHERE role='member' AND is_blo
         </tbody>
     </table>
 
-    <! PAGINATION >
+    <!-- PAGINATION -->
     <div class="pagination">
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?page=<?= $i ?>"><?= $i ?></a>
+            <a href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&status=<?= $status ?>">
+                <?= $i ?>
+            </a>
         <?php endfor; ?>
     </div>
+
 </div>
 
 <script>
@@ -258,24 +261,63 @@ $(document).ready(function() {
     $('.toggle-block').click(function() {
         var btn = $(this);
         var userId = btn.data('id');
-        var currentStatus = parseInt(btn.data('status'));
-
+    
         $.ajax({
             url: 'block.php',
             type: 'POST',
-            data: {user_id: userId, current_status: currentStatus},
+            data: {
+                user_id: userId,
+            },
             dataType: 'json',
             success: function(res) {
                 if (res.success) {
-                    location.reload();
+                     showPopup(res.new_status ? "User Blocked" : "User Unblocked");
+                    
+                     // UPDATE BUTTON
+                    btn.text(res.new_status ? "Unblock" : "Block");
+                    btn.data('status', res.new_status);
+
+                    // UPDATE STATUS TEXT
+                    var row = btn.closest("tr");
+                    var statusCell = row.find("td:nth-child(6)");
+
+                    statusCell.text(res.new_status ? "Blocked" : "Active");
+                    statusCell.removeClass("active blocked");
+                    statusCell.addClass(res.new_status ? "blocked" : "active");
+
                 } else {
-                    alert(res.error);
+                    alert("Error updating user");
                 }
             }
         });
     });
+
 });
+
+function showPopup(message) {
+    let popup = document.getElementById("popup");
+
+    popup.textContent = message;
+    popup.style.display = "block";
+
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 2000);
+}
 </script>
+
+<div id="popup" style="
+    display:none;
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:#28a745;
+    color:white;
+    padding:12px 18px;
+    border-radius:8px;
+    z-index:9999;
+"></div>
 
 </body>
 </html>
+

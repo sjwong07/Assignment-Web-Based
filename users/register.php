@@ -2,7 +2,6 @@
 require_once 'config/database.php';
 
 $error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
@@ -15,17 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($username) || empty($full_name) || empty($email) || empty($phone) || empty($gender) || empty($password)) {
         $error = 'All fields are required';
+
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Invalid email format';
+
     } elseif (strlen($password) < 4) {
-        $error = 'Password must be at least 4 characters';
-    } else {
+       $error = 'Password must be at least 4 characters';
+    } else{
+
         $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ? OR email = ?");
         $stmt->execute([$username, $email]);
+       
         if ($stmt->fetch()) {
             $error = 'Username or email already exists';
         } else {
-            $profile_photo = 'default.png';
+             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+             $profile_photo = 'default.png';
+             $upload_path = 'uploads/profiles/';
+
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, true);
+            }
+
             if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] == 0) {
                 $allowed = ['jpg', 'jpeg', 'png', 'gif'];
                 $filename = $_FILES['profile_photo']['name'];
@@ -33,15 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if (in_array($ext, $allowed)) {
                     $profile_photo = time() . '_' . $filename;
-                    move_uploaded_file($_FILES['profile_photo']['tmp_name'], '../uploads/profiles/' . $profile_photo);
+                    move_uploaded_file($_FILES['profile_photo']['tmp_name'], $upload_path . $profile_photo);
                 }
             }
             
             $stmt = $pdo->prepare("INSERT INTO user (username, full_name, email, phone, gender, password, role, profile_photo, created_at) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-            $stmt->execute([$username, $full_name, $email, $phone, $gender, $password, $role, $profile_photo]);
+            $stmt->execute([$username, $full_name, $email, $phone, $gender, $hashed_password, $role, $profile_photo]);
             
-            $success = 'Registration successful! You can now login.';
+            header("Location:login.php");
+            exit;
         }
     }
 }
@@ -60,8 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
         button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
         .error { color: red; margin-bottom: 15px; padding: 10px; background: #ffebee; border-radius: 4px; }
-        .success { color: green; margin-bottom: 15px; padding: 10px; background: #e8f5e9; border-radius: 4px; }
         .photo-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; }
+        .login-link { text-align: center; margin-top: 15px;}
+        .login-link a {color: #3b82f6; font-weight: bold; text-decoration: none; }
+
     </style>
 </head>
 <body>
@@ -119,6 +132,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit">Register</button>
         </form>
+        
+        <!-- BACK TO LOGIN -->
+         <div class="login-link"> 
+            Already have an account? 
+            <a href="login.php">Login here</a>
+        </div>
+
     </div>
     <script>
         function previewImage(input) {
