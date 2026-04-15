@@ -2,9 +2,7 @@
 include '../lib/_base.php';
 
 //check login
-if (!isset($_SESSION['user_id'])){
-    redirect('/login.php');
-}
+requireMember();
 
 $user_id = $_SESSION['user_id'] ?? null;
 $cart = get_cart();

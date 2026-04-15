@@ -1,10 +1,7 @@
 <?php
 include '../lib/_base.php';
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
-    header("Location: ../login.php");
-    exit;
-}
+requireMember();
 
 $user_id = $_SESSION['user_id'];
 

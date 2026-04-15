@@ -96,6 +96,18 @@ function redirect($url = null) {
     exit();
 }
 
+function requireMember() {
+    if (!isset($_SESSION['user_id'])) {
+        temp('error', 'Please login to access this page.');
+        redirect('/login.php');
+    }
+
+    if ($_SESSION['role'] !== 'member') {
+        temp('error', 'This feature is only available for members.');
+        redirect($_SERVER['HTTP_REFERER'] ?? '/index.php');
+    }
+}
+
 function temp($key, $value = null) {
     if ($value !== null) {
         $_SESSION["temp_$key"] = $value;

@@ -686,7 +686,8 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
     <main>
         <div class="container">
             <!-- Flash Messages -->
-            <?php if (function_exists('getFlashMessage') && $flash = getFlashMessage()): ?>
+            <?php 
+            if (function_exists('getFlashMessage') && $flash = getFlashMessage()): ?>
                 <div class="flash-message flash-<?php echo $flash['type']; ?>">
                     <i class="fas fa-<?php echo $flash['type'] == 'success' ? 'check-circle' : ($flash['type'] == 'error' ? 'exclamation-circle' : 'info-circle'); ?>"></i>
                     <?php echo htmlspecialchars($flash['message']); ?>
