@@ -611,9 +611,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                         </a>
     
                         <div class="dropdown-divider"></div>
-                        <a href="settings.php">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
+                        
                         <form method="POST" action="/logout.php" style="margin: 0;">
                             <button type="submit" onclick="return confirm('Are you sure you want to logout?')">
                                 <i class="fas fa-sign-out-alt"></i> Logout
