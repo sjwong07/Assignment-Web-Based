@@ -23,9 +23,9 @@ $remaining_locked_minutes = 0;
 // Redirect if already logged in
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if ($_SESSION['role'] === 'admin') {
-        header("location: index.php");
+        header("location: users/admins/dashboard.php");
     } else {
-        header("location: index.php");
+        header("location: order/ProductMember.php");
     }
     exit;
 }
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
                 if ($row['role'] === 'admin') {
                     header("location: users/admins/dashboard.php");
                 } else {
-                    header("location: /order/ProductMember.php");
+                    header("location: order/ProductMember.php");
                 }
                 exit;
 
@@ -548,9 +548,5 @@ function togglePassword(fieldId, icon) {
 <?php endif; ?>
 </script>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 68a9d2a4f5e2a26c1ccbd75f633ef3acd82b953e
 </body>
 </html>
