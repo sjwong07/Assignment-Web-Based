@@ -209,44 +209,15 @@ $username = $_SESSION['username'] ?? 'Guest';
     </style>
 </head>
 <body>
-    <!-- Overlay for closing dropdown when clicking outside -->
-    <div id="dropdownOverlay" class="dropdown-overlay"></div>
-
-    <nav class="navbar">
-        <div class="nav-brand">
-            <a href="index.php">📱 ELEX Store</a>
-        </div>
-        <div class="nav-menu">
-            <?php if ($is_logged_in): ?>
-                <div class="user-menu" id="userMenu">
-                    <button class="user-btn" id="userBtn">
-                        👤 <?php echo htmlspecialchars($username); ?> <span>▼</span>
-                    </button>
-                    <div class="dropdown-content" id="dropdownContent">
-                        <a href="dashboard.php">📊 Dashboard</a>
-                        <a href="profile.php">👤 My Profile</a>
-                        <a href="orders.php">🛒 Orders</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="settings.php">⚙️ Settings</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="logout.php" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a>
-                    </div>
-                </div>
-            <?php else: ?>
-                <a href="/login.php" class="nav-link">Login</a>
-                <a href="register.php" class="nav-link">Register</a>
-            <?php endif; ?>
-        </div>
-    </nav>
 
     <div class="hero-section">
         <div class="hero-content">
-            <h1>Welcome to the Electronics Hub</h1>
+            <h1>Welcome to the ELEX Store</h1>
             <p>Your one-stop shop for high-quality components and the latest gadgets.</p>
             
             <div class="hero-buttons">
                 <?php if (!$is_logged_in): ?>
-                    <a href="register.php" class="btn btn-primary">Get Started</a>
+                    <a href="register.php" class="btn btn-primary" style="font-size: 20px; margin-top: 20px;">Get Started</a>
                     <a href="/order/ProductMember.php" class="btn btn-secondary">Browse Products</a>
                 <?php else: ?>
                     <a href="dashboard.php" class="btn btn-primary">Go to Dashboard</a>
@@ -263,7 +234,7 @@ $username = $_SESSION['username'] ?? 'Guest';
         <p>Explore our wide range of tech essentials below.</p>
         
         <div class="featured-section mt-5">
-            <h3>Featured Products</h3>
+            <h3>Top 6 Best Selling Products!!</h3>
             <div class="grid mt-3">
                 <?php
                 // Fetch products from database
