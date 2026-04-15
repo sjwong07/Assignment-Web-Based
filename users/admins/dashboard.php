@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../database.php';
+require_once '../config/database.php';
 include('../../head.php');
 
 // Security: Only Admins allowed
