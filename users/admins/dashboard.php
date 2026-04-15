@@ -15,7 +15,7 @@ $memberCount = $pdo->query("SELECT COUNT(*) FROM user WHERE role = 'member'")->f
 
 $_title = "Admin Dashboard";
 
-include('../../head.php'); 
+include('../../lib/_head.php'); 
 ?>
 
 <div class="container">
@@ -46,5 +46,5 @@ include('../../head.php');
 </div>
 
 <?php 
-include('../../_foot.php'); 
+include('../../lib/_foot.php'); 
 ?>

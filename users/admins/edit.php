@@ -1,21 +1,21 @@
 <?php
 session_start();
-require_once '../../config/database.php';
+require_once '../config/database.php';
 
-// Security & Role Check
+// 1. Security & Role Check - Fix path to root login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: /login.php');
+    header('Location: ../../login.php'); 
     exit();
 }
 
-//ID Validation
+// 2. ID Validation
 $user_id = $_GET['id'] ?? null;
 if (!$user_id || !is_numeric($user_id)) {
     die('Invalid ID');
 }
 
-//Fetch current data
-$stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = ? AND is_deleted = 0");
+// 3. Fetch current data - REMOVED is_deleted because your DB doesn't have it
+$stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $admin = $stmt->fetch();
 
@@ -26,7 +26,7 @@ if (!$admin) {
 
 $error = '';
 
-//Handle Post Request
+// 4. Handle Post Request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $full_name = $_POST['full_name'] ?? '';
@@ -55,8 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $_title = "Edit Admin";
-include('../../_head.php');
+include('../../lib/_head.php');
 ?>
+
+<style>
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .btn-update { background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn-cancel { background: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-left: 10px; display: inline-block; }
+</style>
 
 <div class="container">
     <h1>Edit Admin: <?= htmlspecialchars($admin['username']) ?></h1>
@@ -73,24 +81,24 @@ include('../../_head.php');
 
         <div class="form-group">
             <label>Full Name</label>
-            <input type="text" name="full_name" value="<?= htmlspecialchars($admin['full_name']) ?>" required>
+            <input type="text" name="full_name" value="<?= htmlspecialchars($admin['full_name'] ?? '') ?>" required>
         </div>
 
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($admin['email']) ?>" required>
+            <input type="email" name="email" value="<?= htmlspecialchars($admin['email'] ?? '') ?>" required>
         </div>
 
         <div class="form-group">
             <label>Phone</label>
-            <input type="text" name="phone" value="<?= htmlspecialchars($admin['phone']) ?>" required>
+            <input type="text" name="phone" value="<?= htmlspecialchars($admin['phone'] ?? '') ?>" required>
         </div>
 
         <div class="form-group">
             <label>Gender</label>
             <select name="gender" required>
-                <option value="M" <?= $admin['gender'] == 'M' ? 'selected' : '' ?>>Male</option>
-                <option value="F" <?= $admin['gender'] == 'F' ? 'selected' : '' ?>>Female</option>
+                <option value="M" <?= ($admin['gender'] ?? '') == 'M' ? 'selected' : '' ?>>Male</option>
+                <option value="F" <?= ($admin['gender'] ?? '') == 'F' ? 'selected' : '' ?>>Female</option>
             </select>
         </div>
 
@@ -101,4 +109,4 @@ include('../../_head.php');
     </form>
 </div>
 
-<?php include('../../_foot.php');?>
+<?php include('../../lib/_foot.php');?>

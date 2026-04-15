@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../config/database.php';
+require_once '../config/database.php';
 
 $error = '';
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // 4. Hash Password and Insert
             $hashed_password = password_hash($raw_password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO user (username, full_name, email, phone, gender, password, photo, role, created_at) 
+            $sql = "INSERT INTO user (username, full_name, email, phone, gender, password, profile_photo, role, created_at) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, 'admin', NOW())";
             $stmt = $pdo->prepare($sql);
             
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // UI Variables
 $_title = "Add Admin";
 $_subtitle = "Create new admin account";
-include('../../_head.php');
+include('../../lib/_head.php');
 ?>
 
 <style>
@@ -109,6 +109,14 @@ include('../../_head.php');
             <label>Password</label>
             <input type="password" name="password" required>
         </div>
+
+        <div class="form-group">
+            <label>Role *</label>
+            <select name="role" required>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
         
         <button type="submit">Create Admin</button>
         <a href="index.php" class="cancel-link">Cancel</a>
@@ -121,4 +129,4 @@ include('../../_head.php');
     </form>
 </div>
 
-<?php include('../../_foot.php'); ?>
+<?php include('../../lib/_foot.php'); ?>

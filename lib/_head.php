@@ -44,7 +44,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     
     <!-- Main CSS -->
-    <link rel="stylesheet" href="/CSS/app.css">
+    <link rel="stylesheet" href="/Assignment-Web-Based/assets/css/style.css">
     <link rel="stylesheet" href="assets/css/style.css">
     
     <!-- Custom JS -->
