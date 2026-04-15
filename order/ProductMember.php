@@ -239,7 +239,7 @@ include '../lib/_head.php';
 
         .product-image {
             width: 100%;
-            height: 220px;
+            height: 400px;
             object-fit: cover;
             background: #f1f5f9;
             transition: transform 0.5s ease;
@@ -251,7 +251,7 @@ include '../lib/_head.php';
 
         .image-placeholder {
             width: 100%;
-            height: 220px;
+            height: 400px;
             background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
             display: flex;
             align-items: center;
@@ -369,6 +369,14 @@ include '../lib/_head.php';
             
             .products-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .product-image {
+                height: 350px;
+            }
+            
+            .image-placeholder {
+                height: 350px;
             }
         }
     </style>
@@ -514,8 +522,8 @@ include '../lib/_head.php';
                             <i class="fas fa-folder"></i> <?= htmlspecialchars($p->Category_name) ?>
                         </div>
                         <div class="product-price">
-                            $<?= number_format($p->Product_price, 2) ?>
-                            <small>MYR</small>
+                            RM <?= number_format($p->Product_price, 2) ?>
+                            <small></small>
                         </div>
                         
                         <form method="post" class="cart-form">
