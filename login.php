@@ -1,4 +1,4 @@
-index<?php
+<?php
 session_start();
 
 // Database connection
