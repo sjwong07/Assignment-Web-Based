@@ -4,7 +4,7 @@ require_once 'Admin_Access_Required.php';
 require_once '../lib/_base.php';
 
 // Check if NOT Admin - show message and STOP
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     include '../lib/_head.php';
     ?>
     <!DOCTYPE html>
@@ -717,8 +717,8 @@ include '../lib/_head.php';
                             <th>Product Name</th>
                             <th>Price</th>
                             <th>Category</th>
-                            <th>Photo</th>
                             <th>Stock</th>
+                            <th>Photo</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -734,15 +734,15 @@ include '../lib/_head.php';
                                 <td><input type="text" name="Product_model" placeholder="Enter product name" required></td>
                                 <td><input type="number" name="Product_price" step="0.01" placeholder="0.00" required></td>
                                 <td>
-                                    <input type="number" name="Stock" value="100" min="0" required>
-                                </td>
-                                <td>
                                     <select name="Category_name" required>
                                         <option value="">Select Category</option>
                                         <?php foreach ($categories as $c): ?>
                                             <option value="<?= $c->Category_id ?>"><?= htmlspecialchars($c->Category_name) ?></option>
                                         <?php endforeach; ?>
                                     </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="Stock" value="100" min="0" required>
                                 </td>
                                 <td style="color:#999; font-size:0.75rem;">
                                     <i class="fas fa-cloud-upload-alt"></i> Upload after add
@@ -774,6 +774,11 @@ include '../lib/_head.php';
                                 </td>
                             </form>
                             
+                            <!-- show stock -->
+                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
+                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
+                            </td>
+                            
                             <!-- PHOTO UPLOAD -->
                             <td>
                                 <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
@@ -795,10 +800,6 @@ include '../lib/_head.php';
                                 <?php endif; ?>
                             </td>
                             
-                            // Show stock
-                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
-                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
-                            </td>
 
                             <!-- ACTION BUTTONS -->
                             <td class="action-buttons">
