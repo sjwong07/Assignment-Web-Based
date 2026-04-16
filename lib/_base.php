@@ -1,4 +1,5 @@
 <?php
+
 // ========================================
 // PHP SETUPS & SESSION START
 // ========================================
@@ -54,9 +55,10 @@ try {
 // ========================================
 
 
-
-function is_get() {
-    return $_SERVER['REQUEST_METHOD'] == 'GET';
+if (!function_exists('is_get')) {
+    function is_get() {
+        return $_SERVER['REQUEST_METHOD'] == 'GET';
+    }
 }
 
 function is_post() {

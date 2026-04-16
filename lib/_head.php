@@ -595,19 +595,16 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
 
                 <!-- User Dropdown Menu -->
                 <div class="user-menu">
-                    <button class="user-btn">
-                        <div class="user-avatar">
-                            <?php if (!empty($session_photo) && file_exists($session_photo)): ?>
-                                <img src="<?php echo htmlspecialchars($session_photo); ?>" 
-                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                            <?php else: ?>
-                                <span class="avatar-letter">
-                                    <?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?>
-                                </span>
-                            <?php endif; ?>
-                        </div>
-                        <span><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                        <i class="fas fa-chevron-down"></i>
+                    <button class="user-btn" id="userBtn">
+                        <?php if (isset($_SESSION['profile_photo'])): ?>
+                            <img src="<?= BASE_URL . '/' . $session_photo ?>" alt="Avatar" class="user-avatar" style="object-fit: cover;">
+                        <?php else: ?>
+                            <div class="user-avatar">
+                                <?= strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
+                        <span><?= encode($_SESSION['username'] ?? 'Guest') ?></span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
                     </button>
                     <div class="dropdown-content">
                         <a href="/dashboard.php">
@@ -616,9 +613,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                         <a href="/profile.php">
                             <i class="fas fa-user-circle"></i> My Profile
                         </a>
-                        <a href="orders.php">
-                            <i class="fas fa-shopping-bag"></i> My Orders
-                        </a>
+                        
     
                         <div class="dropdown-divider"></div>
                         
@@ -647,7 +642,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
         <a href="/order/cart.php">🛒 Shopping Cart</a>
         <a href="/order/checkout.php">💳 CheckOut</a>
         <a href="/order/history.php">🕓 History</a>
-        <a href="/users/admins/orderlisting.php">📋 Listing</a>
+        <a href="/order/orderlisting.php">📋 Listing</a>
     </nav>
 
     <!-- Breadcrumb Navigation (Optional - shows on inner pages) -->

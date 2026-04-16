@@ -4,15 +4,13 @@ include '../lib/_base.php';
 $from = req('from'); 
 $id = req('id');
 
-requireMember();
-
-$user_id = $_SESSION['user_id'] ?? $_user->user_id;
+$user_id = $_SESSION['user_id'] ?? ($_user->user_id ?? null);
 
 $stm = $_db->prepare('
     SELECT * FROM `order`
-    WHERE id = ? AND user_id = ?
+    WHERE id = ?
 ');
-$stm->execute([$id, $user_id]);
+$stm->execute([$id]);
 $o = $stm->fetch();
 
 if (!$o) redirect('history.php');

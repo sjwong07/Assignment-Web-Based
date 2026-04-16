@@ -1,10 +1,5 @@
 <?php
-
-
 require '../lib/_base.php';
-
-
-
 
 if (is_post() && isset($_POST['upload'])) {
     
