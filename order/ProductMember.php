@@ -104,8 +104,8 @@ include '../lib/_head.php';
         /* Toast Message */
         .toast-message {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 120px;
+            right: 40%;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 1rem 1.5rem;
@@ -427,7 +427,7 @@ include '../lib/_head.php';
     }
 
     // PRODUCT QUERY
-    $sql = "SELECT p.Product_id, p.Product_model, p.Product_price, 
+    $sql = "SELECT p.Product_id, p.Product_model, p.Product_price, p.Stock,  
                    p.Category_id, p.product_photo, c.Category_name
             FROM Product p
             JOIN Category c ON p.Category_id = c.Category_id
@@ -535,10 +535,13 @@ include '../lib/_head.php';
                                     </option>
                                 <?php endfor; ?>
                             </select>
-                            <button type="submit" class="btn-add">
-                                <i class="fas fa-cart-plus"></i> Add
+                            <button type="submit" class="btn-add" <?= ($p->Stock <= 0 ? 'disable' : '') ?>>
+                                <i class="fas fa-cart-plus"></i> <?= ($p->Stock <= 0 ? 'Out of Stock' : 'Add') ?>
                             </button>
                         </form>
+                        <div style="font-size: 0.8rem; margin-top: 10px; color: <?= ($p->Stock < 10 ? '#ef4444' : '#64748b') ?>;">
+                            <i class="fas fa-cubes"></i> Stock: <?= $p->Stock ?>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>

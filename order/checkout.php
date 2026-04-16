@@ -28,8 +28,21 @@ if (is_post()) {
             INSERT INTO item (order_id, product_id, unit, price)
             VALUES(?, ?, ?, (SELECT Product_price FROM Product WHERE Product_id = ?))
         ');
+
+        $stm_stock = $_db->prepare('
+        UPDATE Product
+        SET Stock = Stock - ?
+        WHERE Product_id = ? AND Stock >= ?
+        ');
+
         foreach($cart as $product_id => $unit){
             $stm->execute([$order_id, $product_id, $unit, $product_id]);
+
+            $stm_stock->execute([$unit, $product_id, $unit]);
+
+            if ($stm_stock->rowCount() == 0) {
+                throw new Exception("$product_id stock not enough");
+            }
         }
 
         $stm = $_db->prepare('
