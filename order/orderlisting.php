@@ -1,5 +1,5 @@
 <?php
-include '../../lib/_base.php';
+require 'Admin_Access_Required.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update'])) {
     $order_ids = $_POST['order_ids'] ?? [];
@@ -22,7 +22,7 @@ $stm = $_db->prepare('
 $stm->execute();
 $arr = $stm->fetchAll(PDO::FETCH_OBJ);
 
-include '../../lib/_head.php';
+include '../lib/_head.php';
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +67,31 @@ include '../../lib/_head.php';
         .status-Completed { background: #f0fdf4; color: #166534; border-color: #dcfce7; }
         .status-Cancelled { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-        .btn-view { background: linear-gradient(135deg, #2a5298, #1e3c72); color: white; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.8rem; }
+        .btn-view {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42,82,152,0.3);
+        }
+        
+        tbody tr:hover {
+            background-color: #f8faff;
+            transition: background 0.2s ease;
+            cursor: default;
+        }
         
         .submit-container { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
         .btn-submit { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
@@ -109,7 +133,7 @@ include '../../lib/_head.php';
                                 <td style="font-size: 0.9rem; color: #475569;"><?= date('d M Y, h:i A', strtotime($o->order_date)) ?></td>
                                 <td style="font-weight: 700; color: #2a5298;">RM <?= number_format($o->total, 2) ?></td>
                                 <td>
-                                    <button type="button" class="btn-view" onclick="location='../../order/detail.php?id=<?= $o->id ?>&from=admin'">
+                                    <button type="button" class="btn-view" onclick="location='detail.php?id=<?= $o->id ?>&from=admin'">
                                         <i class="fas fa-eye"></i> View Details
                                     </button>
                                 </td>
@@ -164,4 +188,4 @@ $(document).ready(function() {
 });
 </script>
 
-<?php include '../../lib/_foot.php'; ?>
+<?php include '../lib/_foot.php'; ?>
