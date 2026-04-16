@@ -35,9 +35,9 @@
                 <ul>
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <li><a href="dashboard.php">📊 Dashboard</a></li>
-                        <li><a href="profile.php">👤 My Profile</a></li>
-                        <li><a href="orders.php">🛒 My Orders</a></li>
-                        <li><a href="logout.php" onclick="return confirm('Logout?')">🚪 Logout</a></li>
+                        <li><a href="/profile.php">👤 My Profile</a></li>
+                        <li><a href="/order/history.php">🛒 My Orders</a></li>
+                        <li><a href="/logout.php" onclick="return confirm('Logout?')">🚪 Logout</a></li>
                     <?php else: ?>
                         <li><a href="/login.php">🔐 Login</a></li>
                         <li><a href="register.php">📝 Register</a></li>

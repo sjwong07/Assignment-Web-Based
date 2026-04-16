@@ -647,7 +647,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
         <a href="/order/cart.php">🛒 Shopping Cart</a>
         <a href="/order/checkout.php">💳 CheckOut</a>
         <a href="/order/history.php">🕓 History</a>
-        <a href="/order/status.php">🚚 Status</a>
+        <a href="/users/admins/orderlisting.php">📋 Listing</a>
     </nav>
 
     <!-- Breadcrumb Navigation (Optional - shows on inner pages) -->

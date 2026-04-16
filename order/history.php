@@ -190,7 +190,7 @@ include '../lib/_head.php';
 
         .orders-table tr {
             transition: background 0.2s ease;
-            cursor: pointer;
+            cursor: default;
         }
 
         .orders-table tr:hover {
@@ -404,11 +404,11 @@ include '../lib/_head.php';
                                 }
                             }
                         ?>
-                        <tr onclick="location='detail.php?id=<?= $o->id ?>&from=history'">
+                        <tr class="order-row">
                             <td>
                                 <div class="order-id">
                                     <i class="fas fa-hashtag"></i>
-                                    #<?= $o->id ?>
+                                    <?= $o->id ?>
                                 </div>
                             </td>
                             <td>

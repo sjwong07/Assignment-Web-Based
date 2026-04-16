@@ -556,8 +556,7 @@ include '../lib/_head.php';
     <div class="back-section">
         <?php
             $back_url = 'history.php';
-            if ($from == 'status')  $back_url = 'status.php';
-            if ($from == 'listing') $back_url = 'listing.php';
+            if ($from == 'admin') $back_url = '../users/admins/orderlisting.php';
         ?>
         <button type="button" class="btn-back" onclick="location='<?= $back_url ?>'">
             <i class="fas fa-arrow-left"></i>

@@ -209,10 +209,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <form method="POST" id="default-photo-form" style="display: flex; gap: 15px;">
                     <input type="hidden" name="set_default_photo" id="selected_avatar">
                     <img src="uploads/profiles/default.png.jpg" class="avatar-opt" data-path="uploads/profiles/default.png.jpg">
-                    <img src="uploads/profiles/user2.jpg.jpg" class="avatar-opt" data-path="uploads/profiles/user2.jpg.jpg">
-                    <img src="uploads/profiles/user3.jng.jpg" class="avatar-opt" data-path="uploads/profiles/user3.jng.jpg">
-                    <img src="uploads/profiles/user4.jng.jpg" class="avatar-opt" data-path="uploads/profiles/user4.jng.jpg">
-                    <img src="uploads/profiles/user5.jng.jpg" class="avatar-opt" data-path="uploads/profiles/user5.jng.jpg">
+                    <img src="uploads/profiles/user2.jpg" class="avatar-opt" data-path="uploads/profiles/user2.jpg.jpg">
+                    <img src="uploads/profiles/user3.jpg" class="avatar-opt" data-path="uploads/profiles/user3.jpg">
+                    <img src="uploads/profiles/user4.jpg" class="avatar-opt" data-path="uploads/profiles/user4.jpg">
+                    <img src="uploads/profiles/user5.jpg" class="avatar-opt" data-path="uploads/profiles/user5.jpg">
                 </form>
             </div>
             <button class="scroll-btn" type="button" onclick="scrollAvatars(100)"><i class="fa-solid fa-chevron-right"></i></button>

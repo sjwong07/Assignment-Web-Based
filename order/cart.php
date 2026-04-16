@@ -13,6 +13,16 @@ if (is_post()) {
         redirect('?');
     }
 
+    if ($btn == 'clear_selected') {
+        $selected_items = req('selected_items'); 
+        if (is_array($selected_items)) {
+            foreach ($selected_items as $id) {
+                update_cart($id, 0); 
+            }
+        }
+        redirect('?');
+    }
+
     $id   = req('id');
     $unit = req('unit');
     update_cart($id, $unit);
@@ -434,6 +444,7 @@ include '../lib/_head.php';
             <table class="cart-table">
                 <thead>
                     <tr>
+                        <th style="width: 50px;"></th>
                         <th>Product</th>
                         <th>Price (RM)</th>
                         <th>Quantity</th>
@@ -447,6 +458,9 @@ include '../lib/_head.php';
                         $subtotal = $item['subtotal'];
                     ?>
                         <tr data-product-id="<?= $p->Product_id ?>">
+                            <td style="text-align: center;">
+                                <input type="checkbox" name="selected_items[]" value="<?= $p->Product_id ?>" class="item-selector" form="clear-selected-form" style="width: 18px; height: 18px; cursor: pointer;">
+                            </td>
                             <td>
                                 <div class="product-cell">
                                     <?php if (!empty($p->Product_photo) && file_exists('../images/' . $p->Product_photo)): ?>
@@ -491,6 +505,12 @@ include '../lib/_head.php';
 
         <!-- Action Buttons -->
         <div class="action-buttons">
+            <form method="post" id="clear-selected-form" style="margin: 0;">
+                <input type="hidden" name="btn" value="clear_selected">
+                <button type="submit" id="btn-clear-selected" class="btn-clear" disabled onclick="return confirm('Remove selected items from cart?')">
+                    <i class="fas fa-check-square"></i> Clear Selected
+                </button>
+            </form>
             <form method="post" style="margin: 0;">
                 <input type="hidden" name="btn" value="clear">
                 <button type="submit" class="btn-clear" onclick="return confirm('Are you sure you want to clear your entire cart?')">
@@ -545,6 +565,35 @@ include '../lib/_head.php';
             window.location.href = '/product/';
         });
     }
+
+    document.querySelectorAll('.unit-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            e.target.form.submit();
+        });
+    });
+
+    //Clear Selected button enable/disable logic
+    const checkboxes = document.querySelectorAll('.item-selector');
+    const clearSelectedBtn = document.getElementById('btn-clear-selected');
+
+    function toggleClearBtn() {
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        clearSelectedBtn.disabled = checkedCount === 0;
+        
+        if (clearSelectedBtn.disabled) {
+            clearSelectedBtn.style.opacity = "0.5";
+            clearSelectedBtn.style.cursor = "not-allowed";
+        } else {
+            clearSelectedBtn.style.opacity = "1";
+            clearSelectedBtn.style.cursor = "pointer";
+        }
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', toggleClearBtn);
+    });
+
+    toggleClearBtn();
 </script>
 
 <?php
