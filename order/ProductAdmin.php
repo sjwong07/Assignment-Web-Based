@@ -1,7 +1,7 @@
 <?php
 
-require 'Admin_Access_Required.php';
-require '../lib/_base.php';
+require_once 'Admin_Access_Required.php';
+require_once '../lib/_base.php';
 
 // Check if NOT Admin - show message and STOP
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
