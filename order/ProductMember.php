@@ -118,8 +118,8 @@ include '../lib/_head.php';
         /* Toast Message */
         .toast-message {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 120px;
+            right: 40%;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 1rem 1.5rem;
