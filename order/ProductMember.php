@@ -104,7 +104,7 @@ include '../lib/_head.php';
         /* Toast Message */
         .toast-message {
             position: fixed;
-            top: 120px;
+            top: 150px;
             right: 40%;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
