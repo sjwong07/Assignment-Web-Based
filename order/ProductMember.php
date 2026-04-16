@@ -75,7 +75,6 @@ include '../lib/_head.php';
             font-size: 1.8rem;
         }
 
-        /* Cart Icon - Now links to /order/cart.php */
         .cart-icon {
             background: white;
             padding: 0.75rem 1.5rem;
@@ -85,8 +84,6 @@ include '../lib/_head.php';
             align-items: center;
             gap: 0.75rem;
             transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
         }
 
         .cart-icon:hover {
@@ -104,22 +101,11 @@ include '../lib/_head.php';
             color: #1e293b;
         }
 
-        /* Cart Badge for item count */
-        .cart-badge {
-            background: linear-gradient(135deg, #2a5298, #1e3c72);
-            color: white;
-            border-radius: 30px;
-            padding: 0.2rem 0.6rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 0.25rem;
-        }
-
         /* Toast Message */
         .toast-message {
             position: fixed;
-            top: 120px;
-            right: 40%;
+            top: 20px;
+            right: 20px;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 1rem 1.5rem;
@@ -362,32 +348,6 @@ include '../lib/_head.php';
             opacity: 0.5;
         }
 
-        /* Fixed View Cart Button */
-        .view-cart-fixed {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(135deg, #2a5298, #1e3c72);
-            color: white;
-            border: none;
-            border-radius: 60px;
-            padding: 0.85rem 1.5rem;
-            font-weight: 600;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .view-cart-fixed:hover {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #1e3c72, #0f2a4f);
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -418,12 +378,6 @@ include '../lib/_head.php';
             .image-placeholder {
                 height: 350px;
             }
-
-            .view-cart-fixed {
-                bottom: 1rem;
-                right: 1rem;
-                padding: 0.7rem 1.2rem;
-            }
         }
     </style>
 </head>
@@ -437,24 +391,6 @@ include '../lib/_head.php';
             Our Products
         </h2>
         
-        <?php
-        // Calculate cart total quantity for display
-        $cart_items = get_cart();
-        $cart_total_qty = 0;
-        if (!empty($cart_items)) {
-            foreach ($cart_items as $qty) {
-                $cart_total_qty += $qty;
-            }
-        }
-        ?>
-        <!-- Cart Icon now links to /order/cart.php -->
-        <a href="/order/cart.php" class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span>My Cart</span>
-            <?php if ($cart_total_qty > 0): ?>
-                <span class="cart-badge"><?= $cart_total_qty ?></span>
-            <?php endif; ?>
-        </a>
     </div>
 
     <?php if ($msg = temp('info')): ?>
@@ -615,14 +551,5 @@ include '../lib/_head.php';
         </div>
     <?php endif; ?>
 </div>
-
-<!-- Fixed FAB button linking to /order/cart.php -->
-<a href="/order/cart.php" class="view-cart-fixed">
-    <i class="fas fa-shopping-bag"></i>
-    <span>View Cart</span>
-    <?php if ($cart_total_qty > 0): ?>
-        <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.5rem; border-radius: 30px; margin-left: 0.25rem;"><?= $cart_total_qty ?></span>
-    <?php endif; ?>
-</a>
 
 <?php include '../lib/_foot.php'; ?>
