@@ -1,4 +1,4 @@
-<?php
+index<?php
 session_start();
 
 // Database connection
@@ -23,9 +23,9 @@ $remaining_locked_minutes = 0;
 // Redirect if already logged in
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     if ($_SESSION['role'] === 'admin') {
-        header("location: users/admins/dashboard.php");
+        header("location: index.php");
     } else {
-        header("location: order/ProductMember.php");
+        header("location: index.php");
     }
     exit;
 }
@@ -75,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
 
                 // Redirect based on role
                 if ($row['role'] === 'admin') {
-                    header("location: users/admins/dashboard.php");
+                    header("location: /order/ProductAdmin.php");
                 } else {
-                    header("location: order/ProductMember.php");
+                    header("location: /order/ProductMember.php");
                 }
                 exit;
 

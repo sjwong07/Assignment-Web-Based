@@ -2,6 +2,7 @@
 require __DIR__ . '/lib/_base.php';
 require __DIR__ . '/lib/_head.php';
 
+
 // 2. Auto-login check via remember me token (if implemented)
 // This would typically be placed before the main logic
 if (!isset($_SESSION['loggedin']) && isset($_COOKIE['remember_token'])) {
