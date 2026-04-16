@@ -613,7 +613,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                         <a href="/profile.php">
                             <i class="fas fa-user-circle"></i> My Profile
                         </a>
-                        <a href="orders.php">
+                        <a href="/order/history.php">
                             <i class="fas fa-shopping-bag"></i> My Orders
                         </a>
     
