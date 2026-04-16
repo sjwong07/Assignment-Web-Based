@@ -718,6 +718,7 @@ include '../lib/_head.php';
                             <th>Price</th>
                             <th>Category</th>
                             <th>Photo</th>
+                            <th>Stock</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -732,6 +733,9 @@ include '../lib/_head.php';
                                 </td>
                                 <td><input type="text" name="Product_model" placeholder="Enter product name" required></td>
                                 <td><input type="number" name="Product_price" step="0.01" placeholder="0.00" required></td>
+                                <td>
+                                    <input type="number" name="Stock" value="100" min="0" required>
+                                </td>
                                 <td>
                                     <select name="Category_name" required>
                                         <option value="">Select Category</option>
@@ -791,6 +795,11 @@ include '../lib/_head.php';
                                 <?php endif; ?>
                             </td>
                             
+                            // Show stock
+                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
+                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
+                            </td>
+
                             <!-- ACTION BUTTONS -->
                             <td class="action-buttons">
                                 <form method="post" onsubmit="return confirm('Update this product?');">
