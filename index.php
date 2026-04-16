@@ -24,7 +24,7 @@ if (!isset($_SESSION['loggedin']) && isset($_COOKIE['remember_token'])) {
 
         // Redirect based on role even in Auto-Login
         if ($row['role'] === 'admin') {
-            header("location: admin/dashboard.php");
+            header("location: index.php");
         } else {
             header("location: index.php");
         }
