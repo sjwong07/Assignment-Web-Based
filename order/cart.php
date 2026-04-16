@@ -518,7 +518,7 @@ include '../lib/_head.php';
                 </button>
             </form>
 
-            <?php if ($_user?->role == 'member'): ?>
+            <?php if ($_user && $_user->role == 'member'): ?>
                 <button type="button" class="btn-checkout" onclick="window.location.href='/order/checkout.php'">
                     <i class="fas fa-credit-card"></i> Proceed to Checkout
                 </button>
