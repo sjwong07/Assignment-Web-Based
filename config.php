@@ -1,4 +1,6 @@
 <?php
+if (defined('BASE_FILE_LOADED')) return;
+define('BASE_FILE_LOADED', true);
 // Start session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
