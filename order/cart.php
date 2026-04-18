@@ -98,7 +98,7 @@ include '../lib/_head.php';
                         $subtotal = $item['subtotal'];
                     ?>
                         <tr data-product-id="<?= $p->Product_id ?>">
-                            <td style="text-align: center;">
+                            <td>
                                 <input type="checkbox" name="selected_items[]" value="<?= $p->Product_id ?>" class="item-selector" form="clear-selected-form" style="width: 18px; height: 18px; cursor: pointer;">
                             </td>
                             <td>
