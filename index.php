@@ -92,14 +92,16 @@ $username = $_SESSION['username'] ?? 'Guest';
 
 .product-image {
     width: 100%;
-    height: 200px;
+    height: 180px; /
     overflow: hidden;
+    padding: 15px; 
+    box-sizing: border-box; 
 }
 
 .product-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; 
 }
 
 .product-info {
@@ -260,10 +262,9 @@ $username = $_SESSION['username'] ?? 'Guest';
         <p>Explore our wide range of tech essentials below.</p>
         
         <div class="featured-section mt-5">
-            <h3>Top 6 Best Selling Products!!</h3>
+            <h3>Top 6 Best Selling Products!!!</h3>
             <div class="grid mt-3">
                 <?php
-                // Fetch products from database
                 $featured_sql = "SELECT Product_id, Product_model, Product_price, Product_photo FROM Product LIMIT 6";
                 $featured_result = mysqli_query($connection, $featured_sql);
                 
@@ -295,24 +296,13 @@ $username = $_SESSION['username'] ?? 'Guest';
            class="btn btn-sm btn-primary">View Details</a>
     </div>
 
-</div>
-</div>
-</div>
-                        <div class="product-info">
-                            <h3><?php echo htmlspecialchars($product['Product_model']); ?></h3>
-                            <p class="price">RM <?php echo number_format($product['Product_price'], 2); ?></p>
-                            <a href="product_detail.php?id=<?php echo $product['Product_id']; ?>" 
-                               class="btn btn-sm btn-primary">View Details</a>
-                        </div>
-                    </div>
-                <?php 
-                    endwhile;
+</div> <?php endwhile;
                 else:
                 ?>
                     <p>No products found. Please <a href="/login.php">login</a> to see our full catalog.</p>
                 <?php endif; ?>
             </div>
-        </div>
+        
     </div>
 
     <footer class="footer">
