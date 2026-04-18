@@ -3326,7 +3326,7 @@ body {
 }
 
 /* Action Buttons */
-.action-buttons {
+.action-button {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -3395,7 +3395,7 @@ body {
     .action-buttons {
         flex-direction: column;
         align-items: stretch;
-    }
+    } 
     
     .btn-back, .btn-confirm {
         justify-content: center;

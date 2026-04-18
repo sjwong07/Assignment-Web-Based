@@ -144,7 +144,7 @@ include '../lib/_head.php';
         </div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons">
+        <div class="action-button">
             <form method="post" id="clear-selected-form" style="margin: 0;">
                 <input type="hidden" name="btn" value="clear_selected">
                 <button type="submit" id="btn-clear-selected" class="btn-clear" disabled onclick="return confirm('Remove selected items from cart?')">
