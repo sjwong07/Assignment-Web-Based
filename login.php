@@ -1,35 +1,23 @@
 <?php
-// 1. Correct way to include your root config
+// 1. PHP LOGIC FIRST (No HTML above this!)
 require_once __DIR__ . '/config.php'; 
 
-// Lockout configuration
-$max_attempts = 3;
-$lockout_time = 300; 
-
 $error = "";
-$remaining_locked_minutes = 0;
 
-// Redirect if already logged in
+// Redirect if already logged in based on their role
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
-    header("Location: " . BASE_URL . "index.php"); // Fixed: removed extra slash
+    if (strtolower($_SESSION['role']) === 'admin') {
+        header("Location: " . BASE_URL . "/users/admins/index.php");
+    } else {
+        header("Location: " . BASE_URL . "/index.php");
+    }
     exit;
 }
 
-// Check if account is locked
-$is_locked = false;
-if (isset($_SESSION['locked_until']) && time() < $_SESSION['locked_until']) {
-    $is_locked = true;
-    $remaining_seconds = $_SESSION['locked_until'] - time();
-    $remaining_locked_minutes = ceil($remaining_seconds / 60);
-}
-
-//////////////////////////////////////////////////////
-// LOGIN PROCESS
-//////////////////////////////////////////////////////
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
-
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = trim($_POST['username']);
     $pass = trim($_POST['password']);
+    $login_type = $_POST['login_type'] ?? 'user'; // Check which tab they logged in from
 
     if (empty($user) || empty($pass)) {
         $error = "Please enter both username and password.";
@@ -41,80 +29,124 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_locked) {
         $result = mysqli_stmt_get_result($stmt);
 
         if ($row = mysqli_fetch_assoc($result)) {
-            
+            // Force role to lowercase to prevent database collation errors
+            $user_role = strtolower($row['role']);
+
             if (isset($row['is_blocked']) && $row['is_blocked'] == 1) {
                 $error = "This account is blocked. Please contact support.";
             }
             else if (hash('sha256', $pass) === $row['password'] || password_verify($pass, $row['password'])) {
-
-                $_SESSION['loggedin'] = true;
-                $_SESSION['username'] = $row['username'];
-                $_SESSION['role'] = $row['role'];
-                $_SESSION['user_id'] = $row['user_id'];
-
-                unset($_SESSION['login_attempts']);
-                unset($_SESSION['locked_until']);
-
-                header("Location: " . BASE_URL . "index.php"); // Fixed: removed extra slash
-                exit;
-
-            } else {
-                $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
-                $attempts_left = $max_attempts - $_SESSION['login_attempts'];
                 
-                if ($_SESSION['login_attempts'] >= $max_attempts) {
-                    $_SESSION['locked_until'] = time() + $lockout_time;
-                    $is_locked = true;
+                // Prevent regular users from logging in through the Admin tab
+                if ($login_type === 'admin' && $user_role !== 'admin') {
+                    $error = "Access denied. You do not have administrator privileges.";
                 } else {
-                    $error = "Invalid password. " . $attempts_left . " attempts remaining.";
+                    // Success! Set session variables
+                    $_SESSION['loggedin'] = true;
+                    $_SESSION['username'] = $row['username'];
+                    $_SESSION['role'] = $user_role;
+                    $_SESSION['user_id'] = $row['user_id'];
+
+                    // REDIRECT BASED ON ROLE 
+                    if ($user_role === 'admin') {
+                        header("Location: " . BASE_URL . "/users/admins/index.php");
+                    } else {
+                        header("Location: " . BASE_URL . "/index.php");
+                    }
+                    exit;
                 }
+            } else {
+                // Simplified failure message without tracking attempts
+                $error = "Invalid password.";
             }
         } else {
             $error = "User not found.";
         }
     }
 }
-
-// After this PHP block, you start your HTML
 include 'lib/_head.php'; 
 ?>
-<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
 
-    <h2 style="text-align:center; margin-bottom:20px;">Login</h2>
+<style>
+    .login-container { max-width: 450px; margin: 50px auto; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+    .tabs { display: flex; border-bottom: 2px solid #eee; background: #f8f9fa; }
+    .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #6c757d; border-bottom: 3px solid transparent; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .tab.active { color: #0056b3; border-bottom: 3px solid #0056b3; background: white; }
+    .tab:hover:not(.active) { background: #e9ecef; }
+    .form-content { padding: 30px; }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .btn-login { width: 100%; padding: 12px; background: #8bc34a; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+    .btn-login:hover { background: #7cb342; }
+    .alert-error { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #f5c6cb; }
+</style>
 
-    <?php if (!empty($error)): ?>
-        <div style="color:red; margin-bottom:10px;">
-            <?= $error ?>
+<div class="login-container">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('user')" id="tab-user">
+            <i class="fas fa-users"></i> For Users
         </div>
-    <?php endif; ?>
-
-    <?php if ($is_locked): ?>
-        <div style="color:red;">
-            Account locked. Try again in <?= $remaining_locked_minutes ?> minutes.
+        <div class="tab" onclick="switchTab('admin')" id="tab-admin">
+            <i class="fas fa-sliders-h"></i> For Admins
         </div>
-    <?php else: ?>
+    </div>
 
-        <form method="POST">
-            <div style="margin-bottom:15px;">
-                <label>Username or Email</label>
-                <input type="text" name="username" required style="width:100%; padding:8px;">
+    <div class="form-content">
+        <h2 style="text-align:center; margin-bottom:20px; color: #333;" id="form-title">Webmail Login</h2>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert-error"><?= $error ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="login.php">
+            <input type="hidden" name="login_type" id="login_type" value="user">
+
+            <div class="input-group">
+                <label>Login (email or username)</label>
+                <input type="text" name="username" required placeholder="Enter email or username">
             </div>
-
-            <div style="margin-bottom:15px;">
+            <div class="input-group">
                 <label>Password</label>
-                <input type="password" name="password" required style="width:100%; padding:8px;">
+                <input type="password" name="password" required placeholder="Enter password">
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 14px;">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: #666; font-weight: normal;">
+                    <input type="checkbox"> Remember me
+                </label>
+                <a href="#" style="color: #0056b3; text-decoration: none;">Forgot password?</a>
             </div>
 
-            <button type="submit" style="width:100%; padding:10px; background:#667eea; color:white; border:none; border-radius:5px;">
-                Login
-            </button>
+            <button type="submit" class="btn-login" id="submit-btn">LOGIN</button>
         </form>
-
-    <?php endif; ?>
-
+    </div>
 </div>
 
-</div> <!-- close container -->
-</main>
-</body>
-</html>
+<script>
+    function switchTab(type) {
+        document.getElementById('tab-user').classList.remove('active');
+        document.getElementById('tab-admin').classList.remove('active');
+        document.getElementById('tab-' + type).classList.add('active');
+
+        document.getElementById('login_type').value = type;
+        
+        if (type === 'admin') {
+            document.getElementById('form-title').innerText = 'Admin Portal Login';
+            document.getElementById('submit-btn').style.background = '#0056b3';
+            document.getElementById('submit-btn').innerText = 'SECURE ADMIN LOGIN';
+        } else {
+            document.getElementById('form-title').innerText = 'Webmail Login';
+            document.getElementById('submit-btn').style.background = '#8bc34a';
+            document.getElementById('submit-btn').innerText = 'LOGIN';
+        }
+    }
+
+    window.onload = function() {
+        <?php if(isset($login_type) && $login_type === 'admin'): ?>
+            switchTab('admin');
+        <?php endif; ?>
+    }
+</script>
+
+<?php include 'lib/_foot.php'; ?>
