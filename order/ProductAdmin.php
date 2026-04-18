@@ -1,5 +1,91 @@
 <?php
-require '../lib/_base.php';
+
+require_once 'Admin_Access_Required.php';
+require_once '../lib/_base.php';
+
+// Check if NOT Admin - show message and STOP
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
+    include '../lib/_head.php';
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Access Denied</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: 'Inter', sans-serif;
+                background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .message-box {
+                background: white;
+                padding: 3rem;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                text-align: center;
+                max-width: 450px;
+            }
+            .message-box i {
+                font-size: 4rem;
+                color: #f59e0b;
+                margin-bottom: 1.5rem;
+            }
+            .message-box h2 {
+                color: #1e293b;
+                margin-bottom: 1rem;
+                font-size: 1.5rem;
+            }
+            .message-box p {
+                color: #64748b;
+                margin-bottom: 2rem;
+                line-height: 1.6;
+            }
+            .message-box .role-badge {
+                display: inline-block;
+                background: #e2e8f0;
+                padding: 0.25rem 1rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #475569;
+                margin-top: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="message-box">
+            <i class="fas fa-shield-alt"></i>
+            <h2>Admin Access Required</h2>
+            <p>This page is restricted to administrators only.</p>
+            <p>Your current role: 
+                <span class="role-badge">
+                    <i class="fas fa-user"></i> 
+                    <?= isset($_SESSION['role']) ? htmlspecialchars($_SESSION['role']) : 'Guest' ?>
+                </span>
+            </p>
+            <p style="margin-top: 1.5rem; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> 
+                <a href="javascript:history.back()" style="color: #2a5298; text-decoration: none; font-weight: 600;">Go Back</a>
+            </p>
+        </div>
+    </body>
+    </html>
+    <?php
+    include '../lib/_foot.php';
+    exit(); // STOP execution - no admin content shown
+}
 
 if (is_post() && isset($_POST['upload'])) {
     
@@ -631,8 +717,8 @@ include '../lib/_head.php';
                             <th>Product Name</th>
                             <th>Price</th>
                             <th>Category</th>
-                            <th>Photo</th>
                             <th>Stock</th>
+                            <th>Photo</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -648,15 +734,15 @@ include '../lib/_head.php';
                                 <td><input type="text" name="Product_model" placeholder="Enter product name" required></td>
                                 <td><input type="number" name="Product_price" step="0.01" placeholder="0.00" required></td>
                                 <td>
-                                    <input type="number" name="Stock" value="100" min="0" required>
-                                </td>
-                                <td>
                                     <select name="Category_name" required>
                                         <option value="">Select Category</option>
                                         <?php foreach ($categories as $c): ?>
                                             <option value="<?= $c->Category_id ?>"><?= htmlspecialchars($c->Category_name) ?></option>
                                         <?php endforeach; ?>
                                     </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="Stock" value="100" min="0" required>
                                 </td>
                                 <td style="color:#999; font-size:0.75rem;">
                                     <i class="fas fa-cloud-upload-alt"></i> Upload after add
@@ -688,6 +774,11 @@ include '../lib/_head.php';
                                 </td>
                             </form>
                             
+                            <!-- show stock -->
+                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
+                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
+                            </td>
+                            
                             <!-- PHOTO UPLOAD -->
                             <td>
                                 <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
@@ -709,10 +800,6 @@ include '../lib/_head.php';
                                 <?php endif; ?>
                             </td>
                             
-                            // Show stock
-                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
-                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
-                            </td>
 
                             <!-- ACTION BUTTONS -->
                             <td class="action-buttons">

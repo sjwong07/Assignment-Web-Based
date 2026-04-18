@@ -88,12 +88,14 @@ function redirect($url = null) {
 
 function requireMember() {
     if (!isset($_SESSION['user_id'])) {
-        temp('error', 'Please login to access this page.');
+        $_SESSION['flash_message'] = 'Please login to access this page.';
+        $_SESSION['flash_type'] = 'error';
         redirect('/login.php');
     }
 
     if ($_SESSION['role'] !== 'member') {
-        temp('error', 'This feature is only available for members.');
+        $_SESSION['flash_message'] = 'This feature is only available for members.';
+        $_SESSION['flash_type'] = 'error';
         redirect($_SERVER['HTTP_REFERER'] ?? '/index.php');
     }
 }

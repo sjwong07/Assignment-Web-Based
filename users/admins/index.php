@@ -1,57 +1,54 @@
 <?php
-session_start();
-require_once '../config/database.php';
-
-// Check login & role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../../login.php'); // Fixed path to login
+require_once '../../config.php'; // Path depends on folder depth
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../../login.php");
     exit();
 }
 
 $_title = "Admin Management";
-include('../../lib/_head.php'); 
+include('../lib/_head.php'); 
 
-// Handle Search logic
+// 3. Handle Search logic using MySQLi
 $search = $_GET['search'] ?? '';
-// FIXED: Added missing " quote and space at the end of the query string
-$query = "SELECT * FROM user WHERE role = 'admin'"; 
+$admins = [];
 
 if ($search) {
-    $query .= " AND (username LIKE ? OR full_name LIKE ? OR email LIKE ?)";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute(["%$search%", "%$search%", "%$search%"]);
+    $searchTerm = "%$search%";
+    $query = "SELECT * FROM user WHERE role = 'admin' AND (username LIKE ? OR full_name LIKE ? OR email LIKE ?)";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "sss", $searchTerm, $searchTerm, $searchTerm);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 } else {
-    $query .= " ORDER BY created_at DESC";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute();
+    $query = "SELECT * FROM user WHERE role = 'admin' ORDER BY user_id DESC";
+    $result = mysqli_query($connection, $query);
 }
 
-$admins = $stmt->fetchAll();
+while ($row = mysqli_fetch_assoc($result)) {
+    $admins[] = $row;
+}
 ?>
 
 <style>
+    /* ... keep your existing styles ... */
     .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
     .status-active { background: #d4edda; color: #155724; }
     .status-blocked { background: #f8d7da; color: #721c24; }
-    .search-box { margin-bottom: 20px; display: flex; gap: 10px; }
-    .search-box input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex-grow: 1; }
-    .admin-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;}
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-    .btn { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px; }
+    .btn { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px; margin-right: 5px; }
     .btn-edit { background: #ffc107; color: #000; }
     .btn-delete { background: #dc3545; color: #fff; }
-    .btn-add { background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; }
 </style>
 
-<div class="container">
+<div class="container" style="padding: 20px;">
     <h1>Admin Management</h1>
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 20px;">
-        <a href="create.php" class="btn-add">+ Add New Admin</a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+        <a href="create.php" style="background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">+ Add New Admin</a>
         
-        <form method="GET" class="search-box" style="margin-bottom: 0;">
-            <input type="text" name="search" placeholder="Search by name, email..." value="<?= htmlspecialchars($search) ?>">
+        <form method="GET" style="display: flex; gap: 10px;">
+            <input type="text" name="search" placeholder="Search..." value="<?= htmlspecialchars($search) ?>" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             <button type="submit">Search</button>
             <?php if($search): ?> <a href="index.php">Clear</a> <?php endif; ?>
         </form>
@@ -72,21 +69,18 @@ $admins = $stmt->fetchAll();
             <?php if (count($admins) > 0): ?>
                 <?php foreach ($admins as $a): ?>
                 <tr>
-            <td>
-                <?php 
-                    $fileName = (!empty($a['profile_photo'])) ? $a['profile_photo'] : 'default.png';
-                        
-                    $imagePath = "../../uploads/profiles/" . $fileName;
-                ?>
-                <img src="<?= $imagePath ?>?t=<?= time() ?>" 
-                    alt="profile" 
-                    style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-            </td>
+                    <td>
+                        <?php 
+                            $img = !empty($a['profile_photo']) ? $a['profile_photo'] : 'default.png.jpg';
+                            $imagePath = "../uploads/profiles/" . $img;
+                        ?>
+                        <img src="<?= $imagePath ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                    </td>
                     <td><?= htmlspecialchars($a['username']) ?></td>
                     <td><?= htmlspecialchars($a['full_name'] ?? 'N/A') ?></td>
                     <td><?= htmlspecialchars($a['email'] ?? 'N/A') ?></td>
                     <td>
-                        <?php if (($a['status'] ?? 'active') == 'active'): ?>
+                        <?php if ($a['is_blocked'] == 0): ?>
                             <span class="status-badge status-active">Active</span>
                         <?php else: ?>
                             <span class="status-badge status-blocked">Blocked</span>
@@ -94,9 +88,7 @@ $admins = $stmt->fetchAll();
                     </td>
                     <td>
                         <a href="edit.php?id=<?= $a['user_id'] ?>" class="btn btn-edit">Edit</a>
-                        <a href="delete.php?id=<?= $a['user_id'] ?>" 
-                           class="btn btn-delete" 
-                           onclick="return confirm('Are you sure?')">Delete</a>
+                        <a href="delete.php?id=<?= $a['user_id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -107,4 +99,4 @@ $admins = $stmt->fetchAll();
     </table>
 </div>
 
-<?php include('../../lib/_foot.php'); ?> 
+<?php include('../lib/_foot.php'); ?>
