@@ -115,7 +115,7 @@ include 'lib/_head.php';
                 <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: #666; font-weight: normal;">
                     <input type="checkbox"> Remember me
                 </label>
-                <a href="#" style="color: #0056b3; text-decoration: none;">Forgot password?</a>
+    
             </div>
 
             <button type="submit" class="btn-login" id="submit-btn">LOGIN</button>

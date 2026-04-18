@@ -69,7 +69,7 @@ $username = $_SESSION['username'] ?? 'Guest';
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .mt-5 { margin-top: 48px; }
         
-        .product-card {
+        .product-card  {
             background: white;
             border-radius: 12px;
             overflow: hidden;
@@ -78,9 +78,34 @@ $username = $_SESSION['username'] ?? 'Guest';
             text-align: center;
         }
         
-        .product-card:hover { transform: translateY(-5px); }
-        .product-image { background: #f7fafc; padding: 40px; font-size: 48px; }
-        .product-info { padding: 20px; }
+        .product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
         .price { font-size: 20px; font-weight: bold; color: #667eea; margin-bottom: 15px; }
 
         .footer { background: #2d3748; color: white; margin-top: 60px; padding: 40px 0 20px; }
@@ -204,6 +229,8 @@ $username = $_SESSION['username'] ?? 'Guest';
             .hero-content h1 { font-size: 32px; }
             .hero-buttons { flex-direction: column; align-items: center; }
             .nav-menu { gap: 0.75rem; }
+
+            
         }
     </style>
 </head>
@@ -237,14 +264,40 @@ $username = $_SESSION['username'] ?? 'Guest';
             <div class="grid mt-3">
                 <?php
                 // Fetch products from database
-                $featured_sql = "SELECT Product_id, Product_model, Product_price FROM Product LIMIT 6";
+                $featured_sql = "SELECT Product_id, Product_model, Product_price, Product_photo FROM Product LIMIT 6";
                 $featured_result = mysqli_query($connection, $featured_sql);
                 
                 if ($featured_result && mysqli_num_rows($featured_result) > 0):
                     while ($product = mysqli_fetch_assoc($featured_result)):
                 ?>
                     <div class="product-card">
-                        <div class="product-image">📱</div>
+
+    <!-- IMAGE -->
+    <div class="product-image">
+        <?php 
+        $image_path = __DIR__ . "/images/" . $product['Product_photo'];
+
+        if (!empty($product['Product_photo']) && file_exists($image_path)): 
+        ?>
+            <img class="product-img" 
+                 src="images/<?= htmlspecialchars($product['Product_photo']) ?>" 
+                 alt="<?= htmlspecialchars($product['Product_model']) ?>">
+        <?php else: ?>
+            <div class="image-placeholder">No Image</div>
+        <?php endif; ?>
+    </div>
+
+    <!-- INFO -->
+    <div class="product-info">
+        <h3><?= htmlspecialchars($product['Product_model']); ?></h3>
+        <p class="price">RM <?= number_format($product['Product_price'], 2); ?></p>
+        <a href="product_detail.php?id=<?= $product['Product_id']; ?>" 
+           class="btn btn-sm btn-primary">View Details</a>
+    </div>
+
+</div>
+</div>
+</div>
                         <div class="product-info">
                             <h3><?php echo htmlspecialchars($product['Product_model']); ?></h3>
                             <p class="price">RM <?php echo number_format($product['Product_price'], 2); ?></p>
