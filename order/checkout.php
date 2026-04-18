@@ -198,7 +198,7 @@ include '../lib/_head.php';
     </div>
 
     <!-- Action Buttons -->
-    <div class="action-buttons">
+    <div class="action-button">
         <button type="button" class="btn-back" onclick="location='/order/cart.php'">
             <i class="fas fa-arrow-left"></i>
             Back to Cart
