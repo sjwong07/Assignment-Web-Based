@@ -4,7 +4,7 @@ require_once 'Admin_Access_Required.php';
 require_once '../lib/_base.php';
 
 // Check if NOT Admin - show message and STOP
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     include '../lib/_head.php';
     ?>
     <!DOCTYPE html>
@@ -168,9 +168,35 @@ if (is_post()) {
             redirect();
         }
 
-        $stm = $_db->prepare("INSERT INTO Product (Product_model, Product_price, Category_id, Product_photo) VALUES (?, ?, ?, NULL)");
-        $stm->execute([$model, $price, $cat_id]);
-        temp('info', '✅ Product Created');
+        $stm = $_db->prepare("SELECT Category_name FROM Category WHERE Category_id = ?");
+        $stm->execute([$cat_id]);
+        $category = $stm->fetchColumn();
+    
+        $cat_upper = strtoupper($category);
+    
+        if (strpos($cat_upper, 'IPHONE') !== false) {
+        $prefix = 'A';
+        } else {
+        $prefix = strtoupper(substr($category, 0, 1));
+        }
+    
+        $stm = $_db->prepare("SELECT COUNT(*) FROM Product WHERE Category_id = ?");
+        $stm->execute([$cat_id]);
+        $count = $stm->fetchColumn();
+    
+        $product_id = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+    
+        $stm = $_db->prepare("SELECT COUNT(*) FROM Product WHERE Product_id LIKE ?");
+        $stm->execute([$prefix . '%']);
+        $count = $stm->fetchColumn();
+    
+        $product_id = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+
+        $stm = $_db->prepare("INSERT INTO Product (Product_id, Product_model, Product_price, Category_id, Product_photo) VALUES (?, ?, ?, ?, NULL)");
+        $stm->execute([$product_id, $model, $price, $cat_id]);
+        temp('info', "Product Created (ID: $product_id)");
+        
+        /*temp('info', 'Product Created');*/
         redirect();
     }
 
