@@ -175,7 +175,7 @@ include '../lib/_head.php';
                             <input type="hidden" name="id" value="<?= $p->Product_id ?>">
                             <select name="unit" class="unit-select">
                                 <?php for($i = 1; $i <= 10; $i++): ?>
-                                    <option value="<?= $i ?>" <?= ($current_unit == $i ? 'selected' : '') ?>>
+                                    <option value="<?= $i ?>" <?= ($i == 1 ? 'selected' : '') ?>>
                                         Qty: <?= $i ?>
                                     </option>
                                 <?php endfor; ?>

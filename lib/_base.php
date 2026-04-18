@@ -756,12 +756,12 @@ function update_cart($id, $unit) {
     
     $cart = get_cart();
 
-    if($unit >= 1 && $unit <= 10){
+    if ($cart[$id] != null) {
+        $cart[$id] += $unit;
+    }else{
         $cart[$id] = $unit;
     }
-    else{
-        unset($cart[$id]);
-    }
+    
 
     ksort($cart);
     set_cart($cart);
