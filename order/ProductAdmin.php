@@ -669,7 +669,7 @@ include '../lib/_head.php';
         AND (:category IS NULL OR c.Category_name = :category)
         AND (:min_price IS NULL OR p.Product_price >= :min_price)
         AND (:max_price IS NULL OR p.Product_price <= :max_price)
-    ORDER BY p.Product_model";
+    ORDER BY p.Product_id,p.Product_model";
 
     $stm = $_db->prepare($product);
     $stm->execute([
