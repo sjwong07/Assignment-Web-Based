@@ -1,29 +1,34 @@
 <?php
-session_start();
-require_once '../../config/database.php';
+// 1. Point to your main config file
+require_once '../config.php'; 
 
-//Security check: Only Admins can toggle status
+// 2. Security check: Only Admins can toggle status
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     die("Access Denied");
 }
 
-// Get the Member ID and their Current Status from the URL
+// 3. Get the Member ID and their Current Block Status from the URL
 $id = $_GET['id'] ?? null;
-$current_status = $_GET['status'] ?? 'active';
-
-// Logic: If they are active, block them. If they are blocked, activate them.
-$new_status = ($current_status === 'active') ? 'blocked' : 'active';
+$current_blocked_status = isset($_GET['current']) ? (int)$_GET['current'] : 0;
 
 if ($id && is_numeric($id)) {
-    // Update the database
-    $stmt = $pdo->prepare("UPDATE user SET status = ? WHERE user_id = ? AND role = 'member'");
+    // 4. Logic: Flip the bit. If 0 (active), set to 1 (blocked). If 1, set to 0.
+    $new_blocked_status = ($current_blocked_status === 0) ? 1 : 0;
+
+    // 5. Update the database using MySQLi ($connection)
+    $sql = "UPDATE user SET is_blocked = ? WHERE user_id = ? AND role = 'member'";
+    $stmt = mysqli_prepare($connection, $sql);
     
-    if ($stmt->execute([$new_status, $id])) {
-        // Redirect back to the member list with a success message
-        header("Location: index.php?msg=StatusUpdated");
-        exit();
-    } else {
-        echo "Error updating status.";
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "ii", $new_blocked_status, $id);
+        
+        if (mysqli_stmt_execute($stmt)) {
+            // Redirect back to the member list
+            header("Location: index.php?msg=StatusUpdated");
+            exit();
+        } else {
+            echo "Error updating status: " . mysqli_error($connection);
+        }
     }
 } else {
     header("Location: index.php");

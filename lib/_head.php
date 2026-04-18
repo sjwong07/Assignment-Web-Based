@@ -44,7 +44,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     
     <!-- Main CSS -->
-    <link rel="stylesheet" href="../CSS/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     
     <!-- Custom JS -->
     <script src="js/app.js"></script>
@@ -86,6 +86,10 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
             <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin'): ?>
                 <a href="/users/admins/index.php" class="nav-link">
                     <i class="fas fa-users-cog"></i> Admin Panel
+                </a>
+                
+                <a href="<?= BASE_URL ?>/admin/admin_management.php" class="nav-link">
+                    <i class="fas fa-user-shield"></i> Manage Admins
                 </a>
             <?php endif; ?>
 

@@ -1,23 +1,29 @@
 <?php
-session_start();
-require_once '../config/database.php';
-
-// 1. Security & Role Check - Fix path to root login
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../../login.php'); 
+require_once '../../config.php'; // Path depends on folder depth
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../../login.php");
     exit();
 }
 
-// 2. ID Validation
+// 2. Security & Role Check
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header('Location: ../login.php'); 
+    exit();
+}
+
+// 3. ID Validation
 $user_id = $_GET['id'] ?? null;
 if (!$user_id || !is_numeric($user_id)) {
     die('Invalid ID');
 }
 
-// 3. Fetch current data - REMOVED is_deleted because your DB doesn't have it
-$stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$admin = $stmt->fetch();
+// 4. Fetch current data using MySQLi
+$sql_fetch = "SELECT * FROM user WHERE user_id = ?";
+$stmt_fetch = mysqli_prepare($connection, $sql_fetch);
+mysqli_stmt_bind_param($stmt_fetch, "i", $user_id);
+mysqli_stmt_execute($stmt_fetch);
+$result = mysqli_stmt_get_result($stmt_fetch);
+$admin = mysqli_fetch_assoc($result);
 
 if (!$admin) {
     header('Location: index.php');
@@ -26,7 +32,7 @@ if (!$admin) {
 
 $error = '';
 
-// 4. Handle Post Request
+// 5. Handle Post Request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $full_name = $_POST['full_name'] ?? '';
@@ -34,28 +40,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $gender = $_POST['gender'] ?? '';
 
-    // Check if email or username is already taken by ANOTHER user
-    $check = $pdo->prepare("SELECT user_id FROM user WHERE (username = ? OR email = ?) AND user_id != ?");
-    $check->execute([$username, $email, $user_id]);
+    // Check if email or username is already taken by ANOTHER user using MySQLi
+    $sql_check = "SELECT user_id FROM user WHERE (username = ? OR email = ?) AND user_id != ?";
+    $stmt_check = mysqli_prepare($connection, $sql_check);
+    mysqli_stmt_bind_param($stmt_check, "ssi", $username, $email, $user_id);
+    mysqli_stmt_execute($stmt_check);
+    mysqli_stmt_store_result($stmt_check);
     
-    if ($check->fetch()) {
+    if (mysqli_stmt_num_rows($stmt_check) > 0) {
         $error = "Username or Email is already in use by another account.";
     } else {
         // Update basic info
-        $sql = "UPDATE user SET username = ?, full_name = ?, email = ?, phone = ?, gender = ? WHERE user_id = ?";
-        $stmt = $pdo->prepare($sql);
+        $sql_update = "UPDATE user SET username = ?, full_name = ?, email = ?, phone = ?, gender = ? WHERE user_id = ?";
+        $stmt_update = mysqli_prepare($connection, $sql_update);
+        mysqli_stmt_bind_param($stmt_update, "sssssi", $username, $full_name, $email, $phone, $gender, $user_id);
         
-        if ($stmt->execute([$username, $full_name, $email, $phone, $gender, $user_id])) {
+        if (mysqli_stmt_execute($stmt_update)) {
             header('Location: index.php?msg=updated');
             exit();
         } else {
-            $error = "Failed to update database.";
+            $error = "Failed to update database: " . mysqli_error($connection);
         }
     }
 }
 
 $_title = "Edit Admin";
-include('../../lib/_head.php');
+include('../lib/_head.php');
 ?>
 
 <style>
@@ -66,11 +76,13 @@ include('../../lib/_head.php');
     .btn-cancel { background: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-left: 10px; display: inline-block; }
 </style>
 
-<div class="container">
+<div class="container" style="padding: 20px;">
     <h1>Edit Admin: <?= htmlspecialchars($admin['username']) ?></h1>
 
     <?php if ($error): ?>
-        <div style="color: red; margin-bottom: 15px;"><?= $error ?></div>
+        <div style="color: red; background: #fee2e2; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #f87171;">
+            <?= htmlspecialchars($error) ?>
+        </div>
     <?php endif; ?>
 
     <form method="POST">
@@ -109,4 +121,4 @@ include('../../lib/_head.php');
     </form>
 </div>
 
-<?php include('../../lib/_foot.php');?>
+<?php include('../lib/_foot.php');?>
