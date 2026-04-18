@@ -85,7 +85,7 @@ include 'lib/_head.php';
 <div class="login-container">
     <div class="tabs">
         <div class="tab active" onclick="switchTab('user')" id="tab-user">
-            <i class="fas fa-users"></i> For Users
+            <i class="fas fa-users"></i> For Members
         </div>
         <div class="tab" onclick="switchTab('admin')" id="tab-admin">
             <i class="fas fa-sliders-h"></i> For Admins
@@ -93,7 +93,7 @@ include 'lib/_head.php';
     </div>
 
     <div class="form-content">
-        <h2 style="text-align:center; margin-bottom:20px; color: #333;" id="form-title">Webmail Login</h2>
+        <h2 style="text-align:center; margin-bottom:20px; color: #333;" id="form-title">Member Login</h2>
 
         <?php if (!empty($error)): ?>
             <div class="alert-error"><?= $error ?></div>
@@ -136,7 +136,7 @@ include 'lib/_head.php';
             document.getElementById('submit-btn').style.background = '#0056b3';
             document.getElementById('submit-btn').innerText = 'SECURE ADMIN LOGIN';
         } else {
-            document.getElementById('form-title').innerText = 'Webmail Login';
+            document.getElementById('form-title').innerText = 'Member Login';
             document.getElementById('submit-btn').style.background = '#8bc34a';
             document.getElementById('submit-btn').innerText = 'LOGIN';
         }
