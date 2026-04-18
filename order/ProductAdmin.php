@@ -4,67 +4,49 @@ require_once 'Admin_Access_Required.php';
 require_once '../lib/_base.php';
 
 // Check if NOT Admin - show message and STOP
+// Check if NOT Admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    include '../lib/_head.php';
+    include '../lib/_head.php'; // This already provides the sidebar and layout
     ?>
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Access Denied</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                font-family: 'Inter', sans-serif;
-                background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            .message-box {
-                background: white;
-                padding: 3rem;
-                border-radius: 20px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-                text-align: center;
-                max-width: 450px;
-            }
-            .message-box i {
-                font-size: 4rem;
-                color: #f59e0b;
-                margin-bottom: 1.5rem;
-            }
-            .message-box h2 {
-                color: #1e293b;
-                margin-bottom: 1rem;
-                font-size: 1.5rem;
-            }
-            .message-box p {
-                color: #64748b;
-                margin-bottom: 2rem;
-                line-height: 1.6;
-            }
-            .message-box .role-badge {
-                display: inline-block;
-                background: #e2e8f0;
-                padding: 0.25rem 1rem;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                font-weight: 600;
-                color: #475569;
-                margin-top: 0.5rem;
-            }
-        </style>
-    </head>
-    <body>
+    <style>
+        /* Center the box specifically within the main content area, not the whole body */
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem 1rem;
+        }
+        .message-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 450px;
+            border: 1px solid #e2e8f0;
+        }
+        .message-box i {
+            font-size: 4rem;
+            color: #f59e0b;
+            margin-bottom: 1.5rem;
+        }
+        .message-box h2 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .message-box .role-badge {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+    </style>
+
+    <div class="error-container">
         <div class="message-box">
             <i class="fas fa-shield-alt"></i>
             <h2>Admin Access Required</h2>
@@ -80,13 +62,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 <a href="javascript:history.back()" style="color: #2a5298; text-decoration: none; font-weight: 600;">Go Back</a>
             </p>
         </div>
-    </body>
-    </html>
+    </div>
+
     <?php
     include '../lib/_foot.php';
-    exit(); // STOP execution - no admin content shown
+    exit(); 
 }
-
+    
 if (is_post() && isset($_POST['upload'])) {
     
     $product_id = post('product_id');
