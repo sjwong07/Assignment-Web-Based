@@ -154,29 +154,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($error) && !isset($_POST['forg
         $result = mysqli_stmt_get_result($stmt);
 
         if ($row = mysqli_fetch_assoc($result)) {
-            // Force role to lowercase to prevent database collation errors
-            $user_role = strtolower($row['role']);
-            
-            // Check password using password_hash (this is what register.php uses)
-            $password_valid = false;
-            
-            // First try password_hash verification (for new registrations and reset passwords)
-            if (isset($row['password']) && !empty($row['password'])) {
-                $password_valid = password_verify($pass, $row['password']);
-            }
-            
-            // If that fails, try legacy SHA256 hash (for old accounts)
-            if (!$password_valid && isset($row['password_legacy'])) {
-                $password_valid = (hash('sha256', $pass) === $row['password_legacy']);
-            }
+    // Force role to lowercase to prevent database collation errors
+    $user_role = strtolower($row['role']);
+    
+    // Check password - FIXED VERSION
+    $password_valid = false;
+    
+    if (isset($row['password']) && !empty($row['password'])) {
+        $stored_password = $row['password'];
+        
+        // Check if it's a SHA256 hash (exactly 64 characters, hex format)
+        if (strlen($stored_password) == 64 && ctype_xdigit($stored_password)) {
+            // Compare using SHA256
+            $password_valid = (hash('sha256', $pass) === $stored_password);
+        } 
+        // Otherwise try bcrypt (for password_hash)
+        else {
+            $password_valid = password_verify($pass, $stored_password);
+        }
+    }
 
-            if (isset($row['is_blocked']) && $row['is_blocked'] == 1) {
-                $error = "This account is blocked. Please contact support.";
-                // Reset attempts on blocked account
-                $_SESSION['login_attempts'] = 0;
-                $_SESSION['lockout_time'] = 0;
-            }
-            else if ($password_valid) {
+    if (isset($row['is_blocked']) && $row['is_blocked'] == 1) {
+        $error = "This account is blocked. Please contact support.";
+        $_SESSION['login_attempts'] = 0;
+        $_SESSION['lockout_time'] = 0;
+    }
+    else if ($password_valid) {
+        // Rest of your success logic...
+          
                 
                 // Prevent regular users from logging in through the Admin tab
                 if ($login_type === 'admin' && $user_role !== 'admin') {
