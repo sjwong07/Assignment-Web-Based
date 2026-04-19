@@ -6,7 +6,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 $_title = "Admin Management";
-include('../lib/_head.php'); 
+include('../../lib/_head.php'); 
 
 // 3. Handle Search logic using MySQLi
 $search = $_GET['search'] ?? '';
@@ -99,4 +99,4 @@ while ($row = mysqli_fetch_assoc($result)) {
     </table>
 </div>
 
-<?php include('../lib/_foot.php'); ?>
+<?php include('../../lib/_foot.php'); ?>

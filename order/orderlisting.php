@@ -1,9 +1,14 @@
 <?php
-require 'Admin_Access_Required.php';
+
+require_once 'Admin_Access_Required.php';
+require_once '../lib/_base.php';
+
+// 1. Admin Access Required Check
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update'])) {
-    $order_ids = $_POST['order_ids'] ?? [];
-    $statuses = $_POST['statuses'] ?? [];
+    $order_ids = $_POST['order_id'] ?? [];
+    $statuses = $_POST['statuse'] ?? [];
     
     $stm = $_db->prepare('UPDATE `order` SET status = ? WHERE id = ?');
     
@@ -12,13 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update'])) {
     }
 }
 
-// Fetch all orders
-$stm = $_db->prepare('
-    SELECT o.*, u.username 
+$order = " SELECT o.*, u.username 
     FROM `order` o
     JOIN user u ON o.user_id = u.user_id
-    ORDER BY o.id DESC
-');
+    ORDER BY o.id DESC";
+// Fetch all orders
+$stm = $_db->prepare($order);
 $stm->execute();
 $arr = $stm->fetchAll(PDO::FETCH_OBJ);
 
@@ -33,73 +37,8 @@ include '../lib/_head.php';
     <title>Admin | Order Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/app.css"> 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        /* Base Styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%); min-height: 100vh; }
-        .history-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
-        .history-header h2 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #1e3c72, #2a5298); -webkit-background-clip: text; background-clip: text; color: transparent; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
-        
-        .orders-table-wrapper { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-        .orders-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .orders-table th { background: #f8fafc; padding: 1.25rem 1rem; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        .orders-table td { padding: 1.25rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease;
-            text-align: center;
-            min-width: 110px; /* Ensures consistent width */
-            border: 1px solid transparent;
-        }
-
-        /* Color Variations */
-        .status-Pending { background: #fff7ed; color: #9a3412; border-color: #ffedd5; }
-        .status-Shipped { background: #eff6ff; color: #1e40af; border-color: #dbeafe; }
-        .status-Completed { background: #f0fdf4; color: #166534; border-color: #dcfce7; }
-        .status-Cancelled { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
-
-        .btn-view {
-            background: linear-gradient(135deg, #2a5298, #1e3c72);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-        }
-
-        .btn-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(42,82,152,0.3);
-        }
-        
-        tbody tr:hover {
-            background-color: #f8faff;
-            transition: background 0.2s ease;
-            cursor: default;
-        }
-        
-        .submit-container { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
-        .btn-submit { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .orders-table-wrapper { animation: fadeInUp 0.4s ease forwards; }
-    </style>
 </head>
 <body>
 
@@ -130,8 +69,8 @@ include '../lib/_head.php';
                                     <input type="hidden" name="order_ids[]" value="<?= $o->id ?>">
                                 </td>
                                 <td><?= htmlspecialchars($o->username) ?></td>
-                                <td style="font-size: 0.9rem; color: #475569;"><?= date('d M Y, h:i A', strtotime($o->order_date)) ?></td>
-                                <td style="font-weight: 700; color: #2a5298;">RM <?= number_format($o->total, 2) ?></td>
+                                <td class="order-date"><?= date('d M Y, h:i A', strtotime($o->order_date)) ?></td>
+                                <td class="order-total">RM <?= number_format($o->total, 2) ?></td>
                                 <td>
                                     <button type="button" class="btn-view" onclick="location='detail.php?id=<?= $o->id ?>&from=admin'">
                                         <i class="fas fa-eye"></i> View Details
@@ -156,12 +95,18 @@ include '../lib/_head.php';
                 </button>
             </div>
         </form>
+    <?php else: ?>
+        <div class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <h3>No Records Found</h3>
+            <p>There are currently no orders in the system to display.</p>
+        </div>
     <?php endif ?>
 </div>
 
 <script>
 $(document).ready(function() {
-    const statuses = ['Pending', 'Shipped', 'Completed', 'Cancelled'];
+    const statuses = ['Pending', 'Shipped', 'Delivered', 'Cancelled'];
 
     $('.status-badge').on('click', function() {
         const $badge = $(this);
@@ -171,14 +116,10 @@ $(document).ready(function() {
         let nextIndex = (currentIndex + 1) % statuses.length;
         let nextStatus = statuses[nextIndex];
         
-        // Update input value
         $input.val(nextStatus);
-        
-        // Update Text
         $badge.text(nextStatus);
         
-        // Update color 
-        $badge.removeClass('status-Pending status-Shipped status-Completed status-Cancelled')
+        $badge.removeClass('status-pending status-shipped status-delivered status-cancelled')
               .addClass('status-' + nextStatus);
     });
 

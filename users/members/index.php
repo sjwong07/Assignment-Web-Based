@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php'; 
+require_once '../../config.php'; 
 
 // 2. Security Check: Only admins can manage members
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {

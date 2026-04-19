@@ -65,17 +65,15 @@ include '../lib/_head.php';
                             $statusText = 'Pending';
                             if (isset($o->status)) {
                                 switch(strtolower($o->status)) {
-                                    case 'completed':
                                     case 'delivered':
-                                        $statusClass = 'status-completed';
-                                        $statusText = 'Completed';
+                                        $statusClass = 'status-delivered';
+                                        $statusText = 'Delivered';
                                         break;
                                     case 'shipped':
                                         $statusClass = 'status-shipped';
                                         $statusText = 'Shipped';
                                         break;
                                     case 'cancelled':
-                                    case 'canceled':
                                         $statusClass = 'status-cancelled';
                                         $statusText = 'Cancelled';
                                         break;
@@ -105,7 +103,7 @@ include '../lib/_head.php';
                             </td>
                             <td>
                                 <span class="status-badge <?= $statusClass ?>">
-                                    <i class="fas <?= $statusClass == 'status-completed' ? 'fa-check-circle' : ($statusClass == 'status-shipped' ? 'fa-truck' : ($statusClass == 'status-cancelled' ? 'fa-times-circle' : 'fa-clock')) ?>"></i>
+                                    <i class="fas <?= $statusClass == 'status-delivered' ? 'fa-check-circle' : ($statusClass == 'status-shipped' ? 'fa-truck' : ($statusClass == 'status-cancelled' ? 'fa-times-circle' : 'fa-clock')) ?>"></i>
                                     <?= $statusText ?>
                                 </span>
                             </td>
