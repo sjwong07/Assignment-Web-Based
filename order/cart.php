@@ -84,7 +84,7 @@ include '../lib/_head.php';
             <table class="cart-table">
                 <thead>
                     <tr>
-                        <th style="width: 50px;"></th>
+                        <th class="head-width"></th>
                         <th>Product</th>
                         <th>Price (RM)</th>
                         <th>Quantity</th>
@@ -99,7 +99,7 @@ include '../lib/_head.php';
                     ?>
                         <tr data-product-id="<?= $p->Product_id ?>">
                             <td>
-                                <input type="checkbox" name="selected_items[]" value="<?= $p->Product_id ?>" class="item-selector" form="clear-selected-form" style="width: 18px; height: 18px; cursor: pointer;">
+                                <input type="checkbox" name="selected_items[]" value="<?= $p->Product_id ?>" class="item-selector" form="clear-selected-form">
                             </td>
                             <td>
                                 <div class="product-cell">
@@ -145,13 +145,13 @@ include '../lib/_head.php';
 
         <!-- Action Buttons -->
         <div class="action-button">
-            <form method="post" id="clear-selected-form" style="margin: 0;">
+            <form method="post" id="clear-selected-form" class="no-margin">
                 <input type="hidden" name="btn" value="clear_selected">
                 <button type="submit" id="btn-clear-selected" class="btn-clear" disabled onclick="return confirm('Remove selected items from cart?')">
                     <i class="fas fa-check-square"></i> Clear Selected
                 </button>
             </form>
-            <form method="post" style="margin: 0;">
+            <form method="post" class="no-margin">
                 <input type="hidden" name="btn" value="clear">
                 <button type="submit" class="btn-clear" onclick="return confirm('Are you sure you want to clear your entire cart?')">
                     <i class="fas fa-trash-alt"></i> Clear Cart
