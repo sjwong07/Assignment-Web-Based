@@ -1886,7 +1886,6 @@ nav a:hover {
 /* Main Content */
 main {
     min-height: calc(100vh - 200px);
-    padding: 2rem 0;
 }
 
 /* Page Header */
