@@ -88,7 +88,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                     <i class="fas fa-users-cog"></i> Admin Panel
                 </a>
                 
-                <a href="<?= BASE_URL ?>/admins/admin_management.php" class="nav-link">
+                <a href="<?= BASE_URL ?>/users/admins/admin_management.php" class="nav-link">
                     <i class="fas fa-user-shield"></i> Manage Admins
                 </a>
             <?php endif; ?>

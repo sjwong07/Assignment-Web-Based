@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php'; 
+require_once '../../config.php'; 
 
 // Security Check
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 $_title = "Admin Management";
-include('../../lib/_head.php'); 
+include '../../lib/_head.php'; 
 
 // Fetch Admins
 $query = "SELECT * FROM user WHERE role = 'admin' ORDER BY user_id DESC";
@@ -51,4 +51,4 @@ $result = mysqli_query($connection, $query);
     </div>
 </div>
 
-<?php include('../../lib/_foot.php'); ?>
+<?php include '../../lib/_foot.php'; ?>
