@@ -1,5 +1,7 @@
 <?php
-require '../lib/_base.php';
+
+require 'Admin_Access_Required.php';
+
 
 // 1. Admin Access Required Check
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
