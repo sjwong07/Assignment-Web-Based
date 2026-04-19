@@ -46,15 +46,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
         $result = mysqli_stmt_get_result($stmt);
         
         if ($row = mysqli_fetch_assoc($result)) {
-            // Hash the new password (using multiple methods for compatibility)
-            $hashed_password = hash('sha256', $new_password);
-            // Also store password_hash version for future verification
-            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            // Hash the new password using password_hash (standard method)
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             
             // Update password and clear reset token
-            $update_sql = "UPDATE user SET password = ?, password_hash = ?, reset_token = NULL, reset_expires = NULL WHERE user_id = ?";
+            $update_sql = "UPDATE user SET password = ?, reset_token = NULL, reset_expires = NULL WHERE user_id = ?";
             $update_stmt = mysqli_prepare($connection, $update_sql);
-            mysqli_stmt_bind_param($update_stmt, "ssi", $hashed_password, $password_hash, $row['user_id']);
+            mysqli_stmt_bind_param($update_stmt, "si", $hashed_password, $row['user_id']);
             
             if (mysqli_stmt_execute($update_stmt)) {
                 $success = "Password has been reset successfully! You can now login with your new password.";
@@ -159,13 +157,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($error) && !isset($_POST['forg
             // Force role to lowercase to prevent database collation errors
             $user_role = strtolower($row['role']);
             
-            // Check password using both hash methods for compatibility
+            // Check password using password_hash (this is what register.php uses)
             $password_valid = false;
-            if (isset($row['password_hash']) && !empty($row['password_hash'])) {
-                $password_valid = password_verify($pass, $row['password_hash']);
+            
+            // First try password_hash verification (for new registrations and reset passwords)
+            if (isset($row['password']) && !empty($row['password'])) {
+                $password_valid = password_verify($pass, $row['password']);
             }
-            if (!$password_valid && isset($row['password'])) {
-                $password_valid = (hash('sha256', $pass) === $row['password']);
+            
+            // If that fails, try legacy SHA256 hash (for old accounts)
+            if (!$password_valid && isset($row['password_legacy'])) {
+                $password_valid = (hash('sha256', $pass) === $row['password_legacy']);
             }
 
             if (isset($row['is_blocked']) && $row['is_blocked'] == 1) {
