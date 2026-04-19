@@ -38,7 +38,7 @@ $result = mysqli_query($connection, $query);
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
                 <tr style="border-top: 1px solid var(--border-color);">
                     <td style="padding: 15px;"><?= htmlspecialchars($row['username']) ?></td>
-                    <td style="padding: 15px;"><?= htmlspecialchars($row['full_name']) ?></td>
+                    <td style="padding: 15px;"><?= htmlspecialchars($row['full_name'] ?? '') ?></td>
                     <td style="padding: 15px;"><?= htmlspecialchars($row['email']) ?></td>
                     <td style="padding: 15px;">
                         <a href="members/edit.php?id=<?= $row['user_id'] ?>" style="color: orange; margin-right:10px;"><i class="fas fa-edit"></i></a>
