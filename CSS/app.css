@@ -174,6 +174,9 @@ body, input, button, select {
             align-items: center;
             padding: 5rem 1rem;
         }
+        .message-box i.fa-shield-alt {
+            color: #f59e0b;
+        }
         .message-box {
             background: white;
             padding: 3rem;
@@ -186,7 +189,7 @@ body, input, button, select {
         .message-box i {
             font-size: 4rem;
             color: #f59e0b;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         .message-box h2 {
             color: #1e293b;
@@ -202,6 +205,23 @@ body, input, button, select {
             font-weight: 600;
             color: #475569;
         }
+
+        .back-link-container {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .back-link {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
 
         /* Card Styles */
         .card {
@@ -2745,6 +2765,16 @@ body {
     opacity: 0.5;
 }
 
+.empty-state h3 {
+    color: #475569;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #94a3b8;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .container {
@@ -4153,3 +4183,25 @@ body {
     opacity: 0;
 }
 
+tbody tr:hover {
+    background-color: #f8faff;
+    transition: background 0.2s ease;
+    cursor: default;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+}
