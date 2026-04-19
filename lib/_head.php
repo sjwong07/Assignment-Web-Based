@@ -107,7 +107,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                         <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
                     </button>
                     <div class="dropdown-content">
-                         <a href="<?= BASE_URL ?>/admins/dashboard.php">
+                         <a href="../users/admins/dashboard.php">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                         <a href="/profile.php">
