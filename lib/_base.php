@@ -748,20 +748,17 @@ function update_cart($id, $unit) {
 
     $stm = $_db->prepare('SELECT COUNT(*) FROM Product WHERE Product_id = ?');
     $stm->execute([$id]);
-    $exists = $stm->fetchColumn() > 0;
-
-    if(!$exists){
+    if ($stm->fetchColumn() == 0) {
         return false;
     }
     
     $cart = get_cart();
 
-    if ($cart[$id] != null) {
-        $cart[$id] += $unit;
-    }else{
+    if ($unit <= 0) {
+        unset($cart[$id]);
+    } else {
         $cart[$id] = $unit;
     }
-    
 
     ksort($cart);
     set_cart($cart);

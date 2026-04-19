@@ -44,7 +44,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     
     <!-- Main CSS -->
-    <link rel="stylesheet" href="../CSS/app.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/CSS/app.css">
     
     <!-- Custom JS -->
     <script src="js/app.js"></script>
@@ -88,7 +88,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                     <i class="fas fa-users-cog"></i> Admin Panel
                 </a>
                 
-                <a href="<?= BASE_URL ?>/admin/admin_management.php" class="nav-link">
+                <a href="<?= BASE_URL ?>/admins/admin_management.php" class="nav-link">
                     <i class="fas fa-user-shield"></i> Manage Admins
                 </a>
             <?php endif; ?>
@@ -107,7 +107,7 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
                         <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="/dashboard.php">
+                        <a href="../users/admins/dashboard.php">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                         <a href="/profile.php">

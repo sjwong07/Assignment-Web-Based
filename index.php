@@ -92,7 +92,7 @@ $username = $_SESSION['username'] ?? 'Guest';
 
 .product-image {
     width: 100%;
-    height: 180px; /
+    height: 180px;
     overflow: hidden;
     padding: 15px; 
     box-sizing: border-box; 
