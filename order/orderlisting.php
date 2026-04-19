@@ -3,8 +3,8 @@
 require 'Admin_Access_Required.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update'])) {
-    $order_ids = $_POST['order_id'] ?? [];
-    $statuses = $_POST['statuse'] ?? [];
+    $order_ids = $_POST['order_ids'] ?? [];
+    $statuses = $_POST['statuses'] ?? [];
     
     $stm = $_db->prepare('UPDATE `order` SET status = ? WHERE id = ?');
     

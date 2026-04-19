@@ -4157,6 +4157,14 @@ tbody tr:hover {
     cursor: default;
 }
 
+.submit-container {
+    margin-top: 10px; 
+    padding: 20px 0;
+    display: flex;
+    justify-content: flex-end; 
+    border-top: 1px solid #eee;
+}
+
 .btn-submit {
     background: linear-gradient(135deg, #059669, #047857);
     color: white;
