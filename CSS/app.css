@@ -4191,3 +4191,271 @@ tbody tr:hover {
 .text-colour {
     color: #10b981;
 }
+
+/* profile settings */
+.profile-settings-body { 
+    background-color: #f8fafc; 
+    padding: 40px 20px; 
+}
+
+.profile-settings .ps-container { 
+    max-width: 600px; 
+    margin: 0 auto; 
+}
+
+.profile-settings .ps-modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.5); 
+}
+
+.profile-settings .ps-modal-content { 
+    background: white; 
+    margin: 8% auto; 
+    padding: 25px; 
+    width: 450px; 
+    border-radius: 12px; 
+    text-align: center; 
+}
+
+.profile-settings .ps-avatar-selection-container { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin: 20px 0; 
+    position: relative; 
+}
+
+.profile-settings .ps-avatar-scroll { 
+    display: flex; 
+    overflow-x: auto; 
+    scroll-behavior: smooth; 
+    gap: 15px; 
+    padding: 10px 5px; 
+    white-space: nowrap; 
+    scrollbar-width: none; 
+}
+
+.profile-settings .ps-avatar-scroll::-webkit-scrollbar { display: none; }
+
+.profile-settings .ps-avatar-scroll img { 
+    width: 70px; 
+    height: 70px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    border: 3px solid transparent; 
+    object-fit: cover; 
+    flex-shrink: 0; 
+    transition: 0.2s; 
+}
+
+.profile-settings .ps-avatar-scroll img:hover { 
+    border-color: #3b82f6; 
+    transform: scale(1.05); 
+}
+
+.profile-settings .ps-scroll-btn { 
+    background: #f1f5f9; 
+    border: none; 
+    border-radius: 50%; 
+    width: 35px; 
+    height: 35px; 
+    cursor: pointer; 
+    color: #475569; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
+
+.profile-settings .ps-scroll-btn:hover { 
+    background: #3b82f6; 
+    color: white; 
+}
+
+.profile-settings .ps-divider { 
+    border-top: 1px solid #ddd; 
+    margin: 20px 0; 
+    position: relative; 
+}
+
+.profile-settings .ps-divider span { 
+    position: absolute; 
+    top: -10px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    background: white; 
+    padding: 0 10px; 
+    font-size: 12px; 
+    color: #64748b; 
+}
+
+.profile-settings #ps-drop-zone-box { 
+    border: 2px dashed #ddd; 
+    padding: 20px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+}
+
+.profile-settings #ps-drop-zone-box.dragover { 
+    border-color: #3b82f6; 
+    background: #eff6ff; 
+    color: #3b82f6; 
+}
+
+.profile-settings .ps-header { 
+    text-align: center; 
+    margin-bottom: 20px; 
+}
+
+.profile-settings .ps-photo-container { 
+    position: relative; 
+    width: 150px; 
+    height: 150px; 
+    margin: 0 auto 15px; 
+    border-radius: 50%; 
+    border: 4px solid white; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+.profile-settings .ps-photo-container img { 
+    width: 100%; 
+    height: 100%; 
+    border-radius: 50%; 
+    object-fit: cover; 
+}
+
+.profile-settings .ps-camera-btn { 
+    position: absolute; 
+    bottom: 5px; 
+    right: 5px; 
+    background: #3b82f6; 
+    color: white; 
+    padding: 8px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    border: 2px solid white; 
+}
+
+.profile-settings .ps-header-info h1 { margin-bottom: 5px; }
+.profile-settings .ps-header-info p { margin: 2px 0; color: #64748b; font-size: 14px; }
+
+.profile-settings .ps-action-btns { 
+    display: flex; 
+    gap: 15px; 
+    margin: 30px 0; 
+}
+
+.profile-settings .ps-btn-tab { 
+    flex: 1; 
+    padding: 12px; 
+    border: 1px solid #ddd; 
+    background: white; 
+    cursor: pointer; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    color: #475569; 
+}
+
+.profile-settings .ps-btn-tab.active { 
+    background: #3b82f6; 
+    color: white; 
+    border-color: #3b82f6; 
+}
+
+.profile-settings .ps-card { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    display: none; 
+    margin-bottom: 20px; 
+}
+
+.profile-settings .ps-card.active { display: block; }
+
+.profile-settings .ps-form-group { margin-bottom: 20px; position: relative; }
+
+.profile-settings .ps-form-group label { 
+    display: block; 
+    margin-bottom: 8px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #475569; 
+}
+
+.profile-settings .ps-form-group input { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 6px; 
+    box-sizing: border-box; 
+}
+
+.ps-input-readonly {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+}
+
+.profile-settings .ps-btn-submit { 
+    padding: 12px; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    width: 100%; 
+    transition: 0.3s; 
+}
+
+.profile-settings .ps-btn-submit.disabled-style { 
+    background-color: #cbd5e1; 
+    cursor: not-allowed; 
+    color: white; 
+}
+
+.profile-settings .ps-btn-submit.active-blue { 
+    background-color: #3b82f6; 
+    cursor: pointer; 
+    color: white; 
+}
+
+.profile-settings .ps-msg { 
+    padding: 12px; 
+    border-radius: 6px; 
+    margin-bottom: 20px; 
+    text-align: center; 
+    border: 1px solid; 
+}
+
+.profile-settings .ps-msg.error { 
+    background: #fee2e2; 
+    color: #ef4444; 
+    border-color: #ef4444; 
+}
+
+.profile-settings .ps-msg.success { 
+    background: #d1fae5; 
+    color: #10b981; 
+    border-color: #10b981; 
+}
+
+.profile-settings .ps-nav-links { 
+    margin-top: 20px; 
+    text-align: center; 
+}
+
+.profile-settings .ps-nav-links a { 
+    text-decoration: none; 
+    color: #64748b; 
+    margin: 0 10px; 
+    font-weight: 600; 
+    transition: 0.2s; 
+}
+
+.profile-settings .ps-nav-links a:hover { color: #3b82f6; }
