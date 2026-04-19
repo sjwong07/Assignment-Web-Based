@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $_title = "Edit Admin";
-include('../lib/_head.php');
+include '../../lib/_head.php';
 ?>
 
 <style>
@@ -121,4 +121,4 @@ include('../lib/_head.php');
     </form>
 </div>
 
-<?php include('../lib/_foot.php');?>
+<?php include '../../lib/_foot.php';?>
