@@ -97,7 +97,7 @@ include '../lib/_head.php';
                 <span class="order-info-label">Order ID</span>
                 <span class="order-info-value">
                     <i class="fas fa-hashtag"></i>
-                    #<?= $o->id ?>
+                    <?= $o->id ?>
                 </span>
             </div>
             <div class="order-info-item">
@@ -168,7 +168,7 @@ include '../lib/_head.php';
         </div>
         <div class="summary-row">
             <span class="summary-label">Shipping</span>
-            <span class="summary-value" style="color: #10b981;">Free</span>
+            <span class="summary-value text-colour">Free</span>
         </div>
         <div class="summary-row total">
             <span class="summary-label">Total</span>

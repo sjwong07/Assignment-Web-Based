@@ -189,7 +189,7 @@ include '../lib/_head.php';
         </div>
         <div class="summary-row">
             <span class="summary-label">Shipping:</span>
-            <span class="summary-value" style="color: #10b981;">Free</span>
+            <span class="summary-value text-colour">Free</span>
         </div>
         <div class="summary-row total">
             <span class="summary-label">Grand Total:</span>
@@ -204,7 +204,7 @@ include '../lib/_head.php';
             Back to Cart
         </button>
 
-        <form method="post" style="margin: 0;">
+        <form method="post" class="no-margin">
             <button type="submit" class="btn-confirm" onclick="return confirm('Please confirm your order. Once confirmed, you cannot modify your order.')">
                 <i class="fas fa-check-circle"></i>
                 Confirm Order
