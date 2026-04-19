@@ -1,10 +1,34 @@
 <?php
-
-require_once 'Admin_Access_Required.php';
-require_once '../lib/_base.php';
+require '../lib/_base.php';
 
 // 1. Admin Access Required Check
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    include '../lib/_head.php'; 
+    ?>
+    <div class="error-container">
+        <div class="message-box">
+            <i class="fas fa-shield-alt"></i>
+            <h2>Admin Access Required</h2>
+            <p>This page is restricted to administrators only.</p>
+            
+            <p>Your current role: 
+                <span class="role-badge">
+                    <i class="fas fa-user"></i> 
+                    <?= isset($_SESSION['role']) ? htmlspecialchars($_SESSION['role']) : 'Guest' ?>
+                </span>
+            </p>
 
+            <div class="back-link-container">
+                <a href="javascript:history.back()" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php
+    include '../lib/_foot.php';
+    exit(); 
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update'])) {
     $order_ids = $_POST['order_id'] ?? [];
@@ -78,7 +102,7 @@ include '../lib/_head.php';
                                 </td>
                                 <td>
                                     <input type="hidden" name="statuses[]" class="status-input" value="<?= $o->status ?>">
-                                    <span class="status-badge status-<?= $o->status ?>">
+                                    <span class="status-badge status-<?= strtolower($o->status) ?>">
                                         <?= $o->status ?>
                                     </span>
                                 </td>
@@ -118,9 +142,11 @@ $(document).ready(function() {
         
         $input.val(nextStatus);
         $badge.text(nextStatus);
+
+        let cssClass = nextStatus.toLowerCase();
         
         $badge.removeClass('status-pending status-shipped status-delivered status-cancelled')
-              .addClass('status-' + nextStatus);
+              .addClass('status-' + cssClass);
     });
 
     $('#bulk-update-form').on('submit', function() {
