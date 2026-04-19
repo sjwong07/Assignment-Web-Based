@@ -103,7 +103,7 @@ include '../lib/_head.php';
                                 </td>
                                 <td>
                                     <input type="hidden" name="statuses[]" class="status-input" value="<?= $o->status ?>">
-                                    <span class="status-badge status-<?= $o->status ?>">
+                                    <span class="status-badge status-<?= strtolower($o->status) ?>">
                                         <?= $o->status ?>
                                     </span>
                                 </td>
@@ -143,9 +143,11 @@ $(document).ready(function() {
         
         $input.val(nextStatus);
         $badge.text(nextStatus);
+
+        let cssClass = nextStatus.toLowerCase();
         
         $badge.removeClass('status-pending status-shipped status-delivered status-cancelled')
-              .addClass('status-' + nextStatus);
+              .addClass('status-' + cssClass);
     });
 
     $('#bulk-update-form').on('submit', function() {

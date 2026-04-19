@@ -3714,37 +3714,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Status Badge */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.status-pending {
-    background: #fef3c7;
-    color: #d97706;
-}
-
-.status-completed {
-    background: #d1fae5;
-    color: #059669;
-}
-
-.status-shipped {
-    background: #dbeafe;
-    color: #2563eb;
-}
-
-.status-cancelled {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
 /* View Button */
 .btn-view {
     background: linear-gradient(135deg, #2a5298, #1e3c72);
@@ -3937,7 +3906,7 @@ body {
     color: #d97706;
 }
 
-.status-completed {
+.status-delivered {
     background: #d1fae5;
     color: #059669;
 }

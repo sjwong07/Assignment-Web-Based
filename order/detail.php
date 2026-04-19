@@ -67,10 +67,9 @@ include '../lib/_head.php';
         $statusIcon = 'fa-clock';
         if (isset($o->status)) {
             switch(strtolower($o->status)) {
-                case 'completed':
                 case 'delivered':
-                    $statusClass = 'status-completed';
-                    $statusText = 'Completed';
+                    $statusClass = 'status-delivered';
+                    $statusText = 'Delivered';
                     $statusIcon = 'fa-check-circle';
                     break;
                 case 'shipped':
@@ -79,7 +78,6 @@ include '../lib/_head.php';
                     $statusIcon = 'fa-truck';
                     break;
                 case 'cancelled':
-                case 'canceled':
                     $statusClass = 'status-cancelled';
                     $statusText = 'Cancelled';
                     $statusIcon = 'fa-times-circle';
@@ -182,7 +180,7 @@ include '../lib/_head.php';
     <div class="back-section">
         <?php
             $back_url = 'history.php';
-            if ($from == 'admin') $back_url = '../users/admins/orderlisting.php';
+            if ($from == 'admin') $back_url = 'orderlisting.php';
         ?>
         <button type="button" class="btn-back" onclick="location='<?= $back_url ?>'">
             <i class="fas fa-arrow-left"></i>
