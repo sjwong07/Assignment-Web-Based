@@ -304,7 +304,7 @@ $username = $_SESSION['username'] ?? 'Guest';
             </div>
         
     </div>
-
+                </div>
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
