@@ -1,102 +1,115 @@
 <?php
-require_once '../../config.php'; // Path depends on folder depth
+require_once '../../config.php';
+
+// Security check
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../../login.php");
     exit();
 }
 
-$_title = "Admin Management";
-include('../../lib/_head.php'); 
-
-// 3. Handle Search logic using MySQLi
-$search = $_GET['search'] ?? '';
-$admins = [];
-
+// Search Logic
+$search = isset($_GET['search']) ? mysqli_real_escape_string($connection, $_GET['search']) : '';
+$where_clause = "WHERE role = 'admin'";
 if ($search) {
-    $searchTerm = "%$search%";
-    $query = "SELECT * FROM user WHERE role = 'admin' AND (username LIKE ? OR full_name LIKE ? OR email LIKE ?)";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "sss", $searchTerm, $searchTerm, $searchTerm);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-} else {
-    $query = "SELECT * FROM user WHERE role = 'admin' ORDER BY user_id DESC";
-    $result = mysqli_query($connection, $query);
+    $where_clause .= " AND (username LIKE '%$search%' OR full_name LIKE '%$search%' OR email LIKE '%$search%')";
 }
 
-while ($row = mysqli_fetch_assoc($result)) {
-    $admins[] = $row;
-}
+$sql = "SELECT * FROM user $where_clause ORDER BY user_id DESC";
+$result = mysqli_query($connection, $sql);
+$total_admins = mysqli_num_rows($result);
+
+$_title = "Admin Management";
+include('../../lib/_head.php');
 ?>
 
-<style>
-    /* ... keep your existing styles ... */
-    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-    .status-active { background: #d4edda; color: #155724; }
-    .status-blocked { background: #f8d7da; color: #721c24; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-    .btn { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px; margin-right: 5px; }
-    .btn-edit { background: #ffc107; color: #000; }
-    .btn-delete { background: #dc3545; color: #fff; }
-</style>
-
-<div class="container" style="padding: 20px;">
-    <h1>Admin Management</h1>
+<div class="container" style="padding: 40px; background-color: #f8fafc; min-height: 100vh; font-family: 'Inter', sans-serif;">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
-        <a href="create.php" style="background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">+ Add New Admin</a>
-        
-        <form method="GET" style="display: flex; gap: 10px;">
-            <input type="text" name="search" placeholder="Search..." value="<?= htmlspecialchars($search) ?>" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <button type="submit">Search</button>
-            <?php if($search): ?> <a href="index.php">Clear</a> <?php endif; ?>
-        </form>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #0f172a; margin: 0; font-size: 1.8rem; font-weight: 800;">Admin Control Center</h1>
+            <p style="color: #64748b; margin: 4px 0 0;">Manage your administrative team and system permissions.</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="margin-bottom: 10px; font-weight: 600; color: #64748b;">Staff Count: <span style="color: #4f46e5;"><?= $total_admins ?></span></div>
+            <a href="create.php" style="background: #4f46e5; color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Add New Admin
+            </a>
+        </div>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Status</th> 
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (count($admins) > 0): ?>
-                <?php foreach ($admins as $a): ?>
-                <tr>
-                    <td>
-                        <?php 
-                            $img = !empty($a['profile_photo']) ? $a['profile_photo'] : 'default.png.jpg';
-                            $imagePath = "../uploads/profiles/" . $img;
-                        ?>
-                        <img src="<?= $imagePath ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+
+    <div style="background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f8fafc; text-align: left; border-bottom: 1px solid #e2e8f0;">
+                    <th style="padding: 20px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; width: 25%;">Administrator</th>
+                    <th style="padding: 20px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; width: 25%;">Email Address</th>
+                    <th style="padding: 20px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; width: 25%;">Activity Logs</th>
+                    <th style="padding: 20px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; width: 25%; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($admin = mysqli_fetch_assoc($result)): ?>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="<?= BASE_URL ?>/uploads/profiles/<?= !empty($admin['profile_photo']) ? $admin['profile_photo'] : 'default.png' ?>" 
+                                 style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
+                            <div>
+                                <div style="color: #0f172a; font-weight: 700;"><?= htmlspecialchars($admin['username']) ?></div>
+                                <div style="color: #64748b; font-size: 0.85rem;"><?= htmlspecialchars($admin['full_name']) ?></div>
+                            </div>
+                        </div>
                     </td>
-                    <td><?= htmlspecialchars($a['username']) ?></td>
-                    <td><?= htmlspecialchars($a['full_name'] ?? 'N/A') ?></td>
-                    <td><?= htmlspecialchars($a['email'] ?? 'N/A') ?></td>
-                    <td>
-                        <?php if ($a['is_blocked'] == 0): ?>
-                            <span class="status-badge status-active">Active</span>
-                        <?php else: ?>
-                            <span class="status-badge status-blocked">Blocked</span>
-                        <?php endif; ?>
+                    
+                    <td style="padding: 15px 20px; color: #475569; font-size: 0.9rem;">
+                        <?= htmlspecialchars($admin['email']) ?>
                     </td>
-                    <td>
-                        <a href="edit.php?id=<?= $a['user_id'] ?>" class="btn btn-edit">Edit</a>
-                        <a href="delete.php?id=<?= $a['user_id'] ?>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
+                    
+                    <td style="padding: 15px 20px;">
+                        <div style="font-size: 0.85rem; color: #0f172a; font-weight: 600;">
+                            Joined: <span style="font-weight: 400; color: #64748b;"><?= date('M d, Y', strtotime($admin['created_at'])) ?></span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
+                            Updated: <?= date('M d, Y H:i', strtotime($admin['updated_at'])) ?>
+                        </div>
+                    </td>
+
+                    <td style="padding: 15px 20px; text-align: center;">
+                        <div style="display: inline-flex; gap: 6px; background: #f8fafc; padding: 4px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            
+                            <?php $isBlocked = ($admin['is_blocked'] == 1); ?>
+                            
+                            <a href="toggle_block.php?id=<?= $admin['user_id'] ?>" 
+                               style="display: flex; align-items: center; justify-content: center; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: bold; color: white; background: <?= $isBlocked ? '#10b981' : '#f59e0b' ?>;"
+                               onclick="return confirm('Update admin access status?');">
+                                <?php if ($isBlocked): ?>
+                                    <i class="fas fa-user-check" style="margin-right: 6px;"></i> Unblock
+                                <?php else: ?>
+                                    <i class="fas fa-user-slash" style="margin-right: 6px;"></i> Block
+                                <?php endif; ?>
+                            </a>
+
+                            <a href="edit.php?id=<?= $admin['user_id'] ?>" 
+                               style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #eff6ff; color: #2563eb; text-decoration: none;"
+                               title="Edit Admin">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <?php if($admin['user_id'] != $_SESSION['user_id']): ?>
+                                <a href="delete.php?id=<?= $admin['user_id'] ?>" 
+                                   style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #fff1f2; color: #e11d48; text-decoration: none;"
+                                   onclick="return confirm('Permanently remove this admin?')"
+                                   title="Delete Admin">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </td>
                 </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="6" style="text-align:center;">No admins found.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <?php include('../../lib/_foot.php'); ?>

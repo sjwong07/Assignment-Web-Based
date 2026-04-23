@@ -85,11 +85,11 @@ $session_photo = $_SESSION['profile_photo'] ?? 'uploads/profiles/default.png.jpg
 
             <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin'): ?>
                 <a href="/users/admins/index.php" class="nav-link">
-                    <i class="fas fa-users-cog"></i> Admin Panel
+                    <i class="fas fa-users-cog"></i> Manage Admins
                 </a>
                 
-                <a href="<?= BASE_URL ?>/users/admins/admin_management.php" class="nav-link">
-                    <i class="fas fa-user-shield"></i> Manage Admins
+                <a href="<?= BASE_URL ?>/users/members/index.php" class="nav-link">
+                    <i class="fas fa-user-shield"></i> Manage Members
                 </a>
             <?php endif; ?>
 
