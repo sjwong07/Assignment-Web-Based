@@ -96,17 +96,25 @@ if (is_post()) {
         $prefix = strtoupper(substr($category, 0, 1));
         }
     
-        $stm = $_db->prepare("SELECT COUNT(*) FROM Product WHERE Category_id = ?");
-        $stm->execute([$cat_id]);
-        $count = $stm->fetchColumn();
-    
-        $product_id = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
-    
-        $stm = $_db->prepare("SELECT COUNT(*) FROM Product WHERE Product_id LIKE ?");
-        $stm->execute([$prefix . '%']);
-        $count = $stm->fetchColumn();
-    
-        $product_id = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+        // Get latest Product_id with same prefix
+$stm = $_db->prepare("
+    SELECT MAX(Product_id) 
+    FROM Product 
+    WHERE Product_id LIKE ?
+");
+$stm->execute([$prefix . '%']);
+$max_id = $stm->fetchColumn();
+
+// Generate next ID
+if ($max_id) {
+    $num = (int) substr($max_id, 1); // remove prefix (e.g. A005 -> 5)
+    $num++;
+} else {
+    $num = 1;
+}
+
+$product_id = $prefix . str_pad($num, 3, '0', STR_PAD_LEFT);
+
 
         $stm = $_db->prepare("INSERT INTO Product (Product_id, Product_model, Product_price, Category_id, Product_photo) VALUES (?, ?, ?, ?, NULL)");
         $stm->execute([$product_id, $model, $price, $cat_id]);
