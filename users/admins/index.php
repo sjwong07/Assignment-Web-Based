@@ -52,7 +52,8 @@ include('../../lib/_head.php');
                 <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 15px 20px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="<?= BASE_URL ?>/uploads/profiles/<?= !empty($admin['profile_photo']) ? $admin['profile_photo'] : 'default.png' ?>" 
+                            <img src="<?= BASE_URL ?>/uploads/profiles/<?= !empty($admin['profile_photo']) ? $admin['profile_photo'] : 'default.png' ?>"
+                            onerror ="this.src'<?= BASE_URL ?>/uploads/profiles/default.png';"
                                  style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
                             <div>
                                 <div style="color: #0f172a; font-weight: 700;"><?= htmlspecialchars($admin['username']) ?></div>
