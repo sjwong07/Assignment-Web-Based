@@ -146,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="ps-avatar-scroll" id="avatarScroll">
                 <form method="POST" id="default-photo-form" style="display: flex; gap: 15px;">
                     <input type="hidden" name="set_default_photo" id="selected_avatar">
-                    <img src="uploads/profiles/default.png.jpg" class="avatar-opt" data-path="uploads/profiles/default.png.jpg">
+                    <img src="uploads/profiles/default.png" class="avatar-opt" data-path="uploads/profiles/default.png">
                     <img src="uploads/profiles/user2.jpg" class="avatar-opt" data-path="uploads/profiles/user2.jpg">
                     <img src="uploads/profiles/user3.jpg" class="avatar-opt" data-path="uploads/profiles/user3.jpg">
                     <img src="uploads/profiles/user4.jpg" class="avatar-opt" data-path="uploads/profiles/user4.jpg">
