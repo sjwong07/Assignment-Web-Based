@@ -198,6 +198,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($error) && !isset($_POST['forg
                     $_SESSION['username'] = $row['username'];
                     $_SESSION['role'] = $user_role;
                     $_SESSION['user_id'] = $row['user_id'];
+
+                    $_temp_cart = $_SESSION['cart'] ?? [];
+                    if(!empty($temp_cart)) {
+                        $ab_cart = get_cart();
+                        foreach($temp_cart as $id => $unit) {
+                            $db_cart[$id] = $unit;
+                        }
+                        set_cart($db_cart);
+                        unset($_SESSION['cart']);
+                    }
                     
                     // Reset login attempts on successful login
                     $_SESSION['login_attempts'] = 0;

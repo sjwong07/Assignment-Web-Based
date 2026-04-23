@@ -57,7 +57,7 @@ include('../../lib/_head.php');
                                  style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
                             <div>
                                 <div style="color: #0f172a; font-weight: 700;"><?= htmlspecialchars($admin['username']) ?></div>
-                                <div style="color: #64748b; font-size: 0.85rem;"><?= htmlspecialchars($admin['full_name']) ?></div>
+                                <div style="color: #64748b; font-size: 0.85rem;"><?= htmlspecialchars($admin['full_name'] ?? '') ?></div>
                             </div>
                         </div>
                     </td>
