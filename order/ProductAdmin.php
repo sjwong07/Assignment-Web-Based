@@ -124,11 +124,32 @@ if (is_post()) {
         $cat_id = post('Category_name');
         $photo = post('Product_photo');
 
-        $stm = $_db->prepare("UPDATE Product SET Product_model = ?, Product_price = ?, Category_id = ?, Product_photo = ? WHERE Product_id = ?");
-        $stm->execute([$model, $price, $cat_id, $photo, $id]);
-        temp('info', '✅ Product Updated');
+        if (empty($model) || empty($price) || empty($cat_id)) {
+        temp('info', '❌ All fields are required!');
         redirect();
     }
+
+    if ($price <= 0) {
+        temp('info', '❌ Price must be greater than 0!');
+        redirect();
+    }
+
+    $stm = $_db->prepare("
+        UPDATE Product 
+        SET Product_model = ?, 
+            Product_price = ?, 
+            Category_id = ?, 
+            Stock = ?
+        WHERE Product_id = ?
+    ");
+
+     $stm->execute([$model, $price, $cat_id, $stock, $id]);
+
+    temp('info', '✅ Product Updated');
+    redirect();
+}
+
+
 
     // 3. DELETE
     if (isset($_POST['Delete'])) {
@@ -327,27 +348,56 @@ include '../lib/_head.php';
                         
                         <?php foreach($products as $p): ?>
                         <tr>
-                            <!-- EDIT FORM -->
-                            <form method="post">
-                                <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
-                                <td><?= htmlspecialchars($p->Product_id) ?></td>
-                                <td><input type="text" name="Product_model" value="<?= htmlspecialchars($p->Product_model) ?>" required></td>
-                                <td><input type="number" name="Product_price" step="0.01" value="<?= $p->Product_price ?>" required></td>
-                                <td>
-                                    <select name="Category_name" required>
-                                        <?php foreach ($categories as $c): ?>
-                                            <option value="<?= $c->Category_id ?>" <?= ($p->Category_id == $c->Category_id) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($c->Category_name) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </td>
-                            </form>
+<form method="post">
+
+    <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
+
+    <td><?= htmlspecialchars($p->Product_id) ?></td>
+
+    <td>
+        <input type="text" name="Product_model"
+               value="<?= htmlspecialchars($p->Product_model) ?>" required>
+    </td>
+
+    <td>
+        <input type="number" name="Product_price"
+               step="0.01"
+               value="<?= $p->Product_price ?>" required>
+    </td>
+
+    <td>
+        <select name="Category_name" required>
+            <?php foreach ($categories as $c): ?>
+                <option value="<?= $c->Category_id ?>"
+                    <?= ($p->Category_id == $c->Category_id) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($c->Category_name) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </td>
+
+    <td>
+        <input type="number" name="Stock"
+               value="<?= $p->Stock ?>" min="0" required>
+    </td>
+
+    <td>
+        <?php if (!empty($p->product_photo)): ?>
+            <img src="../images/<?= htmlspecialchars($p->product_photo) ?>"
+                 style="width:60px;height:60px;object-fit:cover;">
+        <?php endif; ?>
+    </td>
+
+    <td>
+        <button type="submit" name="Update" class="btn-update">
+            <i class="fas fa-edit"></i> Update
+        </button>
+    </td>
+</form>
+</tr>
+
                             
-                            <!-- show stock -->
-                            <td style="font-weight: bold; color: <?=  $p->Stock < 10 ? 'red' : 'inherit' ?>;">
-                                <input type="number" name="Stock" value="<?= $p->Stock ?>" min="0" style="width: 70px;" required>
-                            </td>
+                            
                             
                             <!-- PHOTO UPLOAD -->
                             <td>
@@ -373,7 +423,7 @@ include '../lib/_head.php';
 
                             <!-- ACTION BUTTONS -->
                             <td class="action-buttons">
-                                <form method="post" onsubmit="return confirm('Update this product?');">
+                            
                                     <input type="hidden" name="product_id" value="<?= $p->Product_id ?>">
                                     <input type="hidden" name="Product_model" value="<?= htmlspecialchars($p->Product_model) ?>">
                                     <input type="hidden" name="Product_price" value="<?= $p->Product_price ?>">
