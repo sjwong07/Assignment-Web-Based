@@ -123,6 +123,7 @@ if (is_post()) {
         $price = post('Product_price');
         $cat_id = post('Category_name');
         $photo = post('Product_photo');
+        $stock = post('Stock');
 
         if (empty($model) || empty($price) || empty($cat_id)) {
         temp('info', '❌ All fields are required!');
@@ -429,6 +430,7 @@ include '../lib/_head.php';
                                     <input type="hidden" name="Product_price" value="<?= $p->Product_price ?>">
                                     <input type="hidden" name="Category_name" value="<?= $p->Category_id ?>">
                                     <input type="hidden" name="Product_photo" value="<?= $p->product_photo ?>">
+                                    <input type="hidden" name="Stock" value="<?= $p->Stock ?>">
                                     <button type="submit" name="Update" class="btn-update">
                                         <i class="fas fa-edit"></i> Update
                                     </button>
